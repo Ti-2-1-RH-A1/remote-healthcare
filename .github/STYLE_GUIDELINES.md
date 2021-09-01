@@ -119,6 +119,9 @@ public struct Time : IFormattable
 
 ```cs
 
+
+public int seconds { get; }
+
 public int Hours
 {
     get { return hours; }
