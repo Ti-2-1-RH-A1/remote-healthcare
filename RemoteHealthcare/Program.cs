@@ -10,10 +10,10 @@ namespace RemoteHealthcare
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            MainBLE();
+            await Task.Run(MainBLE);
         }
 
         static async Task MainBLE()
