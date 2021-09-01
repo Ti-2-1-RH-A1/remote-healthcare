@@ -32,7 +32,8 @@ if (statement)
 if (statement) 
 {
     // Code here
-} else {
+} else 
+{
     // Other code here
 }
 if (statement) 
