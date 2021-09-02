@@ -26,6 +26,12 @@ namespace RemoteHealthcare
 
             float test = ParseSpeed(SpeedBytes);
             Console.WriteLine(test);
+
+            Byte[] SpeedBytes = new Byte[8];
+            SpeedBytes[2] = 0b11001011;
+            Page16(SpeedBytes);
+            float test = ParseElapsedTime(SpeedBytes[2]);
+            Console.WriteLine(test);
             **/
 
             Byte[] SpeedBytes = new Byte[8];
@@ -120,9 +126,11 @@ namespace RemoteHealthcare
 
         public static void Page16(byte[] data)
         {
-            // TODO Calculate Elapsed Time.
+            // Calculate Elapsed Time.
+            float time = ParseElapsedTime(data);
+            Console.WriteLine("Elapsed Time: " + time);
 
-            // TODO Calculate Distance Traveled.
+            // Calculate Distance Traveled.
             Console.WriteLine("Distance: " + parseDistance(data));
 
             // Calculate speed.
@@ -132,24 +140,26 @@ namespace RemoteHealthcare
 
         private static int parseDistance(byte[] data)
         {
-            byte[] distanceBytes = new byte[2];
-            distanceBytes[0] = 0;
-            distanceBytes[1] = data[3];
-            return TwoByteToInt(distanceBytes);
+            return TwoByteToInt(data[3]);
+        }
+        private static float ParseElapsedTime(byte[] data)
+        {
+            int timeInt = TwoByteToInt(data[2]);
+            return timeInt * 0.25f;
         }
 
-        public static float ParseSpeed(byte[] data)
+        public static float ParseSpeed(Byte[] data)
         {
-            byte[] SpeedBytes = new byte[2];
-            SpeedBytes[0] = data[4];
-            SpeedBytes[1] = data[5];
-            int speedInt = TwoByteToInt(SpeedBytes);
+            int speedInt = TwoByteToInt(data[4], data[5]);
             return speedInt;
         }
 
-        public static int TwoByteToInt(byte[] data)
+        public static int TwoByteToInt(byte byte1, byte byte2 = 0)
         {
-            return BitConverter.ToUInt16(data, 0);
+            Byte[] bytes = new Byte[2];
+            bytes[0] = byte1;
+            bytes[1] = byte2;
+            return BitConverter.ToUInt16(bytes, 0);
         }
     }
 }
