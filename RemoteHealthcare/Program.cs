@@ -62,7 +62,7 @@ namespace RemoteHealthcare
             var services = bleBike.GetServices;
             foreach (var service in services)
             {
-                Console.WriteLine($"Service: {service}");
+                Console.WriteLine($"B Service: {service}");
             }
 
             // Set service
@@ -74,16 +74,33 @@ namespace RemoteHealthcare
             errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
 
             // Heart rate
-            //errorCode =  await bleHeart.OpenDevice("Decathlon Dual HR");
 
-            //await bleHeart.SetService("HeartRate");
 
-            //bleHeart.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
-            //await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
 
+
+            errorCode = await bleHeart.OpenDevice("Decathlon Dual HR");
+            var servicesHR = bleHeart.GetServices;
+            foreach (var service in servicesHR)
+            {
+                Console.WriteLine($"HR Service: {service}");
+            }
+
+            await bleHeart.SetService("HeartRate");
+
+            bleHeart.SubscriptionValueChanged += BleHeart_SubscriptionValueChanged;
+            await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
 
             Console.Read();
         }
+
+        private static void BleHeart_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
+        {
+            if (e.Data[0] != 0x16)
+                return;
+            Console.WriteLine($"Heartrate: {e.Data[1]} BPM");
+        }
+
+
 
         private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
