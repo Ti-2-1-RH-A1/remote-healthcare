@@ -18,6 +18,16 @@ namespace RemoteHealthcare
 
         static async Task MainBLE()
         {
+            /** Test code voor TwoByteToInt
+            Byte[] SpeedBytes = new Byte[8];
+
+            SpeedBytes[4] = 0b11001011;
+            SpeedBytes[5] = 0b00010001;
+
+            int test = TwoByteToInt(SpeedBytes);
+            Console.WriteLine(test);
+            **/
+
             int errorCode = 0;
             BLE bleBike = new BLE();
             BLE bleHeart = new BLE();
@@ -74,6 +84,8 @@ namespace RemoteHealthcare
             var msg = new Byte[msgLength];
             Array.Copy(e.Data, 4, msg, 0, msgLength);
             int dataPageNumber = msg[0];
+            
+            //logging
             Console.WriteLine("sync: " + sync.ToString());
             Console.WriteLine("msgLength" + msgLength.ToString());
             Console.WriteLine("msgID: " + msgID.ToString());
@@ -81,6 +93,8 @@ namespace RemoteHealthcare
             Console.WriteLine("dataPageNumber: " + dataPageNumber.ToString());
             Console.WriteLine("cs: " + cs.ToString());
             Console.WriteLine(BitConverter.ToString(msg).Replace("-", " "));
+            
+            //Parse msg data
             ParseData(msg);
         }
 
@@ -100,17 +114,20 @@ namespace RemoteHealthcare
 
         public static void Page16(byte[] data)
         {
-            //byte byteTemp = data[5];
+            // TODO Calculate Elapsed Time.
 
-            //var output = byteTemp || data[4];
-            //Console.WriteLine(output);
-            Byte[] SpeedBytes = new Byte[4];
-            SpeedBytes[3] = data[4];
-            SpeedBytes[2] = data[5];
-            var byte1 = BitConverter.ToSingle(SpeedBytes, 0);
-            Console.WriteLine(byte1);
+            // TODO Calculate Distance Traveled.
 
-
+            // Calculate speed.
+            int speed = TwoByteToInt(data);
+            Console.WriteLine("Speed: " + speed);
+        }
+        public static int TwoByteToInt(Byte[] data)
+        {
+            Byte[] SpeedBytes = new Byte[2];
+            SpeedBytes[0] = data[4];
+            SpeedBytes[1] = data[5];
+            return BitConverter.ToUInt16(SpeedBytes, 0);
         }
     }
 }
