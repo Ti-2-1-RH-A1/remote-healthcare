@@ -19,12 +19,12 @@ namespace RemoteHealthcare
         static async Task MainBLE()
         {
             /** Test code voor TwoByteToInt
-            Byte[] SpeedBytes = new Byte[8];
+             Byte[] SpeedBytes = new Byte[8];
 
             SpeedBytes[4] = 0b11001011;
             SpeedBytes[5] = 0b00010001;
 
-            int test = TwoByteToInt(SpeedBytes);
+            float test = ParseSpeed(SpeedBytes);
             Console.WriteLine(test);
             **/
 
@@ -119,15 +119,21 @@ namespace RemoteHealthcare
             // TODO Calculate Distance Traveled.
 
             // Calculate speed.
-            int speed = TwoByteToInt(data);
+            float speed = ParseSpeed(data);
             Console.WriteLine("Speed: " + speed);
         }
-        public static int TwoByteToInt(Byte[] data)
+        public static float ParseSpeed(Byte[] data)
         {
             Byte[] SpeedBytes = new Byte[2];
             SpeedBytes[0] = data[4];
             SpeedBytes[1] = data[5];
-            return BitConverter.ToUInt16(SpeedBytes, 0);
+            int speedInt = TwoByteToInt(SpeedBytes);
+            return speedInt;
+        }
+
+        public static int TwoByteToInt(Byte[] data)
+        {
+            return BitConverter.ToUInt16(data, 0);
         }
     }
 }
