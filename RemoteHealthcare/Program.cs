@@ -28,6 +28,13 @@ namespace RemoteHealthcare
             Console.WriteLine(test);
             **/
 
+            Byte[] SpeedBytes = new Byte[8];
+
+            SpeedBytes[3] = 0b11001011;
+
+            float test = parseDistance(SpeedBytes);
+            Console.WriteLine(test);
+
             int errorCode = 0;
             BLE bleBike = new BLE();
             BLE bleHeart = new BLE();
@@ -111,27 +118,36 @@ namespace RemoteHealthcare
             }
         }
 
-
         public static void Page16(byte[] data)
         {
             // TODO Calculate Elapsed Time.
 
             // TODO Calculate Distance Traveled.
+            Console.WriteLine("Distance: " + parseDistance(data));
 
             // Calculate speed.
             float speed = ParseSpeed(data);
             Console.WriteLine("Speed: " + speed);
         }
-        public static float ParseSpeed(Byte[] data)
+
+        private static int parseDistance(byte[] data)
         {
-            Byte[] SpeedBytes = new Byte[2];
+            byte[] distanceBytes = new byte[2];
+            distanceBytes[0] = 0;
+            distanceBytes[1] = data[3];
+            return TwoByteToInt(distanceBytes);
+        }
+
+        public static float ParseSpeed(byte[] data)
+        {
+            byte[] SpeedBytes = new byte[2];
             SpeedBytes[0] = data[4];
             SpeedBytes[1] = data[5];
             int speedInt = TwoByteToInt(SpeedBytes);
             return speedInt;
         }
 
-        public static int TwoByteToInt(Byte[] data)
+        public static int TwoByteToInt(byte[] data)
         {
             return BitConverter.ToUInt16(data, 0);
         }
