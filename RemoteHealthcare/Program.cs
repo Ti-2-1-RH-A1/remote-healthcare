@@ -38,8 +38,9 @@ namespace RemoteHealthcare
 
             SpeedBytes[3] = 0b11001011;
 
-            float test = parseDistance(SpeedBytes);
-            Console.WriteLine(test);
+            Page16(SpeedBytes);
+            //float test = parseDistance(SpeedBytes);
+            //Console.WriteLine(test);
 
             int errorCode = 0;
             BLE bleBike = new BLE();
@@ -97,7 +98,7 @@ namespace RemoteHealthcare
             var msg = new Byte[msgLength];
             Array.Copy(e.Data, 4, msg, 0, msgLength);
             int dataPageNumber = msg[0];
-            
+
             //logging
             Console.WriteLine("sync: " + sync.ToString());
             Console.WriteLine("msgLength" + msgLength.ToString());
@@ -106,7 +107,7 @@ namespace RemoteHealthcare
             Console.WriteLine("dataPageNumber: " + dataPageNumber.ToString());
             Console.WriteLine("cs: " + cs.ToString());
             Console.WriteLine(BitConverter.ToString(msg).Replace("-", " "));
-            
+
             //Parse msg data
             ParseData(msg);
         }
@@ -142,6 +143,7 @@ namespace RemoteHealthcare
         {
             return TwoByteToInt(data[3]);
         }
+        
         private static float ParseElapsedTime(byte[] data)
         {
             int timeInt = TwoByteToInt(data[2]);
