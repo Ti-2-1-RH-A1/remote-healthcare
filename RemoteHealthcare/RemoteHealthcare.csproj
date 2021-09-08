@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <StartupObject>FietsDemo.Simulator</StartupObject>
+    <StartupObject>RemoteHealthcare.Simulator</StartupObject>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
