@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <StartupObject>RemoteHealthcare.Simulator</StartupObject>
+    <StartupObject></StartupObject>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
