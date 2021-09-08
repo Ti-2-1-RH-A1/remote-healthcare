@@ -63,7 +63,7 @@ namespace RemoteHealthcare
         {
             byte[] data = generateAPage(0x10);
            
-            double speed = 40 * (256 / this.resistance) * (Math.Sin(i * 0.1) + 1) / 2;
+            double speed = 40 * (256 / (this.resistance + 1)) * (Math.Sin(i * 0.1) + 1) / 2;
             short speedcalc = (short)(speed * 1000 * (1 / 3.6));
 
             byte[] bytes = BitConverter.GetBytes(speedcalc);

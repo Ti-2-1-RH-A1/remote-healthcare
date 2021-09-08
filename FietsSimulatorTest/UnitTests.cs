@@ -11,16 +11,16 @@ namespace FietsSimulatorTest
         [TestMethod]
         public void TestSimulator()
         {
-            Simulator simulator = new Simulator();
+            SimulatorBike simulator = new SimulatorBike();
             Stopwatch stopwatch = Stopwatch.StartNew();
             int i = 0;
             try
             {
-                SimulatorBike.RunStep(ref i, ref stopwatch);
+                simulator.RunStep(ref i, ref stopwatch);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Assert.Fail();
+                Assert.Fail(e.Message);
                 throw;
             }
             Assert.IsTrue(true);
