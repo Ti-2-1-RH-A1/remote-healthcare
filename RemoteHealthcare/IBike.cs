@@ -1,8 +1,12 @@
-﻿namespace RemoteHealthcare
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace RemoteHealthcare
 {
     public interface IBike
     {
-        byte[] Data { get; set; }
-        string ServiceName { get; set; }
+        public void SetResistance(byte Value);
+        public void SetAirResistance(byte Value);
     }
 }

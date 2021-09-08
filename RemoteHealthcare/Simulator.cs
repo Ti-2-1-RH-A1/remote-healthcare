@@ -74,7 +74,7 @@ namespace RemoteHealthcare
 
     }
 
-    class FakeBike : IBike
+    class FakeBike : IBikeData
     {
         public byte[] Data { get; set; }
         public string ServiceName { get; set; }

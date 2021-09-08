@@ -66,7 +66,7 @@ namespace RemoteHealthcare
             Console.WriteLine($"Heartrate: {e.Data[1]} BPM");
         }
 
-        public class RealBike : IBike
+        public class RealBike : IBikeData
         {
             public byte[] Data { get; set; }
             public string ServiceName { get; set; }
@@ -84,7 +84,7 @@ namespace RemoteHealthcare
             BleBike_SubscriptionValueChanged(realBike);
         }
 
-        public static void BleBike_SubscriptionValueChanged(IBike e)
+        public static void BleBike_SubscriptionValueChanged(IBikeData e)
         {
             Console.WriteLine("Received from {0}: {1}, {2}", e.ServiceName,
                 BitConverter.ToString(e.Data).Replace("-", " "),
