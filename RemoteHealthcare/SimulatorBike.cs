@@ -4,11 +4,28 @@ using System.Diagnostics;
 
 namespace RemoteHealthcare
 {
-    public class Simulator
+    public class SimulatorBike : IBike
     {
+        private byte resistance;
+        private byte airResistanceCoefficient;
+        private byte windspeed;
+        private byte draftingFactor;
+
+        public void SetResistance(byte resistance)
+        {
+            this.resistance = resistance;
+        }
+
+        public void SetAirResistance(byte airResistanceCoefficient, byte windspeed, byte draftingFactor)
+        {
+            this.airResistanceCoefficient = airResistanceCoefficient;
+            this.windspeed = windspeed;
+            this.draftingFactor = draftingFactor;
+        }
+
         readonly Thread thread;
 
-        public Simulator()
+        public SimulatorBike()
         {
             this.thread = new Thread(new ThreadStart(Run));
             this.thread.Start();
@@ -71,7 +88,6 @@ namespace RemoteHealthcare
 
             return data;
         }
-
     }
 
     class FakeBike : IBikeData

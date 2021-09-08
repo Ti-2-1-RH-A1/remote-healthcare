@@ -13,7 +13,7 @@ namespace RemoteHealthcare
         static async Task MainBLE()
         {
             int errorCode = 0;
-            BLE bleBike = new BLE();
+            RealBike bleBike = new RealBike();
             BLE bleHeart = new BLE();
             Thread.Sleep(1000); // We need some time to list available devices
 
@@ -66,21 +66,25 @@ namespace RemoteHealthcare
             Console.WriteLine($"Heartrate: {e.Data[1]} BPM");
         }
 
-        public class RealBike : IBikeData
+        public class RealBikeData : IBikeData
         {
             public byte[] Data { get; set; }
             public string ServiceName { get; set; }
 
-            public RealBike(BLESubscriptionValueChangedEventArgs e)
+            public RealBikeData(BLESubscriptionValueChangedEventArgs e)
             {
                 this.Data = e.Data;
                 this.ServiceName = e.ServiceName;
+            }
+
+            public RealBikeData()
+            {
             }
         }
 
         private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
-            RealBike realBike = new RealBike(e);
+            RealBikeData realBike = new RealBikeData(e);
             BleBike_SubscriptionValueChanged(realBike);
         }
 

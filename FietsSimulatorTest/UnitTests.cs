@@ -15,7 +15,7 @@ namespace FietsSimulatorTest
             int i = 0;
             try
             {
-                Simulator.RunStep(ref i, ref stopwatch);
+                SimulatorBike.RunStep(ref i, ref stopwatch);
             }
             catch (Exception)
             {
