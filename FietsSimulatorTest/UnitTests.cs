@@ -11,11 +11,12 @@ namespace FietsSimulatorTest
         [TestMethod]
         public void TestSimulator()
         {
+            Simulator simulator = new Simulator();
             Stopwatch stopwatch = Stopwatch.StartNew();
             int i = 0;
             try
             {
-                Simulator.RunStep(ref i, ref stopwatch);
+                simulator.RunStep(ref i, ref stopwatch);
             }
             catch (Exception)
             {

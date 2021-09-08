@@ -7,13 +7,19 @@ namespace RemoteHealthcare
     public class Simulator
     {
         readonly Thread thread;
+        public double metersTraveled;
 
         public Simulator()
         {
             this.thread = new Thread(new ThreadStart(Run));
+        }
+
+        public void start()
+        {
             this.thread.Start();
             Console.ReadLine();
         }
+
 
         public void Run()
         {
@@ -26,7 +32,7 @@ namespace RemoteHealthcare
             }
         }
         
-        public static void RunStep(ref int i, ref Stopwatch stopwatch)
+        public void RunStep(ref int i, ref Stopwatch stopwatch)
         {              
             FakeBike fakeBike = new FakeBike();
             fakeBike.Data = GenerateSpeedData(i, stopwatch);
@@ -34,7 +40,8 @@ namespace RemoteHealthcare
             i++;
         }
 
-        private static byte[] GenerateSpeedData(int i, Stopwatch stopwatch)
+        private long elapsedTime = 0;
+        private byte[] GenerateSpeedData(int i, Stopwatch stopwatch)
         {
             byte[] data = generateAPage(0x10);
            
@@ -42,7 +49,15 @@ namespace RemoteHealthcare
             short speedcalc = (short)(speed * 1000 * (1 / 3.6));
 
             byte[] bytes = BitConverter.GetBytes(speedcalc);
-            data[6] = (byte)(stopwatch.ElapsedMilliseconds / 250); // Elapsed Time
+
+            long stopwatchElapsedMilliseconds = stopwatch.ElapsedMilliseconds;
+            data[6] = (byte)(stopwatchElapsedMilliseconds/ 250); // Elapsed Time
+            long timeDifference = stopwatchElapsedMilliseconds - elapsedTime;
+            elapsedTime = stopwatchElapsedMilliseconds;
+            double timeDoubleDifference = (double)timeDifference/1000;
+            double metersPerSecond = speed*(1/3.6);
+            metersTraveled += timeDoubleDifference * metersPerSecond;
+            data[7] = (byte) metersTraveled;
 
             data[8] = bytes[0];
             data[9] = bytes[1];
