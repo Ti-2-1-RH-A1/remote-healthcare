@@ -74,10 +74,6 @@ namespace RemoteHealthcare
             errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
 
             // Heart rate
-
-
-
-
             errorCode = await bleHeart.OpenDevice("Decathlon Dual HR");
             var servicesHR = bleHeart.GetServices;
             foreach (var service in servicesHR)
