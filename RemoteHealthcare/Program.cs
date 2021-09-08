@@ -100,9 +100,26 @@ namespace RemoteHealthcare
             Console.WriteLine($"Heartrate: {e.Data[1]} BPM");
         }
 
+        class RealBike : IBike
+        {
+            public byte[] Data { get; set; }
+            public string ServiceName { get; set; }
 
-
+            public RealBike(BLESubscriptionValueChangedEventArgs e)
+            {
+                this.Data = e.Data;
+                this.ServiceName = e.ServiceName;
+            }
+        }
+      
         private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
+        {
+            RealBike realBike = new RealBike(e);
+            BleBike_SubscriptionValueChanged(realBike);
+        }
+
+
+        public static void BleBike_SubscriptionValueChanged(IBike e)
         {
             Console.WriteLine("Received from {0}: {1}, {2}", e.ServiceName,
                 BitConverter.ToString(e.Data).Replace("-", " "),
@@ -153,7 +170,7 @@ namespace RemoteHealthcare
 
             // Calculate speed.
             float speed = ParseSpeed(data);
-            Console.WriteLine("Speed: " + speed);
+            Console.WriteLine("\nSpeed: " + speed * 0.001 * 3.6 + "\n");
         }
 
         private static int parseDistance(byte[] data)
