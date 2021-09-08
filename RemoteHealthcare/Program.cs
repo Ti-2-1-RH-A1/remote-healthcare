@@ -8,18 +8,16 @@ namespace RemoteHealthcare
         static Task Main(string[] args)
         {
             bool validSelection = false;
+            Simulator simulator = new Simulator();
+            BikeManager bike = new BikeManager();
+            HRManager hr = new HRManager();
             while (!validSelection)
             {
-
-                Simulator simulator = new Simulator();
                 switch (consoleMenu())
                 {
                     case "0":
                         Console.Clear();
-
                         simulator.startSim();
-                        
-
                         break;
                     case "1":
                         Console.Clear();
@@ -34,20 +32,54 @@ namespace RemoteHealthcare
                         Console.ReadLine();
                         break;
                     case "2":
-                        validSelection = true;
-                        Console.WriteLine("Selected 2");
+                        Console.Clear();
+                        
+                        Console.Write("Wat is het serie nummer van de fiets: ");
+                        string serie = Console.ReadLine();
+                        Console.Write("Hoeveel data pakketen wil je ontvangen: ");
+                        int amount = 1;
+                        try
+                        {
+                            amount = Int32.Parse(Console.ReadLine());
+                        }
+                        catch (Exception e)
+                        {
+                            Console.BackgroundColor = ConsoleColor.DarkRed;
+                            Console.WriteLine("Getal invoer is niet correct probeer opnieuw (Druk op enter)");
+                            Console.BackgroundColor = ConsoleColor.Black;
+                            Console.ReadLine();
+                            break;
+                        }
+                        Console.Clear();
+                        bike.MakeConnection(serie, amount);
                         break;
                     case "3":
-                        validSelection = true;
-                        Console.WriteLine("Selected 3");
+                        Console.Clear();
+                        
+                        Console.Write("Hoeveel data pakketen wil je ontvangen: ");
+                        int amountHR = 1;
+                        try
+                        {
+                            amountHR = Int32.Parse(Console.ReadLine());
+                        }
+                        catch (Exception e)
+                        {
+                            Console.BackgroundColor = ConsoleColor.DarkRed;
+                            Console.WriteLine("Getal invoer is niet correct probeer opnieuw (Druk op enter)");
+                            Console.BackgroundColor = ConsoleColor.Black;
+                            Console.ReadLine();
+                            break;
+                        }
+                        Console.Clear();
+                        hr.MakeConnection(amountHR);
                         break;
                     case "4":
-                        validSelection = true;
-                        Console.WriteLine("Selected 4");
+                        bike.closeConnections();
+                        hr.closeConnections();
                         break;
                     case "5":
-                        validSelection = true;
-                        Console.WriteLine("Selected 5");
+                        // validSelection = true;
+                        // Console.WriteLine("Selected 5");
                         break;
                 }
             }
@@ -59,23 +91,22 @@ namespace RemoteHealthcare
         {
             Console.Clear();
             string menuTitle = @"
-========================================================================================================================  
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════  
                                         █   █   ████    █   █   █   █
                                         ██ ██   █       ██  █   █   █
                                         █ █ █   ████    █ █ █   █   █
                                         █   █   █       █  ██   █   █
                                         █   █   ████    █   █    ███
-========================================================================================================================
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 ";
 
             Console.WriteLine(menuTitle);
             string menuOption = @"
 [0] - Start Simulator
 [1] - 1 data entry simulator
-[2] - Option 2
-[3] - Option 3
-[4] - Option 4
-[5] - Option 5
+[2] - Start reading from bike
+[3] - Start Reading from Heartrate Monitor
+[4] - Force close connection from bike
     ";
             Console.WriteLine(menuOption);
             Console.Write("Select option: ");
@@ -222,10 +253,10 @@ namespace RemoteHealthcare
             {
                 case 0x10:
                     Page16(data);
-                    break;
+                    return true;
                 default:
-                    Console.WriteLine("Not 16");
-                    break;
+                    // Console.WriteLine("Not 16");
+                    return false;
             }
         }
 

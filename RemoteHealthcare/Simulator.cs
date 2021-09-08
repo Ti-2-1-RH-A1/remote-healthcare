@@ -7,7 +7,6 @@ namespace RemoteHealthcare
     public class Simulator
     {
         public double metersTraveled;
-        Thread thread;
 
         public Simulator()
         {
@@ -34,8 +33,6 @@ namespace RemoteHealthcare
                 count++;
                 if (count > 15)
                 {
-                    
-
                         Console.BackgroundColor = ConsoleColor.DarkRed;
                         Console.Write("Wil je verder gaan met de simulatie? (y/n)");
 
@@ -55,8 +52,8 @@ namespace RemoteHealthcare
         public void RunStep(ref int i, ref Stopwatch stopwatch)
         {              
             FakeBike fakeBike = new FakeBike();
-            fakeBike.Data = GenerateSpeedData(i, stopwatch);
-            Bluetooth.BleBike_SubscriptionValueChanged(fakeBike);
+            fakeBike.Data = GenerateSpeedData(i);
+            BikeManager.BleBike_SubscriptionValueChanged(fakeBike);
             i++;
         }
 
