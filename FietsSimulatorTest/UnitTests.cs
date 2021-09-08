@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RemoteHealthcare;
 using System;
+using System.Diagnostics;
 
 namespace FietsSimulatorTest
 {
@@ -10,10 +11,11 @@ namespace FietsSimulatorTest
         [TestMethod]
         public void TestSimulator()
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
             int i = 0;
             try
             {
-                Simulator.RunStep(ref i);
+                Simulator.RunStep(ref i, ref stopwatch);
             }
             catch (Exception)
             {
