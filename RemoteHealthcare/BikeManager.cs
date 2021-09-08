@@ -169,7 +169,7 @@ namespace RemoteHealthcare
                 // Console.WriteLine(BitConverter.ToString(msg).Replace("-", " "));
 
                 //Parse msg data
-                if (Program.ParseData(msg))
+                if (Bluetooth.ParseData(msg))
                 {
                     amountDataSend++;
                 }

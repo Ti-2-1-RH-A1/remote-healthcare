@@ -52,7 +52,7 @@ namespace RemoteHealthcare
         public void RunStep(ref int i, ref Stopwatch stopwatch)
         {              
             FakeBike fakeBike = new FakeBike();
-            fakeBike.Data = GenerateSpeedData(i);
+            fakeBike.Data = GenerateSpeedData(i, stopwatch);
             BikeManager.BleBike_SubscriptionValueChanged(fakeBike);
             i++;
         }

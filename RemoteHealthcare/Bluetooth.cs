@@ -111,12 +111,13 @@ namespace RemoteHealthcare
             ParseData(msg);
         }
 
-        public static void ParseData(byte[] data)
+        public static bool ParseData(byte[] data)
         {
             switch (data[0])
             {
                 case 0x10:
                     Page16(data);
+                    return true;
                     break;
                 case 0x19:
                     Page25(data);
@@ -125,6 +126,7 @@ namespace RemoteHealthcare
                     Console.WriteLine("Not 16 or 25");
                     break;
             }
+            return false;
         }
 
         public static void Page16(byte[] data)
