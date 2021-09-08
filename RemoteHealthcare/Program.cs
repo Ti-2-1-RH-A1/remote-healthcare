@@ -13,10 +13,11 @@ namespace RemoteHealthcare
         static async Task Main(string[] args)
         {
             bool validSelection = false;
+            Simulator simulator = new Simulator();
+            BikeManager bike = new BikeManager();
+            HRManager hr = new HRManager();
             while (!validSelection)
             {
-
-                Simulator simulator = new Simulator();
                 switch (consoleMenu())
                 {
                     case "0":
@@ -39,20 +40,54 @@ namespace RemoteHealthcare
                         Console.ReadLine();
                         break;
                     case "2":
-                        validSelection = true;
-                        Console.WriteLine("Selected 2");
+                        Console.Clear();
+                        
+                        Console.Write("Wat is het serie nummer van de fiets: ");
+                        string serie = Console.ReadLine();
+                        Console.Write("Hoeveel data pakketen wil je ontvangen: ");
+                        int amount = 1;
+                        try
+                        {
+                            amount = Int32.Parse(Console.ReadLine());
+                        }
+                        catch (Exception e)
+                        {
+                            Console.BackgroundColor = ConsoleColor.DarkRed;
+                            Console.WriteLine("Getal invoer is niet correct probeer opnieuw (Druk op enter)");
+                            Console.BackgroundColor = ConsoleColor.Black;
+                            Console.ReadLine();
+                            break;
+                        }
+                        Console.Clear();
+                        bike.MakeConnection(serie, amount);
                         break;
                     case "3":
-                        validSelection = true;
-                        Console.WriteLine("Selected 3");
+                        Console.Clear();
+                        
+                        Console.Write("Hoeveel data pakketen wil je ontvangen: ");
+                        int amountHR = 1;
+                        try
+                        {
+                            amountHR = Int32.Parse(Console.ReadLine());
+                        }
+                        catch (Exception e)
+                        {
+                            Console.BackgroundColor = ConsoleColor.DarkRed;
+                            Console.WriteLine("Getal invoer is niet correct probeer opnieuw (Druk op enter)");
+                            Console.BackgroundColor = ConsoleColor.Black;
+                            Console.ReadLine();
+                            break;
+                        }
+                        Console.Clear();
+                        hr.MakeConnection(amountHR);
                         break;
                     case "4":
-                        validSelection = true;
-                        Console.WriteLine("Selected 4");
+                        bike.closeConnections();
+                        hr.closeConnections();
                         break;
                     case "5":
-                        validSelection = true;
-                        Console.WriteLine("Selected 5");
+                        // validSelection = true;
+                        // Console.WriteLine("Selected 5");
                         break;
                 }
             }
@@ -64,23 +99,22 @@ namespace RemoteHealthcare
         {
             Console.Clear();
             string menuTitle = @"
-========================================================================================================================  
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════  
                                         █   █   ████    █   █   █   █
                                         ██ ██   █       ██  █   █   █
                                         █ █ █   ████    █ █ █   █   █
                                         █   █   █       █  ██   █   █
                                         █   █   ████    █   █    ███
-========================================================================================================================
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 ";
 
             Console.WriteLine(menuTitle);
             string menuOption = @"
 [0] - Start Simulator
 [1] - 1 data entry simulator
-[2] - Option 2
-[3] - Option 3
-[4] - Option 4
-[5] - Option 5
+[2] - Start reading from bike
+[3] - Start Reading from Heartrate Monitor
+[4] - Force close connection from bike
     ";
             Console.WriteLine(menuOption);
             Console.Write("Select option: ");
@@ -88,149 +122,20 @@ namespace RemoteHealthcare
 
         }
 
-        static void startSim()
-        {
-            Simulator sim = new Simulator();
-            return;
-        }
 
 
-        static async Task MainBLE()
-        {
-            /** Test code voor TwoByteToInt
-             Byte[] SpeedBytes = new Byte[8];
+        
 
-            SpeedBytes[4] = 0b11001011;
-            SpeedBytes[5] = 0b00010001;
-
-            float test = ParseSpeed(SpeedBytes);
-            Console.WriteLine(test);
-
-            Byte[] SpeedBytes = new Byte[8];
-            SpeedBytes[2] = 0b11001011;
-            Page16(SpeedBytes);
-            float test = ParseElapsedTime(SpeedBytes[2]);
-            Console.WriteLine(test);
-            **/
-
-            Byte[] SpeedBytes = new Byte[8];
-
-            SpeedBytes[3] = 0b11001011;
-
-            Page16(SpeedBytes);
-            //float test = parseDistance(SpeedBytes);
-            //Console.WriteLine(test);
-
-            int errorCode = 0;
-            BLE bleBike = new BLE();
-            BLE bleHeart = new BLE();
-            Thread.Sleep(1000); // We need some time to list available devices
-
-            // List available devices
-            List<String> bleBikeList = bleBike.ListDevices();
-            Console.WriteLine("Devices found: ");
-            foreach (var name in bleBikeList)
-            {
-                Console.WriteLine($"Device: {name}");
-            }
-
-            // Connecting
-            errorCode = errorCode = await bleBike.OpenDevice("Tacx Flux 00472");
-            // __TODO__ Error check
-
-            var services = bleBike.GetServices;
-            foreach (var service in services)
-            {
-                Console.WriteLine($"B Service: {service}");
-            }
-
-            // Set service
-            errorCode = await bleBike.SetService("6e40fec1-b5a3-f393-e0a9-e50e24dcca9e");
-            // __TODO__ error check
-
-            // Subscribe
-            bleBike.SubscriptionValueChanged += BleBike_SubscriptionValueChanged;
-            errorCode = await bleBike.SubscribeToCharacteristic("6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
-
-            // Heart rate
-            errorCode = await bleHeart.OpenDevice("Decathlon Dual HR");
-            var servicesHR = bleHeart.GetServices;
-            foreach (var service in servicesHR)
-            {
-                Console.WriteLine($"HR Service: {service}");
-            }
-
-            await bleHeart.SetService("HeartRate");
-
-            bleHeart.SubscriptionValueChanged += BleHeart_SubscriptionValueChanged;
-            await bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
-
-            Console.Read();
-        }
-
-        private static void BleHeart_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
-        {
-            if (e.Data[0] != 0x16)
-                return;
-            Console.WriteLine($"Heartrate: {e.Data[1]} BPM");
-        }
-
-        class RealBike : IBike
-        {
-            public byte[] Data { get; set; }
-            public string ServiceName { get; set; }
-
-            public RealBike(BLESubscriptionValueChangedEventArgs e)
-            {
-                this.Data = e.Data;
-                this.ServiceName = e.ServiceName;
-            }
-        }
-
-        private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
-        {
-            RealBike realBike = new RealBike(e);
-            BleBike_SubscriptionValueChanged(realBike);
-        }
-
-
-        public static void BleBike_SubscriptionValueChanged(IBike e)
-        {
-            Console.WriteLine("Received from {0}: {1}, {2}", e.ServiceName,
-                BitConverter.ToString(e.Data).Replace("-", " "),
-                Encoding.UTF8.GetString(e.Data));
-            var sync = e.Data[0];
-            int msgLength = e.Data[1];
-            var msgID = e.Data[2];
-            int channelNumber = e.Data[3];
-            var cs = e.Data[msgLength + 3];
-            var msg = new Byte[msgLength];
-            Array.Copy(e.Data, 4, msg, 0, msgLength);
-            int dataPageNumber = msg[0];
-
-            //logging
-            Console.WriteLine("sync: " + sync.ToString());
-            Console.WriteLine("msgLength" + msgLength.ToString());
-            Console.WriteLine("msgID: " + msgID.ToString());
-            Console.WriteLine("channelNumber: " + channelNumber.ToString());
-            Console.WriteLine("dataPageNumber: " + dataPageNumber.ToString());
-            Console.WriteLine("cs: " + cs.ToString());
-            Console.WriteLine(BitConverter.ToString(msg).Replace("-", " "));
-
-            //Parse msg data
-            ParseData(msg);
-        }
-
-        public static void ParseData(byte[] data)
+        public static bool ParseData(byte[] data)
         {
             switch (data[0])
             {
                 case 0x10:
                     Page16(data);
-                    break;
+                    return true;
                 default:
-                    Console.WriteLine("Not 16");
-                    break;
+                    // Console.WriteLine("Not 16");
+                    return false;
             }
         }
 
