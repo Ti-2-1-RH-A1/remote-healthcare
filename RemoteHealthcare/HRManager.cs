@@ -8,10 +8,7 @@ using Avans.TI.BLE;
 namespace RemoteHealthcare
 {
     class HRManager
-
-
     {
-
         private static int amountDataSend = 0;
         private static int ThresholdDataAmount = 0;
         private static int OriginalrequestedDataAmount = 0;
@@ -90,8 +87,6 @@ namespace RemoteHealthcare
                         bleHeart.CloseDevice();
                         exit = true;
                     }
-
-
                 }
             }
 
@@ -120,7 +115,5 @@ namespace RemoteHealthcare
 
             return false;
         }
-
-
     }
 }

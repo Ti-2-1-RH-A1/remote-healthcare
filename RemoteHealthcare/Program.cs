@@ -22,10 +22,7 @@ namespace RemoteHealthcare
                 {
                     case "0":
                         Console.Clear();
-
                         simulator.startSim();
-                        
-
                         break;
                     case "1":
                         Console.Clear();
@@ -93,8 +90,6 @@ namespace RemoteHealthcare
             }
             // await Task.Run(MainBLE);
         }
-
-
         static string consoleMenu()
         {
             Console.Clear();
@@ -121,11 +116,7 @@ namespace RemoteHealthcare
             return Console.ReadLine();
 
         }
-
-
-
         
-
         public static bool ParseData(byte[] data)
         {
             switch (data[0])

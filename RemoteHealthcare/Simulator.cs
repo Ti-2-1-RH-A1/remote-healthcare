@@ -31,8 +31,6 @@ namespace RemoteHealthcare
                 count++;
                 if (count > 15)
                 {
-                    
-
                         Console.BackgroundColor = ConsoleColor.DarkRed;
                         Console.Write("Wil je verder gaan met de simulatie? (y/n)");
 

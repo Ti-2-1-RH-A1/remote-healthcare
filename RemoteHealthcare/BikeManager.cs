@@ -55,8 +55,6 @@ namespace RemoteHealthcare
             Task<int> task = bleBike.OpenDevice($"Tacx Flux {deviceName}");
             errorCode = task.Result;
             // __TODO__ Error check
-
-            
             if (errorCode == 1)
             {
                 Console.BackgroundColor = ConsoleColor.DarkRed;
@@ -120,13 +118,9 @@ namespace RemoteHealthcare
                         bleBike.CloseDevice();
                         exit = true;
                     }
-                    
-
                 }
             }
-
             return;
-
         }
 
 
