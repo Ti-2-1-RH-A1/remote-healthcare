@@ -6,11 +6,16 @@ namespace RemoteHealthcare
 {
     public class SimulatorBike : IBike
     {
+        readonly Thread thread;
+        public double metersTraveled;
+        
         private byte resistance;
-        private byte airResistanceCoefficient;
-        private byte windspeed;
-        private byte draftingFactor;
 
+        public SimulatorBike()
+        {
+            this.thread = new Thread(new ThreadStart(Run));
+        }
+        
         public void SetResistance(byte resistance)
         {
             this.resistance = resistance;
@@ -18,25 +23,21 @@ namespace RemoteHealthcare
 
         public void SetAirResistance(byte airResistanceCoefficient, byte windspeed, byte draftingFactor)
         {
-            this.airResistanceCoefficient = airResistanceCoefficient;
-            this.windspeed = windspeed;
-            this.draftingFactor = draftingFactor;
+            double windResistance = (draftingFactor * windspeed * airResistanceCoefficient);
+            // If windresistance is 0 then total resistance is 0 as well.
+            // If windresistance > 0 then determine how much windresistance there is compared to the max possible (65.62).
+            // Which is determined from max wind speed * max wind resistance coefficient * max drafting factor = 127 * 1.86 * 1
+            // This then gives a value of 0 to 1, which is multiplied by 256 to get a hex value of 0x00 to 0xFF,
+            // which is used for the total resistance.
+            this.resistance = windResistance <= 0 ? (byte)0 : (byte)(65.62 / windResistance * 256);
         }
-
-        readonly Thread thread;
-        public double metersTraveled;
-
-        public SimulatorBike()
-        {
-            this.thread = new Thread(new ThreadStart(Run));
-        }
+        
 
         public void start()
         {
             this.thread.Start();
             Console.ReadLine();
         }
-
 
         public void Run()
         {
@@ -62,17 +63,17 @@ namespace RemoteHealthcare
         {
             byte[] data = generateAPage(0x10);
            
-            double speed = 40 * (Math.Sin(i * 0.1) + 1) / 2;
+            double speed = 40 * (256 / this.resistance) * (Math.Sin(i * 0.1) + 1) / 2;
             short speedcalc = (short)(speed * 1000 * (1 / 3.6));
 
             byte[] bytes = BitConverter.GetBytes(speedcalc);
 
             long stopwatchElapsedMilliseconds = stopwatch.ElapsedMilliseconds;
-            data[6] = (byte)(stopwatchElapsedMilliseconds/ 250); // Elapsed Time
+            data[6] = (byte)(stopwatchElapsedMilliseconds / 250); // Elapsed Time
             long timeDifference = stopwatchElapsedMilliseconds - elapsedTime;
             elapsedTime = stopwatchElapsedMilliseconds;
-            double timeDoubleDifference = (double)timeDifference/1000;
-            double metersPerSecond = speed*(1/3.6);
+            double timeDoubleDifference = (double)timeDifference / 1000;
+            double metersPerSecond = speed*(1 / 3.6);
             metersTraveled += timeDoubleDifference * metersPerSecond;
             data[7] = (byte) metersTraveled;
 
@@ -110,5 +111,4 @@ namespace RemoteHealthcare
         public byte[] Data { get; set; }
         public string ServiceName { get; set; }
     }
-
 }
