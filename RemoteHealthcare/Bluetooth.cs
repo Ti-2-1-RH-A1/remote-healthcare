@@ -145,14 +145,12 @@ namespace RemoteHealthcare
 
         public static float ParseElapsedTime(byte[] data)
         {
-            int timeInt = TwoByteToInt(data[2]);
-            return timeInt * 0.25f;
+            return TwoByteToInt(data[2]) * 0.25f;
         }
 
-        public static float ParseSpeed(byte[] data)
+        public static int ParseSpeed(byte[] data)
         {
-            int speedInt = TwoByteToInt(data[4], data[5]);
-            return speedInt;
+            return TwoByteToInt(data[4], data[5]);
         }
 
         public static int TwoByteToInt(byte byte1, byte byte2 = 0)

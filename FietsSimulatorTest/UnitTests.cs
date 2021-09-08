@@ -15,7 +15,7 @@ namespace FietsSimulatorTest
             {
                 Simulator.RunStep(ref i);
             }
-            catch (System.Exception)
+            catch (Exception)
             {
                 Assert.Fail();
                 throw;
@@ -49,6 +49,13 @@ namespace FietsSimulatorTest
             DistanceBytes[3] = 0b11001011;
             float test3 = Bluetooth.ParseDistance(DistanceBytes);
             Assert.AreEqual(test3, 203f);
+        }
+
+        [TestMethod]
+        public void TestTwoByteToInt()
+        {
+            int test = Bluetooth.TwoByteToInt(0b11001011, 0b00010001);
+            Assert.AreEqual(test, 4555);
         }
     }
 }
