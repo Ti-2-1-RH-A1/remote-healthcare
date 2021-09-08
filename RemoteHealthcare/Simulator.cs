@@ -13,9 +13,14 @@ namespace RemoteHealthcare
         public Simulator()
         {
             this.thread = new Thread(new ThreadStart(Run));
+        }
+
+        public void start()
+        {
             this.thread.Start();
             Console.ReadLine();
         }
+
 
         public void Run()
         {
