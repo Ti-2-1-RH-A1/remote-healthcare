@@ -17,23 +17,24 @@ namespace RemoteHealthcare
 
         public void Run()
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
             int i = 0;
             while (true)
             {
-                RunStep(ref i);
+                RunStep(ref i, ref stopwatch);
                 Thread.Sleep(1000);
             }
         }
         
-        public static void RunStep(ref int i)
+        public static void RunStep(ref int i, ref Stopwatch stopwatch)
         {              
             FakeBike fakeBike = new FakeBike();
-            fakeBike.Data = GenerateSpeedData(i);
+            fakeBike.Data = GenerateSpeedData(i, stopwatch);
             Bluetooth.BleBike_SubscriptionValueChanged(fakeBike);
             i++;
         }
 
-        private static byte[] GenerateSpeedData(int i)
+        private static byte[] GenerateSpeedData(int i, Stopwatch stopwatch)
         {
             byte[] data = generateAPage(0x10);
            
@@ -41,7 +42,6 @@ namespace RemoteHealthcare
             short speedcalc = (short)(speed * 1000 * (1 / 3.6));
 
             byte[] bytes = BitConverter.GetBytes(speedcalc);
-            Stopwatch stopwatch = Stopwatch.StartNew();
             data[6] = (byte)(stopwatch.ElapsedMilliseconds / 250); // Elapsed Time
 
             data[8] = bytes[0];
