@@ -21,13 +21,9 @@ namespace FietsDemo
             Console.ReadLine();
 
         }
-
-
         public void run()
         {
             Random random = new Random();
-
-
             int i = 0;
             while (true)
             {
@@ -40,13 +36,7 @@ namespace FietsDemo
                 data[5] = 0x19;
                 data[6] = 0x61;
                 data[7] = 0x54;
-
-                //data[8] =  0xCB;
-                //data[9] =  0x30;
-
-
                 i++;
-
                 double speed = 40 * (Math.Sin(i * 0.1) + 1) / 2;
                 short speedcalc = (short)(speed * 1000 * (1 / 3.6));
 
@@ -54,9 +44,6 @@ namespace FietsDemo
 
                 data[8] = bytes[0];
                 data[9] = bytes[1];
-
-
-
                 data[10] = 0xFF;
                 data[11] = 0x24;
                 data[12] = 0x01;
@@ -77,10 +64,6 @@ namespace FietsDemo
     {
         public byte[] Data { get; set; }
         public string ServiceName { get; set; }
-
-
-
-
     }
 
 }
