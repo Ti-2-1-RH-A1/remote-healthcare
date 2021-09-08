@@ -1,6 +1,6 @@
 ﻿namespace RemoteHealthcare
 {
-    interface IBike
+    public interface IBike
     {
         byte[] Data { get; set; }
         string ServiceName { get; set; }

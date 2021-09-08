@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using Avans.TI.BLE;
 
 namespace RemoteHealthcare
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static Task Main(string[] args)
         {
             bool validSelection = false;
             Simulator simulator = new Simulator();
@@ -88,8 +83,10 @@ namespace RemoteHealthcare
                         break;
                 }
             }
-            // await Task.Run(MainBLE);
+
+            return Task.CompletedTask;
         }
+
         static string consoleMenu()
         {
             Console.Clear();
@@ -116,7 +113,7 @@ namespace RemoteHealthcare
             return Console.ReadLine();
 
         }
-        
+      
         public static bool ParseData(byte[] data)
         {
             switch (data[0])

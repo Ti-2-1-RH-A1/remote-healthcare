@@ -6,7 +6,7 @@ namespace RemoteHealthcare
 {
     public class Simulator
     {
-        Thread thread;
+        public double metersTraveled;
 
         public Simulator()
         {
@@ -19,14 +19,16 @@ namespace RemoteHealthcare
             return;
         }
 
+
         public void Run()
         {
             Boolean running = true;
             int count = 1;
+            Stopwatch stopwatch = Stopwatch.StartNew();
             int i = 0;
             while (running)
             {
-                RunStep(ref i);
+                RunStep(ref i, ref stopwatch);
                 Thread.Sleep(1000);
                 count++;
                 if (count > 15)
@@ -47,7 +49,7 @@ namespace RemoteHealthcare
             }
         }
         
-        public static void RunStep(ref int i)
+        public void RunStep(ref int i, ref Stopwatch stopwatch)
         {              
             FakeBike fakeBike = new FakeBike();
             fakeBike.Data = GenerateSpeedData(i);
@@ -55,7 +57,8 @@ namespace RemoteHealthcare
             i++;
         }
 
-        private static byte[] GenerateSpeedData(int i)
+        private long elapsedTime = 0;
+        private byte[] GenerateSpeedData(int i, Stopwatch stopwatch)
         {
             byte[] data = generateAPage(0x10);
            
@@ -63,8 +66,15 @@ namespace RemoteHealthcare
             short speedcalc = (short)(speed * 1000 * (1 / 3.6));
 
             byte[] bytes = BitConverter.GetBytes(speedcalc);
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            data[6] = (byte)(stopwatch.ElapsedMilliseconds / 250); // Elapsed Time
+
+            long stopwatchElapsedMilliseconds = stopwatch.ElapsedMilliseconds;
+            data[6] = (byte)(stopwatchElapsedMilliseconds/ 250); // Elapsed Time
+            long timeDifference = stopwatchElapsedMilliseconds - elapsedTime;
+            elapsedTime = stopwatchElapsedMilliseconds;
+            double timeDoubleDifference = (double)timeDifference/1000;
+            double metersPerSecond = speed*(1/3.6);
+            metersTraveled += timeDoubleDifference * metersPerSecond;
+            data[7] = (byte) metersTraveled;
 
             data[8] = bytes[0];
             data[9] = bytes[1];
