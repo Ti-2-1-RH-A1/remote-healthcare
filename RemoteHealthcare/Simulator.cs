@@ -31,20 +31,20 @@ namespace RemoteHealthcare
                 count++;
                 if (count > 15)
                 {
-                    //background red
-                    Console.WriteLine("Wil je verder gaan met de simulatie? y/n");
-           
-                    while (count > 15 && running)
-                    {
-                        if (Console.ReadLine()==("y"))
+                    
+
+                        Console.BackgroundColor = ConsoleColor.DarkRed;
+                        Console.Write("Wil je verder gaan met de simulatie? (y/n)");
+
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        if (Console.ReadLine()=="y")
                         {
                             count = 0;
                         }
-                        else if (Console.ReadLine()==("n"))
+                        else
                         {
                             running = false;
                         }
-                    }
                 }
             }
         }

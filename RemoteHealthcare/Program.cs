@@ -21,15 +21,9 @@ namespace RemoteHealthcare
                 {
                     case "0":
                         Console.Clear();
-                        Console.BackgroundColor = ConsoleColor.DarkRed;
-                        Console.WriteLine("WARNING! When the simulator is started a reboot is required to close it do you want to continue? (y/n)");
-                        Console.BackgroundColor = ConsoleColor.Black;
-                        if (Console.ReadLine() == "y")
-                        {
-                            Console.Clear();
-                            
-                            simulator.startSim();
-                        }
+
+                        simulator.startSim();
+                        
 
                         break;
                     case "1":
@@ -70,12 +64,12 @@ namespace RemoteHealthcare
         {
             Console.Clear();
             string menuTitle = @"
-========================================================================================================================
-                                         |      _|  _|_|_|_|  _|      _|  _|    _|  
-                                        _|_|  _|_|  _|        _|_|    _|  _|    _|  
-                                        _|  _|  _|  _|_|_|    _|  _|  _|  _|    _|  
-                                        _|      _|  _|        _|    _|_|  _|    _|  
-                                        _|      _|  _|_|_|_|  _|      _|    _|_|    
+========================================================================================================================  
+                                        █   █   ████    █   █   █   █
+                                        ██ ██   █       ██  █   █   █
+                                        █ █ █   ████    █ █ █   █   █
+                                        █   █   █       █  ██   █   █
+                                        █   █   ████    █   █    ███
 ========================================================================================================================
 ";
 
