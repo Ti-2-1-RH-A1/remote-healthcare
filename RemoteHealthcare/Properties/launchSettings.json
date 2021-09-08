@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "RemoteHealthcare": {
+      "commandName": "Project"
+    },
+    "Simulator": {
+      "commandName": "Project"
+    }
+  }
+}
