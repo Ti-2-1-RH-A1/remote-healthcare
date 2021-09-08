@@ -9,7 +9,6 @@ namespace RemoteHealthcare
         readonly Thread thread;
         public double metersTraveled;
 
-
         public Simulator()
         {
             this.thread = new Thread(new ThreadStart(Run));
@@ -57,11 +56,8 @@ namespace RemoteHealthcare
             elapsedTime = stopwatchElapsedMilliseconds;
             double timeDoubleDifference = (double)timeDifference/1000;
             double metersPerSecond = speed*(1/3.6);
-
             metersTraveled += timeDoubleDifference * metersPerSecond;
-
             data[7] = (byte) metersTraveled;
-
 
             data[8] = bytes[0];
             data[9] = bytes[1];
