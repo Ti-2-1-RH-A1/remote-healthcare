@@ -21,11 +21,31 @@ namespace RemoteHealthcare
 
         public void Run()
         {
+            Boolean running = true;
+            int count = 1;
             int i = 0;
-            while (true)
+            while (running)
             {
                 RunStep(ref i);
                 Thread.Sleep(1000);
+                count++;
+                if (count > 15)
+                {
+                    //background red
+                    Console.WriteLine("Wil je verder gaan met de simulatie? y/n");
+           
+                    while (count > 15 && running)
+                    {
+                        if (Console.ReadLine()==("y"))
+                        {
+                            count = 0;
+                        }
+                        else if (Console.ReadLine()==("n"))
+                        {
+                            running = false;
+                        }
+                    }
+                }
             }
         }
         
