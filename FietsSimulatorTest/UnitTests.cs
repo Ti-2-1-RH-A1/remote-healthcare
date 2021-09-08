@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RemoteHealthcare;
 using System;
+using System.Diagnostics;
 
 namespace FietsSimulatorTest
 {
@@ -10,12 +11,13 @@ namespace FietsSimulatorTest
         [TestMethod]
         public void TestSimulator()
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
             int i = 0;
             try
             {
-                Simulator.RunStep(ref i);
+                Simulator.RunStep(ref i, ref stopwatch);
             }
-            catch (System.Exception)
+            catch (Exception)
             {
                 Assert.Fail();
                 throw;
@@ -49,6 +51,13 @@ namespace FietsSimulatorTest
             DistanceBytes[3] = 0b11001011;
             float test3 = Bluetooth.ParseDistance(DistanceBytes);
             Assert.AreEqual(test3, 203f);
+        }
+
+        [TestMethod]
+        public void TestTwoByteToInt()
+        {
+            int test = Bluetooth.TwoByteToInt(0b11001011, 0b00010001);
+            Assert.AreEqual(test, 4555);
         }
     }
 }

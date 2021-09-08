@@ -118,8 +118,11 @@ namespace RemoteHealthcare
                 case 0x10:
                     Page16(data);
                     break;
+                case 0x19:
+                    Page25(data);
+                    break;
                 default:
-                    Console.WriteLine("Not 16");
+                    Console.WriteLine("Not 16 or 25");
                     break;
             }
         }
@@ -138,22 +141,32 @@ namespace RemoteHealthcare
             Console.WriteLine("\nSpeed: " + speed * 0.001 * 3.6 + "\n");
         }
 
-        public static int ParseDistance(byte[] data)
+        public static void Page25(byte[] data)
         {
-            return TwoByteToInt(data[3]);
+            // Calculate RPM
+            int rpm = ParseRPM(data);
+            Console.WriteLine("RPM: " + rpm);
+
+            // Calculate Accumulated Power
+            int AccPower = ParseAccPower(data);
+            Console.WriteLine("AccPower: " + AccPower);
+
+            // Calculate Instantaneous Power
+            int InsPower = ParseAccPower(data);
+            Console.WriteLine("InsPower: " + InsPower);
         }
 
-        public static float ParseElapsedTime(byte[] data)
-        {
-            int timeInt = TwoByteToInt(data[2]);
-            return timeInt * 0.25f;
-        }
+        public static int ParseAccPower(byte[] data) => TwoByteToInt(data[3], data[4]);
 
-        public static float ParseSpeed(byte[] data)
-        {
-            int speedInt = TwoByteToInt(data[4], data[5]);
-            return speedInt;
-        }
+        public static int ParseInsPower(byte[] data) => TwoByteToInt(data[5], (byte)(data[6] >> 4));
+
+        public static int ParseRPM(byte[] data) => TwoByteToInt(data[2]);
+
+        public static int ParseDistance(byte[] data) => TwoByteToInt(data[3]);
+        
+        public static float ParseElapsedTime(byte[] data) => TwoByteToInt(data[2]) * 0.25f;
+
+        public static int ParseSpeed(byte[] data) => TwoByteToInt(data[4], data[5]);
 
         public static int TwoByteToInt(byte byte1, byte byte2 = 0)
         {
