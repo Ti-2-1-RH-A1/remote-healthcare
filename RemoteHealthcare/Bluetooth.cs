@@ -1,121 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Avans.TI.BLE;
 
 namespace RemoteHealthcare
 {
-    class Program
+    public class Bluetooth
     {
-        static Task Main(string[] args)
-        {
-            bool validSelection = false;
-            while (!validSelection)
-            {
-
-                Simulator simulator = new Simulator();
-                switch (consoleMenu())
-                {
-                    case "0":
-                        Console.Clear();
-
-                        simulator.startSim();
-                        
-
-                        break;
-                    case "1":
-                        Console.Clear();
-                        Console.BackgroundColor = ConsoleColor.DarkRed;
-                        Console.WriteLine("Below 1 entry from the simulated data is shown.");
-                        Console.BackgroundColor = ConsoleColor.Black;
-                        int i = 0;
-                        Simulator.RunStep(ref i);
-                        Console.BackgroundColor = ConsoleColor.DarkRed;
-                        Console.WriteLine("Press enter to continue.");
-                        Console.BackgroundColor = ConsoleColor.Black;
-                        Console.ReadLine();
-                        break;
-                    case "2":
-                        validSelection = true;
-                        Console.WriteLine("Selected 2");
-                        break;
-                    case "3":
-                        validSelection = true;
-                        Console.WriteLine("Selected 3");
-                        break;
-                    case "4":
-                        validSelection = true;
-                        Console.WriteLine("Selected 4");
-                        break;
-                    case "5":
-                        validSelection = true;
-                        Console.WriteLine("Selected 5");
-                        break;
-                }
-            }
-
-            return Task.CompletedTask;
-        }
-
-        static string consoleMenu()
-        {
-            Console.Clear();
-            string menuTitle = @"
-========================================================================================================================  
-                                        █   █   ████    █   █   █   █
-                                        ██ ██   █       ██  █   █   █
-                                        █ █ █   ████    █ █ █   █   █
-                                        █   █   █       █  ██   █   █
-                                        █   █   ████    █   █    ███
-========================================================================================================================
-";
-
-            Console.WriteLine(menuTitle);
-            string menuOption = @"
-[0] - Start Simulator
-[1] - 1 data entry simulator
-[2] - Option 2
-[3] - Option 3
-[4] - Option 4
-[5] - Option 5
-    ";
-            Console.WriteLine(menuOption);
-            Console.Write("Select option: ");
-            return Console.ReadLine();
-
-        }
-
-        static void startSim()
-        {
-            Simulator sim = new Simulator();
-            return;
-        }
-
-
         static async Task MainBLE()
         {
-            /** Test code voor TwoByteToInt
-             Byte[] SpeedBytes = new Byte[8];
-
-            SpeedBytes[4] = 0b11001011;
-            SpeedBytes[5] = 0b00010001;
-
-            float test = ParseSpeed(SpeedBytes);
-            Console.WriteLine(test);
-
-            Byte[] SpeedBytes = new Byte[8];
-            SpeedBytes[2] = 0b11001011;
-            Page16(SpeedBytes);
-            float test = ParseElapsedTime(SpeedBytes[2]);
-            Console.WriteLine(test);
-            **/
-
-            Byte[] SpeedBytes = new Byte[8];
-
-            SpeedBytes[3] = 0b11001011;
-
-            Page16(SpeedBytes);
-            //float test = parseDistance(SpeedBytes);
-            //Console.WriteLine(test);
-
             int errorCode = 0;
             BLE bleBike = new BLE();
             BLE bleHeart = new BLE();
@@ -170,7 +66,7 @@ namespace RemoteHealthcare
             Console.WriteLine($"Heartrate: {e.Data[1]} BPM");
         }
 
-        class RealBike : IBike
+        public class RealBike : IBike
         {
             public byte[] Data { get; set; }
             public string ServiceName { get; set; }
@@ -187,7 +83,6 @@ namespace RemoteHealthcare
             RealBike realBike = new RealBike(e);
             BleBike_SubscriptionValueChanged(realBike);
         }
-
 
         public static void BleBike_SubscriptionValueChanged(IBike e)
         {
@@ -223,8 +118,11 @@ namespace RemoteHealthcare
                 case 0x10:
                     Page16(data);
                     break;
+                case 0x19:
+                    Page25(data);
+                    break;
                 default:
-                    Console.WriteLine("Not 16");
+                    Console.WriteLine("Not 16 or 25");
                     break;
             }
         }
@@ -236,36 +134,99 @@ namespace RemoteHealthcare
             Console.WriteLine("Elapsed Time: " + time);
 
             // Calculate Distance Traveled.
-            Console.WriteLine("Distance: " + parseDistance(data));
+            Console.WriteLine("Distance: " + ParseDistance(data));
 
             // Calculate speed.
             float speed = ParseSpeed(data);
             Console.WriteLine("\nSpeed: " + speed * 0.001 * 3.6 + "\n");
         }
 
-        private static int parseDistance(byte[] data)
+        public static void Page25(byte[] data)
         {
-            return TwoByteToInt(data[3]);
+            // Calculate RPM
+            int rpm = ParseRPM(data);
+            Console.WriteLine("RPM: " + rpm);
+
+            // Calculate Accumulated Power
+            int AccPower = ParseAccPower(data);
+            Console.WriteLine("AccPower: " + AccPower);
+
+            // Calculate Instantaneous Power
+            int InsPower = ParseAccPower(data);
+            Console.WriteLine("InsPower: " + InsPower);
         }
 
-        private static float ParseElapsedTime(byte[] data)
-        {
-            int timeInt = TwoByteToInt(data[2]);
-            return timeInt * 0.25f;
-        }
+        public static int ParseAccPower(byte[] data) => TwoByteToInt(data[3], data[4]);
 
-        public static float ParseSpeed(Byte[] data)
-        {
-            int speedInt = TwoByteToInt(data[4], data[5]);
-            return speedInt;
-        }
+        public static int ParseInsPower(byte[] data) => TwoByteToInt(data[5], (byte)(data[6] >> 4));
+
+        public static int ParseRPM(byte[] data) => TwoByteToInt(data[2]);
+
+        public static int ParseDistance(byte[] data) => TwoByteToInt(data[3]);
+        
+        public static float ParseElapsedTime(byte[] data) => TwoByteToInt(data[2]) * 0.25f;
+
+        public static int ParseSpeed(byte[] data) => TwoByteToInt(data[4], data[5]);
 
         public static int TwoByteToInt(byte byte1, byte byte2 = 0)
         {
-            Byte[] bytes = new Byte[2];
+            byte[] bytes = new byte[2];
             bytes[0] = byte1;
             bytes[1] = byte2;
             return BitConverter.ToUInt16(bytes, 0);
+        }
+
+        // byte resistance =- basic resistance in % (0x00 == 0% and 0xFF == 100%
+        public static void SetResistance(BLE bleBike, byte resistance)
+        {
+            byte datapage = 0x30;
+            byte zeroValue = 0x00;
+            byte[] payload = { datapage, zeroValue, zeroValue, zeroValue, zeroValue, zeroValue, zeroValue, resistance };
+            sendBluetoothMessage(bleBike, payload);
+        }
+
+        // byte airResistanceCoefficient = Coefficient of the air resistance input in % of total (0x00 = 0% and 0xFF = 100%), where actual coefficient goes from 0.00 to 1.86 kg/m
+        // byte windspeed = windspeed input in % of total (0x00 = 0% and 0xFF = 100%), where actual windspeed goes from -127 to 127 km/h
+        // byte draftingFactor = drafting factor input in % of total (0x00 = 0% and 0xFF = 100%), where actual factor goes from 0.0 to 1.00 (the lower this factor, the less air resistance matters)
+        public static void SetAirResistance(BLE bleBike, byte airResistanceCoefficient, byte windspeed, byte draftingFactor)
+        {
+            byte datapage = 0x32;
+            byte zeroValue = 0x00;
+            byte[] payload = { datapage, zeroValue, zeroValue, zeroValue, zeroValue, airResistanceCoefficient, windspeed, draftingFactor };
+            sendBluetoothMessage(bleBike, payload);
+        }
+
+        private static void sendBluetoothMessage(BLE bleBike, byte[] payload)
+        {
+            // Declare some standard values for the message.
+            byte sync = 0xA4;
+            byte length = 0x09;
+            byte msgId = 0x4E;
+            byte channelNumber = 0x05;
+
+            // Determine checksum
+            byte checksum = 0x00;
+            checksum ^= sync;
+            checksum ^= length;
+            checksum ^= msgId;
+            checksum ^= channelNumber;
+            foreach (byte b in payload)
+            {
+                checksum ^= b;
+            }
+
+            // length is payload + sync + length + msgId + channelnumber + checksum.
+            // So length is payload.Length + 5
+            byte[] data = new byte[payload.Length + 5];
+            data[0] = sync;
+            data[1] = length;
+            data[2] = msgId;
+            data[3] = channelNumber;
+            payload.CopyTo(data, 4);
+            data[data.Length - 1] = checksum;
+
+            Console.WriteLine("Trying to send byte array: " + string.Join(", ", data));
+            bleBike.WriteCharacteristic("6e40fec3-b5a3-f393-e0a9-e50e24dcca9e", data);
         }
     }
 }
