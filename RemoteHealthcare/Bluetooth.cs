@@ -13,7 +13,7 @@ namespace RemoteHealthcare
         static async Task MainBLE()
         {
             int errorCode = 0;
-            RealBike bleBike = new RealBike();
+            BLE bleBike = new BLE();
             BLE bleHeart = new BLE();
             Thread.Sleep(1000); // We need some time to list available devices
 
