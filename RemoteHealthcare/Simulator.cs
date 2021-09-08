@@ -49,7 +49,7 @@ namespace RemoteHealthcare
             short speedcalc = (short)(speed * 1000 * (1 / 3.6));
 
             byte[] bytes = BitConverter.GetBytes(speedcalc);
-
+            Stopwatch stopwatch = Stopwatch.StartNew();
             data[6] = (byte)(stopwatch.ElapsedMilliseconds / 250); // Elapsed Time
 
             data[8] = bytes[0];
