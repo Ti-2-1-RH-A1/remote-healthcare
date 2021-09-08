@@ -19,6 +19,7 @@ namespace RemoteHealthcare
             this.thread.Start();
             Console.ReadLine();
         }
+
         public void Run()
         {
             int i = 0;
@@ -31,10 +32,10 @@ namespace RemoteHealthcare
         
         public static void RunStep(ref int i)
         {              
-                FakeBike fakeBike = new FakeBike();
-                fakeBike.Data = GenerateSpeedData(i);
-                Program.BleBike_SubscriptionValueChanged(fakeBike);
-                i++;
+            FakeBike fakeBike = new FakeBike();
+            fakeBike.Data = GenerateSpeedData(i);
+            Program.BleBike_SubscriptionValueChanged(fakeBike);
+            i++;
         }
 
         private static byte[] GenerateSpeedData(int i)
@@ -73,8 +74,6 @@ namespace RemoteHealthcare
 
             return data;
         }
-
-
 
     }
 
