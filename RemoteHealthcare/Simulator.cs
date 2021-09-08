@@ -7,12 +7,12 @@ namespace RemoteHealthcare
     public class Simulator
     {
         readonly Thread thread;
-        static void Main(string[] args)
-        {
-            // Display the number of command line arguments.
-            Console.WriteLine(args.Length);
-            Simulator simulator = new Simulator();
-        }
+        // static void Main(string[] args)
+        // {
+        //     // Display the number of command line arguments.
+        //     Console.WriteLine(args.Length);
+        //     Simulator simulator = new Simulator();
+        // }
 
         public Simulator()
         {
