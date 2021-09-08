@@ -17,12 +17,6 @@ namespace RemoteHealthcare
             Console.ReadLine();
         }
 
-        public static void Main(string[] args)
-        {
-            Simulator simulator = new Simulator();
-
-        }
-
         public void Run()
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
