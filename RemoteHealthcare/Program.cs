@@ -15,8 +15,6 @@ namespace RemoteHealthcare
             bool validSelection = false;
             while (!validSelection)
             {
-
-
                 switch (consoleMenu())
                 {
                     case "0":
@@ -47,8 +45,6 @@ namespace RemoteHealthcare
             }
             // await Task.Run(MainBLE);
         }
-
-
         static string consoleMenu()
         {
             Console.Clear();
@@ -76,7 +72,6 @@ namespace RemoteHealthcare
             return Console.ReadLine();
 
         }
-
 
         static async Task MainBLE()
         {
