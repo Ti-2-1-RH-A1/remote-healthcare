@@ -154,7 +154,7 @@ namespace RemoteHealthcare
             Console.WriteLine("AccPower: " + AccPower);
 
             // Calculate Instantaneous Power
-            int InsPower = ParseAccPower(data);
+            int InsPower = ParseInsPower(data);
             Console.WriteLine("InsPower: " + InsPower);
         }
 
