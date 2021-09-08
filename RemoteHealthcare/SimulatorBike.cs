@@ -6,14 +6,13 @@ namespace RemoteHealthcare
 {
     public class SimulatorBike : IBike
     {
-        readonly Thread thread;
         public double metersTraveled;
         
         private byte resistance;
 
         public SimulatorBike()
         {
-            this.thread = new Thread(new ThreadStart(Run));
+            
         }
         
         public void SetResistance(byte resistance)
@@ -33,20 +32,38 @@ namespace RemoteHealthcare
         }
         
 
-        public void start()
+        public void startSim()
         {
-            this.thread.Start();
-            Console.ReadLine();
+            Run();
+            return;
         }
 
         public void Run()
         {
+            Boolean running = true;
+            int count = 1;
             Stopwatch stopwatch = Stopwatch.StartNew();
             int i = 0;
-            while (true)
+            while (running)
             {
                 RunStep(ref i, ref stopwatch);
                 Thread.Sleep(1000);
+                count++;
+                if (count > 15)
+                {
+                        Console.BackgroundColor = ConsoleColor.DarkRed;
+                        Console.Write("Wil je verder gaan met de simulatie? (y/n)");
+
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        if (Console.ReadLine()=="y")
+                        {
+                            count = 0;
+                        }
+                        else
+                        {
+                            running = false;
+                        }
+                }
             }
         }
         
@@ -54,7 +71,7 @@ namespace RemoteHealthcare
         {              
             FakeBike fakeBike = new FakeBike();
             fakeBike.Data = GenerateSpeedData(i, stopwatch);
-            Bluetooth.BleBike_SubscriptionValueChanged(fakeBike);
+            BikeManager.BleBike_SubscriptionValueChanged(fakeBike);
             i++;
         }
 
