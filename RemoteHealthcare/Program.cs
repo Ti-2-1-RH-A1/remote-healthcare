@@ -160,7 +160,7 @@ namespace RemoteHealthcare
         {
             return TwoByteToInt(data[3]);
         }
-        
+
         private static float ParseElapsedTime(byte[] data)
         {
             int timeInt = TwoByteToInt(data[2]);
