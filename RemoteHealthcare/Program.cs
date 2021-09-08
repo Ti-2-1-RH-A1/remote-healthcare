@@ -15,15 +15,34 @@ namespace RemoteHealthcare
             bool validSelection = false;
             while (!validSelection)
             {
+
+                Simulator simulator = new Simulator();
                 switch (consoleMenu())
                 {
                     case "0":
-                        validSelection = true;
-                        Console.WriteLine("Selected 0");
+                        Console.Clear();
+                        Console.BackgroundColor = ConsoleColor.DarkRed;
+                        Console.WriteLine("WARNING! When the simulator is started a reboot is required to close it do you want to continue? (y/n)");
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        if (Console.ReadLine() == "y")
+                        {
+                            Console.Clear();
+                            
+                            simulator.startSim();
+                        }
+
                         break;
                     case "1":
-                        validSelection = true;
-                        Console.WriteLine("Selected 1");
+                        Console.Clear();
+                        Console.BackgroundColor = ConsoleColor.DarkRed;
+                        Console.WriteLine("Below 1 entry from the simulated data is shown.");
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        int i = 0;
+                        Simulator.RunStep(ref i);
+                        Console.BackgroundColor = ConsoleColor.DarkRed;
+                        Console.WriteLine("Press enter to continue.");
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.ReadLine();
                         break;
                     case "2":
                         validSelection = true;
@@ -45,6 +64,8 @@ namespace RemoteHealthcare
             }
             // await Task.Run(MainBLE);
         }
+
+
         static string consoleMenu()
         {
             Console.Clear();
@@ -60,8 +81,8 @@ namespace RemoteHealthcare
 
             Console.WriteLine(menuTitle);
             string menuOption = @"
-[0] - Option 0
-[1] - Option 1
+[0] - Start Simulator
+[1] - 1 data entry simulator
 [2] - Option 2
 [3] - Option 3
 [4] - Option 4
@@ -72,6 +93,13 @@ namespace RemoteHealthcare
             return Console.ReadLine();
 
         }
+
+        static void startSim()
+        {
+            Simulator sim = new Simulator();
+            return;
+        }
+
 
         static async Task MainBLE()
         {
@@ -164,7 +192,7 @@ namespace RemoteHealthcare
                 this.ServiceName = e.ServiceName;
             }
         }
-      
+
         private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
         {
             RealBike realBike = new RealBike(e);
