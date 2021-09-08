@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Diagnostics;
 
 namespace RemoteHealthcare
 {
@@ -23,6 +24,8 @@ namespace RemoteHealthcare
         public void Run()
         {
             int i = 0;
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
             while (true)
             {
                 RunStep(ref i);
@@ -46,6 +49,8 @@ namespace RemoteHealthcare
             short speedcalc = (short)(speed * 1000 * (1 / 3.6));
 
             byte[] bytes = BitConverter.GetBytes(speedcalc);
+
+            data[6] = (byte)(stopwatch.ElapsedMilliseconds / 250); // Elapsed Time
 
             data[8] = bytes[0];
             data[9] = bytes[1];
