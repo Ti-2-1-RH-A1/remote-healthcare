@@ -11,6 +11,7 @@ namespace FietsSimulatorTest
         [TestMethod]
         public void TestSimulator()
         {
+            Simulator simulator = new Simulator();
             Stopwatch stopwatch = Stopwatch.StartNew();
             int i = 0;
             try
