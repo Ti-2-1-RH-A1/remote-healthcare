@@ -122,13 +122,11 @@ namespace RemoteHealthcare
                 case 0x10:
                     Page16(data);
                     return true;
-                    break;
                 case 0x19:
                     Page25(data);
-                    break;
+                    return true;
                 default:
-                    Console.WriteLine("Not 16 or 25");
-                    break;
+                    return false;
             }
             return false;
         }

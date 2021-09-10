@@ -9,7 +9,7 @@ namespace RemoteHealthcare
         static Task Main(string[] args)
         {
             bool validSelection = false;
-            Simulator simulator = new Simulator();
+            SimulatorBike simulator = new SimulatorBike();
             BikeManager bike = new BikeManager();
             HRManager hr = new HRManager();
             while (!validSelection)

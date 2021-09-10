@@ -19,7 +19,7 @@ namespace RemoteHealthcare
 
         private static BLE bleBike = null;
 
-        class RealBike : IBike
+        class RealBike : IBikeData
         {
             public byte[] Data { get; set; }
             public string ServiceName { get; set; }
@@ -142,7 +142,7 @@ namespace RemoteHealthcare
             BleBike_SubscriptionValueChanged(realBike);
         }
 
-        public static void BleBike_SubscriptionValueChanged(IBike e)
+        public static void BleBike_SubscriptionValueChanged(IBikeData e)
         {
             if (!reachedThreshold)
             {
