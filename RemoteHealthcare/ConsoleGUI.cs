@@ -8,8 +8,6 @@ namespace RemoteHealthcare
 {
     class ConsoleGUI
     {
-
-
         public Task SelectionHandler()
         {
             bool validSelection = false;
@@ -38,9 +36,7 @@ namespace RemoteHealthcare
                         Console.ReadKey();
                         break;
                     case "2":
-
                         Console.Clear();
-
                         Console.Write("Wat is het serie nummer van de fiets? : ");
                         string serie = Console.ReadLine();
                         bool enteryValid = false;
@@ -60,7 +56,7 @@ namespace RemoteHealthcare
 
                                 enteryValid = true;
                             }
-                            catch (Exception e)
+                            catch (Exception)
                             {
                                 Console.BackgroundColor = ConsoleColor.DarkRed;
                                 Console.WriteLine("Getal invoer is niet correct probeer opnieuw (Druk op een knop)");
@@ -70,7 +66,7 @@ namespace RemoteHealthcare
                         }
 
                         Console.Clear();
-                        bike.MakeConnectionAsync(serie, amountEntry);
+                        bike.MakeConnectionAsync(serie, amountEntry).Wait();
                         break;
                     case "3":
                         bool validEntery = false;
@@ -83,14 +79,14 @@ namespace RemoteHealthcare
                             try
                             {
                                 entryAmount = Int32.Parse(Console.ReadLine());
-                                if (entryAmount ! > 0)
+                                if (entryAmount! > 0)
                                 {
                                     throw new Exception();
                                 }
 
                                 validEntery = true;
                             }
-                            catch (Exception e)
+                            catch (Exception)
                             {
                                 Console.BackgroundColor = ConsoleColor.DarkRed;
                                 Console.WriteLine("Getal invoer is niet correct probeer opnieuw (Druk op een knop)");
@@ -101,8 +97,6 @@ namespace RemoteHealthcare
                         Console.Clear();
                         hr.MakeConnection(entryAmount);
                         break;
-
-
                     case "4":
                         bike.closeConnections();
                         hr.closeConnections();
@@ -116,7 +110,7 @@ namespace RemoteHealthcare
 
             return Task.CompletedTask;
         }
-    
+
 
         public string mainMenu()
         {
