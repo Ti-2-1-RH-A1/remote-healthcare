@@ -29,16 +29,16 @@ namespace RemoteHealthcare
                         Stopwatch stopwatch = Stopwatch.StartNew();
                         simulator.RunStep(ref i, ref stopwatch);
                         Console.BackgroundColor = ConsoleColor.DarkRed;
-                        Console.WriteLine("Press enter to continue.");
+                        Console.WriteLine("Press any key to continue.");
                         Console.BackgroundColor = ConsoleColor.Black;
-                        Console.ReadLine();
+                        Console.ReadKey();
                         break;
                     case "2":
                         Console.Clear();
                         
-                        Console.Write("Wat is het serie nummer van de fiets: ");
+                        Console.Write("Wat is het serie nummer van de fiets? : ");
                         string serie = Console.ReadLine();
-                        Console.Write("Hoeveel data pakketen wil je ontvangen: ");
+                        Console.Write("Hoeveel data pakketen wil je ontvangen? : ");
                         int amount = 1;
                         try
                         {
@@ -112,7 +112,7 @@ namespace RemoteHealthcare
     ";
             Console.WriteLine(menuOption);
             Console.Write("Select option: ");
-            return Console.ReadLine();
+            return Console.ReadKey().KeyChar.ToString();
 
         }
     }
