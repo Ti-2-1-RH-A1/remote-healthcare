@@ -71,7 +71,7 @@ namespace RemoteHealthcare
         {              
             FakeBike fakeBike = new FakeBike();
             fakeBike.Data = GenerateSpeedData(i, stopwatch);
-            BikeManager.BleBike_SubscriptionValueChanged(fakeBike);
+            Bluetooth.BleBike_SubscriptionValueChanged(fakeBike, false);
             i++;
         }
 
