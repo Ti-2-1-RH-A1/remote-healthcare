@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -32,7 +34,13 @@ namespace VirtualReality
                 rc = networkStream.Read(packetBuffer, receivedTotal, packetLength - receivedTotal);
                 receivedTotal += rc;
             }
-            Console.WriteLine(System.Text.Encoding.ASCII.GetString(packetBuffer));
+            string receivedData = System.Text.Encoding.ASCII.GetString(packetBuffer);
+            Console.WriteLine(receivedData);
+
+            dynamic jsonData = JsonConvert.DeserializeObject(receivedData);
+            Console.WriteLine(jsonData.id);           
+
+            JArray jsonDataArray = jsonData.data;           
         }
     }
 }
