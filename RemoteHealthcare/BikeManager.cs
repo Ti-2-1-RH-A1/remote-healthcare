@@ -111,6 +111,7 @@ namespace RemoteHealthcare
 
                     if (Console.ReadLine() == "y")
                     {
+                        
                         ThresholdDataAmount = ThresholdDataAmount + OriginalrequestedDataAmount;
                        
                         reachedThreshold = !reachedThreshold;

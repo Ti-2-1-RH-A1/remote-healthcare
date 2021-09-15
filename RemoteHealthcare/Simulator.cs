@@ -37,7 +37,7 @@ namespace RemoteHealthcare
                         Console.Write("Wil je verder gaan met de simulatie? (y/n)");
 
                         Console.BackgroundColor = ConsoleColor.Black;
-                        if (Console.ReadLine()=="y")
+                        if (Console.ReadKey().KeyChar.ToString()=="y")
                         {
                             count = 0;
                         }
