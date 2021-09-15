@@ -53,7 +53,7 @@ namespace RemoteHealthcare
                             break;
                         }
                         Console.Clear();
-                        bike.MakeConnection(serie, amount);
+                        bike.MakeConnectionAsync(serie, amount);
                         break;
                     case "3":
                         Console.Clear();
