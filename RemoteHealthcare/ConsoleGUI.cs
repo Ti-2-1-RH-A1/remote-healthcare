@@ -35,9 +35,7 @@ namespace RemoteHealthcare
                         Console.ReadKey();
                         break;
                     case "2":
-
                         Console.Clear();
-
                         Console.Write("Wat is het serie nummer van de fiets? : ");
                         string serie = Console.ReadLine();
                         bool enteryValid = false;
@@ -57,7 +55,7 @@ namespace RemoteHealthcare
 
                                 enteryValid = true;
                             }
-                            catch (Exception e)
+                            catch (Exception)
                             {
                                 Console.BackgroundColor = ConsoleColor.DarkRed;
                                 Console.WriteLine("Getal invoer is niet correct probeer opnieuw (Druk op een knop)");
@@ -80,14 +78,14 @@ namespace RemoteHealthcare
                             try
                             {
                                 entryAmount = Int32.Parse(Console.ReadLine());
-                                if (entryAmount ! > 0)
+                                if (entryAmount! > 0)
                                 {
                                     throw new Exception();
                                 }
 
                                 validEntery = true;
                             }
-                            catch (Exception e)
+                            catch (Exception)
                             {
                                 Console.BackgroundColor = ConsoleColor.DarkRed;
                                 Console.WriteLine("Getal invoer is niet correct probeer opnieuw (Druk op een knop)");
@@ -98,8 +96,6 @@ namespace RemoteHealthcare
                         Console.Clear();
                         program.hrManager.MakeConnection(entryAmount);
                         break;
-
-
                     case "4":
                         program.bikeManager.closeConnections();
                         program.hrManager.closeConnections();
@@ -109,7 +105,7 @@ namespace RemoteHealthcare
 
             return Task.CompletedTask;
         }
-    
+
 
         public string mainMenu()
         {
