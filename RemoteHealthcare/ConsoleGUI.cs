@@ -9,6 +9,8 @@ namespace RemoteHealthcare
     class ConsoleGUI
     {
 
+        /// <summary>Method handlesc>The selection from the menu</c> and the function calls to the menu..</summary>
+        ///
 
         public Task SelectionHandler(Program program)
         {
@@ -106,7 +108,8 @@ namespace RemoteHealthcare
             return Task.CompletedTask;
         }
 
-
+        /// <summary>Method shows <c>The menu</c> it returns <returns>(string)The key pressed by the user </returns></susmmary>
+        ///
         public string mainMenu()
         {
             Console.Clear();
