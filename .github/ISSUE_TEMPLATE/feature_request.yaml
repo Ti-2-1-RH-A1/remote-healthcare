@@ -1,7 +1,7 @@
 name: "Nieuwe Feature"
 description: File a bug report
 title: "[Feature]: "
-label: "enhancement"
+labels: "enhancement"
 body:
   - type: markdown
     attributes:
