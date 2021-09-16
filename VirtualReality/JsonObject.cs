@@ -37,7 +37,7 @@ namespace VirtualReality
 
 		private static void Init()
 		{
-			callbacks["route/node/update"] = (data) =>
+			callbacks[JsonID.SCENE_NODE_UPDATE] = (data) =>
 			{
 				if (data.status != "ok")
 				{
