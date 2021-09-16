@@ -83,11 +83,9 @@ namespace VirtualReality
                 Console.WriteLine("Id to send to the tunnel: " + id);
             }
 
-            /*ResetScene(networkStream, id);*/
             Dictionary<string, string> nodes = new Dictionary<string, string>();
             GetScene(networkStream, id, ref nodes);
             DeleteNode(networkStream, id, ref nodes);
-            /*FindNode(networkStream, id, ref nodes);*/
             ResetScene(networkStream, id);
         }
 
