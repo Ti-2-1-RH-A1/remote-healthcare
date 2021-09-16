@@ -9,8 +9,6 @@ namespace VirtualReality
 {
     class Program
     {
-        
-
         static void Main(string[] args)
         {
             // Initialise and connect to the TcpClient
@@ -38,23 +36,27 @@ namespace VirtualReality
             Dictionary<string, string> userSessionsMap = new Dictionary<string, string>();
             foreach (JObject jObject in jsonDataArray)
             {
-                if (jObject.ContainsKey("id") && jObject.ContainsKey("clientinfo"))
+                if (jObject.ContainsKey("id") && jObject.ContainsKey("features") && jObject.ContainsKey("clientinfo"))
                 {
-                    string user = jObject["clientinfo"]["user"].ToString();
-                    Console.WriteLine(user);
-                    Console.WriteLine(jObject["id"]);
-                    // the dictionary doesn't like duplicates
-                    if (!userSessionsMap.ContainsKey(user))
+                    JArray features = (JArray)jObject.GetValue("features");
+                    if (features.Count != 0 && features[0].ToString() == "tunnel")
                     {
-                        userSessionsMap.Add(jObject["clientinfo"]["user"].ToString(), jObject["id"].ToString());
-                    }
-                    
+                        string user = jObject["clientinfo"]["user"].ToString();
+                        Console.WriteLine(user);
+                        Console.WriteLine(jObject["id"]);
+                        // the dictionary doesn't like duplicates
+                        if (!userSessionsMap.ContainsKey(user))
+                        {
+                            userSessionsMap.Add(jObject["clientinfo"]["user"].ToString(), jObject["id"].ToString());
+                        }
+                    }                                       
                 }
             }
 
             // get user input for which session to connect to
             Console.WriteLine("Which client should be connected to?");
             string userInput = Console.ReadLine();
+            string tunnelCreationResponse = "";
             if (userSessionsMap.ContainsKey(userInput))
             {
                 Console.WriteLine("Creating a tunnel");
@@ -67,11 +69,20 @@ namespace VirtualReality
                                                         }
                                                     }";
                 sendToTcp(networkStream, tunnelCreationDataString);
-                string tunnelCreationResponse;
+                
                 ReceiveFromTcp(networkStream, out tunnelCreationResponse);
             } else
             {
                 Console.WriteLine("That client isn't recognised");
+            }
+
+            dynamic tunnelCreationResponseJsonData = JsonConvert.DeserializeObject(tunnelCreationResponse);
+
+            string id = "";
+            if (tunnelCreationResponseJsonData != null)
+            {
+                id = tunnelCreationResponseJsonData.data.id;
+                Console.WriteLine("Id to send to the tunnel: " + id);
             }
         }
 
