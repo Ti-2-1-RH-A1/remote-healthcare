@@ -29,6 +29,5 @@ body:
       label: Style Guide
       description: By submitting this issue, you agree to follow our [Style Guide](https://github.com/Ti-2-1-RH-A1/remote-healthcare/blob/development/.github/STYLE_GUIDELINES.md)
       options:
-        - label: I agree to follow the Style Guide
-    validations:    
-      required: true
+        - label: I agree to follow the Style Guide   
+          required: true
