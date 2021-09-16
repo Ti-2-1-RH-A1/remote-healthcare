@@ -136,8 +136,6 @@ namespace VirtualReality
                     }
                 }
             }
-
-
             return userSessionsMap;
         }
 
