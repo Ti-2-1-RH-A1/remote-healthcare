@@ -34,7 +34,7 @@ namespace VirtualReality
 
         public void start()
         {
-            
+
             foreach (KeyValuePair<string, string> keyValuePair in userSessionsMap)
             {
                 Console.WriteLine(keyValuePair.ToString());
@@ -46,7 +46,7 @@ namespace VirtualReality
 
             if (createTunnel(userInput))
             {
-                Console.WriteLine("Succes connected to "+userInput);
+                Console.WriteLine("Succes connected to " + userInput);
             }
             else
             {
@@ -72,7 +72,7 @@ namespace VirtualReality
 
 
                 sendToTcp(networkStream, tunnelCreateJson.ToString());
-                string tunnelCreationResponse ="";
+                string tunnelCreationResponse = "";
 
 
 
@@ -111,21 +111,6 @@ namespace VirtualReality
 
 
         private Dictionary<string, string> getRunningSessions()
-        {
-            JObject sessionJson = new JObject();
-            sessionJson.Add("id", "session/list");
-            sendToTcp(networkStream, sessionJson.ToString());
-
-            // receive the response
-            string receivedData;
-            ReceiveFromTcp(networkStream, out receivedData);
-
-            // parse the received data
-            dynamic jsonData = JsonConvert.DeserializeObject(receivedData);
-
-            JArray jsonDataArray = jsonData.data;
-
-            private Dictionary<string, string> getRunningSessions()
         {
             JObject sessionJson = new JObject();
             sessionJson.Add("id", "session/list");
