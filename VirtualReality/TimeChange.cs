@@ -66,20 +66,11 @@ namespace VirtualReality
             sendJson.Add("data",jsonData);
 
             Console.WriteLine(sendJson);
-
-
-
             program.SendViaTunnel(sendJson);
             string tunnelCreationResponse = "";
-
-
-
             program.ReceiveFromTcp(out tunnelCreationResponse);
 
             Console.WriteLine(tunnelCreationResponse);
-
-            //dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
-            //string response = responseDeserializeObject["data"]["status"].ToString();
         }
         
     }
