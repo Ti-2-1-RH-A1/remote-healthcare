@@ -29,18 +29,17 @@ namespace VirtualReality
 			callbacks[id](data);
 		}
 
-		/// <summary>Send sends<c>the given id and data as a JSON object string.</c>The id and data get serialized into
-		/// an JSON object and than turned into a byte array. This byte array is than send to the server.</summary>
+		/// <summary>Send sends<c>the given id and data as a JSON object string.</c>It calls the SendViaTunnel function
+		/// of the Program class giving it the id and date. That function than sends that on to the server.</summary>
 		///
 
 		public void Send(string id, dynamic data)
 		{
-            JObject jObject = new()
-            {
-                { "id", id },
-                { "data", new JObject(data) }
-            };
-            program.SendViaTunnel(jObject);
+            program.SendViaTunnel(new()
+			{
+				{ "id", id },
+				{ "data", new JObject(data) }
+			});
 		}
 
 		/// <summary>Init does<c>the initialisation of all the callbacks that are used.</c>The callbacks are added to
