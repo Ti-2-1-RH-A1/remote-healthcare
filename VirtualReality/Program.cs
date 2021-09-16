@@ -113,6 +113,14 @@ namespace VirtualReality
             /*SendToTunnelWithData(networkStream, destId, "scene/node/delete", @"""id"" : {" + nodes.GetValueOrDefault(userInput) + @"}", out response);*/
             string json = @"{""id"" : ""tunnel/send"",""data"" :{""dest"" : """ + destId + @""",""data"" : {""id"" : ""scene/node/delete"",""data"" :{""id"" : """ + nodes.GetValueOrDefault(userInput) + @"""}}}}";
 
+            string data = @"""id"" : """ + nodes.GetValueOrDefault(userInput) + @"""";
+            /*SendToTunnel(networkStream, json, out response);*/
+            SendToTunnelWithData(networkStream, destId, @"scene/node/delete", data, out response);
+        }
+
+        public static void SendToTunnelWithData(NetworkStream networkStream, string destId, string id, string data, out string response)
+        {
+            string json = @"{""id"" : ""tunnel/send"",""data"" :{""dest"" : """ + destId + @""",""data"" : {""id"" : """ + id + @""",""data"" :{" + data + @"}}}}";
 
             SendToTunnel(networkStream, json, out response);
         }
@@ -168,22 +176,7 @@ namespace VirtualReality
             Console.WriteLine("Response: " + response);
         }
 
-        public static void SendToTunnelWithData(NetworkStream networkStream, string destId, string id, string data, out string response)
-        {
-            SendToTunnel(networkStream, 
-                @"{
-                    ""id"" : ""tunnel/send"",
-	                ""data"" :
-	                    {
-                            ""dest"" : """ + destId + @""",
-		                    ""data"" : 
-		                        {
-                                    ""id"" : """ + id + @""",
-                                    ""data"" : {" + data + @"}
-                                }
-                        }
-        }", out response);
-        }
+        
 
         public static void SendToTunnelWithoutData(NetworkStream networkStream, string destId, string id, out string response)
         {
