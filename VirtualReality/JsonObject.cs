@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +13,18 @@ namespace VirtualReality
 		private delegate void dataCallback(dynamic data);
 		private static readonly Dictionary<string, dataCallback> callbacks = new();
 
-		/// <summary>Handle handles<c>the id and data that is being received.</c>It searches for the callback
-		/// in the dictionary and exeutes that callback with the given data.</summary>
-		///
+		private Program program;
 
-		public static void Handle(string id, dynamic data)
+        public JsonObject(Program program)
+        {
+            this.program = program;
+        }
+
+        /// <summary>Handle handles<c>the id and data that is being received.</c>It searches for the callback
+        /// in the dictionary and exeutes that callback with the given data.</summary>
+        ///
+
+        public static void Handle(string id, dynamic data)
 		{
 			callbacks[id](data);
 		}
@@ -25,10 +33,14 @@ namespace VirtualReality
 		/// an JSON object and than turned into a byte array. This byte array is than send to the server.</summary>
 		///
 
-		public static void Send(string id, dynamic data)
+		public void Send(string id, dynamic data)
 		{
-			byte[] payload = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new { id = id, data = data }));
-	        // TODO[Jeroen] Actualy send the payload.
+            JObject jObject = new()
+            {
+                { "id", id },
+                { "data", new JObject(data) }
+            };
+            program.SendViaTunnel(jObject);
 		}
 
 		/// <summary>Init does<c>the initialisation of all the callbacks that are used.</c>The callbacks are added to
