@@ -34,6 +34,7 @@ namespace VirtualReality
             Console.WriteLine(jsonDataArray);
 
             Dictionary<string, string> userSessionsMap = new Dictionary<string, string>();
+            List<string> sessions = new List<string>(); 
             foreach (JObject jObject in jsonDataArray)
             {
                 if (jObject.ContainsKey("id") && jObject.ContainsKey("features") && jObject.ContainsKey("clientinfo"))
@@ -42,13 +43,15 @@ namespace VirtualReality
                     if (features.Count != 0 && features[0].ToString() == "tunnel")
                     {
                         string user = jObject["clientinfo"]["user"].ToString();
+                        Console.WriteLine("#" + (sessions.Count));
                         Console.WriteLine(user);
                         Console.WriteLine(jObject["id"]);
+                        sessions.Add(jObject["id"].ToString());
                         // the dictionary doesn't like duplicates
-                        if (!userSessionsMap.ContainsKey(user))
+                        /*if (!userSessionsMap.ContainsKey(user))
                         {
                             userSessionsMap.Add(jObject["clientinfo"]["user"].ToString(), jObject["id"].ToString());
-                        }
+                        }*/
                     }                                       
                 }
             }
@@ -57,14 +60,14 @@ namespace VirtualReality
             Console.WriteLine("Which client should be connected to?");
             string userInput = Console.ReadLine();
             string tunnelCreationResponse = "";
-            if (userSessionsMap.ContainsKey(userInput))
+            if (/*userSessionsMap.ContainsKey(userInput)*/ int.Parse(userInput) < sessions.Count)
             {
                 Console.WriteLine("Creating a tunnel");
                 // create a tunnel
                 string tunnelCreationDataString = @"{""id"" : ""tunnel/create"", 
                                                         ""data"" : 
                                                         {
-                                                            ""session"" : """ + userSessionsMap.GetValueOrDefault(userInput) + @""",
+                                                            ""session"" : """ + /*userSessionsMap.GetValueOrDefault(userInput)*/ sessions[int.Parse(userInput)] + @""",
                                                             ""key"" : """"
                                                         }
                                                     }";
@@ -84,6 +87,75 @@ namespace VirtualReality
                 id = tunnelCreationResponseJsonData.data.id;
                 Console.WriteLine("Id to send to the tunnel: " + id);
             }
+
+            /*ResetScene(networkStream, id);*/
+            GetScene(networkStream, id);
+            ResetScene(networkStream, id);
+            GetScene(networkStream, id);
+        }
+
+        public static void ResetScene(NetworkStream networkStream, string destId)
+        {
+            string response;
+            SendToTunnelWithoutData(networkStream, destId, "scene/reset", out response);
+        }
+
+        public static void GetScene(NetworkStream networkStream, string destId)
+        {
+            string response;
+            SendToTunnelWithoutData(networkStream, destId, "scene/get", out response);
+
+            dynamic responseData = JsonConvert.DeserializeObject(response);
+            JArray children = responseData.data.data.data.children;
+            Dictionary<string, string> nodes = new Dictionary<string, string>();
+            foreach (JObject jObject in children)
+            {
+                nodes.Add(jObject.GetValue("name").ToString(), jObject.GetValue("uuid").ToString());
+            }
+            foreach (string s in nodes.Keys) {
+                Console.WriteLine(s);
+            }
+        }
+
+        public static void SendToTunnel(NetworkStream networkStream, string message, out string response)
+        {
+            Console.WriteLine("Press any key to send to tunnel");
+            Console.ReadLine();
+            sendToTcp(networkStream, message);
+
+            ReceiveFromTcp(networkStream, out response);
+            Console.WriteLine("Response: " + response);
+        }
+
+        public static void SendToTunnelWithData(NetworkStream networkStream, string destId, string id, string data, out string response)
+        {
+            SendToTunnel(networkStream, @"{
+    ""id"" : ""tunnel/send"",
+	""data"" :
+	{
+                ""dest"" : """ + destId + @""",
+		""data"" : 
+		{
+                    ""id"" : """ + id + @""",
+                    ""data"" : """ + data + @"""
+                }
+            }
+        }", out response);
+        }
+
+        public static void SendToTunnelWithoutData(NetworkStream networkStream, string destId, string id, out string response)
+        {
+            SendToTunnel(networkStream, @"{
+    ""id"" : ""tunnel/send"",
+	""data"" :
+	{
+                ""dest"" : """ + destId + @""",
+		""data"" : 
+		{
+                    ""id"" : """ + id + @"""
+                }
+            }
+        }", out response);
         }
 
         public static void sendToTcp(NetworkStream networkStream, string data)
