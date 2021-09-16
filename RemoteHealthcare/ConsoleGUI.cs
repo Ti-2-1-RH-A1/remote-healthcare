@@ -11,7 +11,6 @@ namespace RemoteHealthcare
 
         /// <summary>Method handlesc>The selection from the menu</c> and the function calls to the menu..</summary>
         ///
-
         public Task SelectionHandler(Program program)
         {
             bool validSelection = false;
@@ -67,7 +66,7 @@ namespace RemoteHealthcare
                         }
 
                         Console.Clear();
-                        program.bikeManager.MakeConnectionAsync(serie, amountEntry);
+                        program.bikeManager.MakeConnectionAsync(serie, amountEntry).Wait();
                         break;
                     case "3":
                         bool validEntery = false;

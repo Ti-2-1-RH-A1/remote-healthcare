@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avans.TI.BLE;
 
+using avansBikeData = Avans.TI.BLE.BLESubscriptionValueChangedEventArgs;
+
 namespace RemoteHealthcare
 {
     public class Bluetooth
@@ -27,34 +29,34 @@ namespace RemoteHealthcare
             Console.WriteLine($"Heartrate: {e.Data[1]} BPM");
         }
 
-        public class RealBikeData : IBikeData
-        {
-            public byte[] Data { get; set; }
-            public string ServiceName { get; set; }
+        //public class RealBikeData : BikeData
+        //{
+        //    public byte[] Data { get; set; }
+        //    public string ServiceName { get; set; }
 
-            public RealBikeData(BLESubscriptionValueChangedEventArgs e)
-            {
-                this.Data = e.Data;
-                this.ServiceName = e.ServiceName;
-            }
+        //    public RealBikeData(BLESubscriptionValueChangedEventArgs e)
+        //    {
+        //        this.Data = e.Data;
+        //        this.ServiceName = e.ServiceName;
+        //    }
 
-            public RealBikeData()
-            {
-            }
-        }
+        //    public RealBikeData()
+        //    {
+        //    }
+        //}
 
-        private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
-        {
-            RealBikeData realBike = new RealBikeData(e);
-            BleBike_SubscriptionValueChanged(realBike, true);
-        }
+        //private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
+        //{
+        //    RealBikeData realBike = new RealBikeData(e);
+        //    BleBike_SubscriptionValueChanged(realBike, true);
+        //}
 
-        public static void BleBike_SubscriptionValueChanged(IBikeData e, bool isLogging)
+        public static void BleBike_SubscriptionValueChanged(avansBikeData e, bool isLogging)
         {
             if (isLogging) Console.WriteLine("Received from {0}: {1}, {2}", e.ServiceName,
                 BitConverter.ToString(e.Data).Replace("-", " "),
                 Encoding.UTF8.GetString(e.Data));
-            var sync = e.Data[0];
+            var sync = e.Data[0];                   
             int msgLength = e.Data[1];
             var msgID = e.Data[2];
             int channelNumber = e.Data[3];
