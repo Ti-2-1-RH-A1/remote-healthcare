@@ -16,6 +16,31 @@ namespace VirtualReality
         {
             Program program = new Program();
             program.Start();
+            Console.Write("Enter time between 0 - 24 : ");
+            float entryAmount = 0;
+            bool validEntery = false;
+            while (!validEntery)
+            {
+                try
+                {
+                    entryAmount = int.Parse(Console.ReadLine());
+                    if (entryAmount < 0 || entryAmount > 24)
+                    {
+                        throw new Exception();
+                    }
+
+                    validEntery = true;
+                }
+                catch (Exception)
+                {
+                    Console.BackgroundColor = ConsoleColor.DarkRed;
+                    Console.WriteLine("Getal invoer is niet correct probeer opnieuw");
+                    Console.BackgroundColor = ConsoleColor.Black;
+                }
+            }
+
+            TimeChange timeChange = new TimeChange(entryAmount, program);
+            timeChange.SetStatic();
         }
 
         public Program()
@@ -71,18 +96,18 @@ namespace VirtualReality
                 dataJson.Add("key", sessionKey);
 
                 tunnelCreateJson.Add("data", dataJson);
-                SendToTcp(networkStream, tunnelCreateJson.ToString());
+                SendToTcp( tunnelCreateJson.ToString());
                 string tunnelCreationResponse = "";
 
 
 
-                ReceiveFromTcp(networkStream, out tunnelCreationResponse);
+                ReceiveFromTcp(out tunnelCreationResponse);
 
 
                 dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
                 string response = responseDeserializeObject["data"]["status"].ToString();
 
-                if (response != "oke")
+                if (response != "ok")
                 {
                     return false;
                 }
@@ -98,7 +123,7 @@ namespace VirtualReality
         /// <summary>SendToTcp does <c>Sending a String over Tcp</c> using ASCII encoding</summary>
         ///
         
-        public void SendToTcp(NetworkStream networkStream, string data)
+        public void SendToTcp( string data)
         {
             byte[] dataBytes = System.Text.Encoding.ASCII.GetBytes(data);
             int dataLength = dataBytes.Length;
@@ -114,11 +139,11 @@ namespace VirtualReality
         {
             JObject sessionJson = new JObject();
             sessionJson.Add("id", "session/list");
-            SendToTcp(networkStream, sessionJson.ToString());
+            SendToTcp( sessionJson.ToString());
 
             // receive the response
             string receivedData;
-            ReceiveFromTcp(networkStream, out receivedData);
+            ReceiveFromTcp(out receivedData);
 
             // parse the received data
             dynamic jsonData = JsonConvert.DeserializeObject(receivedData);
@@ -138,12 +163,12 @@ namespace VirtualReality
                 }
             }
             return userSessionsMap;
-        }
+        } 
 
         /// <summary>ReceiveFromTcp does <c>recieving data from a tcp stream</c> using a network stream decodes using ASCII to a string</summary>
         ///
         
-        public void ReceiveFromTcp(NetworkStream networkStream, out string receivedData)
+        public void ReceiveFromTcp(out string receivedData)
         {
             // read a small part of the packet and receive the packet length
             byte[] buffer = new byte[4];
