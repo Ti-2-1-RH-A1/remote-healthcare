@@ -16,7 +16,6 @@
 - Last lines of file always has to be empty for git.
 - Pascal case for variables.
 - Public function starts with capital case.
-- Private function starts with lower case.
 - No unnecesary abreviations
 
 ## if statements 
