@@ -75,6 +75,7 @@ private void Method(Data data){
 
 /// <summary>Method does <c>This</c> returns <returns>A string</returns> and is explained here.</summary>
 ///
+
 private String Method(Data data){
     // Code here
     return "A string";
