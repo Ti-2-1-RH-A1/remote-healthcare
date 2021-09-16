@@ -27,7 +27,7 @@ namespace VirtualReality
 
 		public static void Send(string id, dynamic data)
 		{
-			byte[] payload = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new { id = id, data = data }));
+			byte[] payload = System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new { id, data }));
 	        // TODO[Jeroen] Actualy send the payload.
 		}
 
