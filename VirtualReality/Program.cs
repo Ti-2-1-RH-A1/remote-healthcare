@@ -66,9 +66,6 @@ namespace VirtualReality
             // Console.WriteLine(test);
             // Expected Response
             // {"id":"tunnel/send","data":{"id":"13bc8b1f-36fa-4464-850d-7b9d5e99ae2a","data":{"id":"scene/reset","status":"ok"}}}
-
-
-
         }
 
         /// <summary>CreateTunnel does <c>Creating a network tunnel</c> returns <returns>A Boolean</returns> sends the correct json and then checks connection status based on that it returns a boolean</summary>
@@ -84,7 +81,6 @@ namespace VirtualReality
                 JObject dataJson = new JObject {{"session", userSessionsMap.GetValueOrDefault(sessionID)}};
                 // place to set the key 
                 string sessionKey = "";
-
                 dataJson.Add("key", sessionKey);
 
                 tunnelCreateJson.Add("data", dataJson);
@@ -154,7 +150,6 @@ namespace VirtualReality
                     }
                 }
             }
-
             return userSessionsMap;
         }
 
@@ -172,22 +167,13 @@ namespace VirtualReality
             {
                 JObject tunnelJSon = new JObject();
                 tunnelJSon.Add("id", "tunnel/send");
-
-
                 JObject tunnelJObject = new JObject();
                 tunnelJObject.Add("dest", currentSessionID);
                 tunnelJObject.Add("data", jObject);
-
-
-
-
                 tunnelJSon.Add("data", tunnelJObject);
                 Console.WriteLine(tunnelJSon.ToString());
                 SendToTcp(tunnelJSon.ToString());
             }
-
-            
-
         }
 
         /// <summary>ReceiveFromTcp does <c>recieving data from a tcp stream</c> using a network stream decodes using ASCII to a string</summary>
