@@ -16,7 +16,6 @@
 - Last lines of file always has to be empty for git.
 - Pascal case for variables.
 - Public function starts with capital case.
-- Private function starts with lower case.
 - No unnecesary abreviations
 
 ## if statements 
@@ -75,6 +74,7 @@ private void Method(Data data){
 
 /// <summary>Method does <c>This</c> returns <returns>A string</returns> and is explained here.</summary>
 ///
+
 private String Method(Data data){
     // Code here
     return "A string";

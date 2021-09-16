@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Avans.TI.BLE;
 
 namespace RemoteHealthcare
@@ -14,13 +11,9 @@ namespace RemoteHealthcare
         private static int OriginalrequestedDataAmount = 0;
         private static bool exit = false;
         private static bool reachedThreshold = false;
-
         private static BLE bleHeart = null;
-        public HRManager()
-        {
-        }
 
-        public void MakeConnection(int dataBlocks)
+        public async void MakeConnection(int dataBlocks)
         {
             OriginalrequestedDataAmount = dataBlocks;
             ThresholdDataAmount = dataBlocks;
@@ -29,12 +22,10 @@ namespace RemoteHealthcare
 
             bleHeart = new BLE();
             Thread.Sleep(1000); // We need some time to list available devices
-            List<String> bleHList = bleHeart.ListDevices();
 
-            // Heart rate
-            Task<int> task = bleHeart.OpenDevice("Decathlon Dual HR");
-             errorCode = task.Result;
-            if (errorCode == 1)
+            // connect
+            errorCode = await Bluetooth.SetConnectionAsync(bleHeart, "Decathlon Dual HR", "HeartRate", BleHeart_SubscriptionValueChanged, "HeartRateMeasurement");
+            if (errorCode >= 1)
             {
                 Console.BackgroundColor = ConsoleColor.DarkRed;
                 Console.WriteLine($"Connectie met HRM kan niet worden gemaakt. Druk op een toets om door te gaan!");
@@ -42,30 +33,7 @@ namespace RemoteHealthcare
                 Console.ReadLine();
                 return;
             }
-            var servicesHR = bleHeart.GetServices;
-            
-            Task<int> taskService = bleHeart.SetService("HeartRate");
-            errorCode = taskService.Result;
-            if (errorCode == 1)
-            {
-                Console.BackgroundColor = ConsoleColor.DarkRed;
-                Console.WriteLine($"Service instelling van HRM kan niet worden gezet. Druk op een toets om door te gaan!");
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.ReadLine();
-                return;
-            }
-            bleHeart.SubscriptionValueChanged += BleHeart_SubscriptionValueChanged;
-            
-            Task<int> taskSub = bleHeart.SubscribeToCharacteristic("HeartRateMeasurement");
-            errorCode = taskSub.Result;
-            if (errorCode == 1)
-            {
-                Console.BackgroundColor = ConsoleColor.DarkRed;
-                Console.WriteLine($"Subscription van HRM kan niet worden gemaakt. Druk op een toets om door te gaan!");
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.ReadLine();
-                return;
-            }
+
             while (!exit)
             {
                 if (amountDataSend >= ThresholdDataAmount)
@@ -89,8 +57,6 @@ namespace RemoteHealthcare
                     }
                 }
             }
-
-            return;
         }
 
         private static void BleHeart_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
@@ -105,7 +71,7 @@ namespace RemoteHealthcare
             }
         }
 
-        public bool closeConnections()
+        public bool CloseConnections()
         {
             if (bleHeart != null)
             {
