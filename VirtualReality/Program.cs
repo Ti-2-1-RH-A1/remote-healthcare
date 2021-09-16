@@ -95,6 +95,8 @@ namespace VirtualReality
             return true;
         }
         /// <summary>SendToTcp does <c>Sending a String over Tcp</c> using ASCII encoding</summary>
+        ///
+        
         public void SendToTcp(NetworkStream networkStream, string data)
         {
             byte[] dataBytes = System.Text.Encoding.ASCII.GetBytes(data);
