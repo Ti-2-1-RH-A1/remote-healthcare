@@ -52,7 +52,6 @@ namespace VirtualReality
             {
                 Console.WriteLine("couldn't connect to that client");
             }
-
         }
 
 
