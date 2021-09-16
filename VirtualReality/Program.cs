@@ -35,7 +35,6 @@ namespace VirtualReality
         
         public void Start()
         {
-
             foreach (KeyValuePair<string, string> keyValuePair in userSessionsMap)
             {
                 Console.WriteLine(keyValuePair.ToString());
