@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Avans.TI.BLE;
@@ -16,20 +17,23 @@ namespace RemoteHealthcare
         private bool reachedThreshold = false;
 
         private RealBike realBike = null;
+        private SimulatorBike simBike = null;
 
-        //class RealBike : IBikeData
-        //{
-        //    public byte[] Data { get; set; }
-        //    public string ServiceName { get; set; }
-
-        //    public RealBike(BLESubscriptionValueChangedEventArgs e)
-        //    {
-        //        this.Data = e.Data;
-        //        this.ServiceName = e.ServiceName;
-        //    }
-        //}
         public BikeManager()
         {
+        }
+
+        public void StartSim()
+        {
+            this.simBike = new SimulatorBike();
+            this.simBike.startSim();
+        }
+
+        public void SimRunStep()
+        {
+            int i = 0;
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            this.simBike.RunStep(ref i, ref stopwatch);
         }
 
         public async Task MakeConnectionAsync(string deviceName, int dataBlocks)
@@ -38,7 +42,7 @@ namespace RemoteHealthcare
             ThresholdDataAmount = dataBlocks;
             int errorCode = 0;
 
-            realBike = new BLE();
+            realBike = new RealBike();
             Console.WriteLine($"Connectie met fiets {deviceName} wordt gemaakt");
             Thread.Sleep(1000); // We need some time to list available devices
 
@@ -65,9 +69,7 @@ namespace RemoteHealthcare
 
                     if (Console.ReadLine() == "y")
                     {
-
                         ThresholdDataAmount = ThresholdDataAmount + OriginalrequestedDataAmount;
-
                         reachedThreshold = !reachedThreshold;
                     }
                     else
