@@ -10,7 +10,7 @@ namespace VirtualReality
     class Program
     {
         private NetworkStream networkStream;
-        private Dictionary<string, string> userSessionsMap;
+        private List<(string,string)> userSessions;
         private String currentSessionID;
 
         static void Main(string[] args)
@@ -27,7 +27,7 @@ namespace VirtualReality
             client.Connect("145.48.6.10", 6666);
             // Request the session list from the server
             networkStream = client.GetStream();
-            userSessionsMap = GetRunningSessions();
+            userSessions = GetRunningSessions();
         }
 
         /// <summary>Start does <c>The beginning of the Program</c> This is the beginning of the program, als 
@@ -35,9 +35,11 @@ namespace VirtualReality
         ///
         public void Start()
         {
-            foreach (KeyValuePair<string, string> keyValuePair in userSessionsMap)
+            int i = 0;
+            foreach ((string,string) s in userSessions)
             {
-                Console.WriteLine(keyValuePair.ToString());
+                Console.WriteLine("#" + i + " " + s.Item2 + " " + s.Item1);
+                i++;
             }
 
             // get user input for which session to connect to
@@ -52,60 +54,42 @@ namespace VirtualReality
             {
                 Console.WriteLine("couldn't connect to that client");
             }
-
-             // A Simple Test code
-            // JObject jObject = new JObject();
-            // jObject.Add("id", "scene/reset");
-            //
-            // jObject.Add("data", new JObject());
-            //
-            // SendViaTunnel(jObject);
-            //
-            // string test;
-            // ReceiveFromTcp(out test);
-            // Console.WriteLine(test);
-            // Expected Response
-            // {"id":"tunnel/send","data":{"id":"13bc8b1f-36fa-4464-850d-7b9d5e99ae2a","data":{"id":"scene/reset","status":"ok"}}}
+            Dictionary<string, string> nodes = new Dictionary<string, string>();
+            GetScene(networkStream, currentSessionID, ref nodes);
+            DeleteNode(networkStream, currentSessionID, ref nodes);
+            string response;
+            ReceiveFromTcp(out response);
         }
 
         /// <summary>CreateTunnel does <c>Creating a network tunnel</c> returns <returns>A Boolean</returns> sends the correct json and then checks connection status based on that it returns a boolean</summary>
         ///
         public Boolean CreateTunnel(String sessionID)
         {
-            if (userSessionsMap.ContainsKey(sessionID))
-            {
-                Console.WriteLine("Creating a tunnel");
-                // create a tunnel
-                JObject tunnelCreateJson = new JObject {{"id", "tunnel/create"}};
+            Console.WriteLine("Creating a tunnel");
+            // create a tunnel
+            JObject tunnelCreateJson = new JObject {{"id", "tunnel/create"}};
 
-                JObject dataJson = new JObject {{"session", userSessionsMap.GetValueOrDefault(sessionID)}};
-                // place to set the key 
-                string sessionKey = "";
-                dataJson.Add("key", sessionKey);
+            JObject dataJson = new JObject {{"session", userSessions[int.Parse(sessionID)].Item1}};
+            // place to set the key 
+            string sessionKey = "";
+            dataJson.Add("key", sessionKey);
 
-                tunnelCreateJson.Add("data", dataJson);
-                SendToTcp(tunnelCreateJson.ToString());
-                string tunnelCreationResponse = "";
+            tunnelCreateJson.Add("data", dataJson);
+            SendToTcp(tunnelCreateJson.ToString());
+            string tunnelCreationResponse;
 
+            ReceiveFromTcp(out tunnelCreationResponse);
 
-                ReceiveFromTcp(out tunnelCreationResponse);
+            dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
+            string response = responseDeserializeObject["data"]["status"].ToString();
 
-
-                dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
-                string response = responseDeserializeObject["data"]["status"].ToString();
-
-                if (response != "ok")
-                {
-                    return false;
-                }
-
-                currentSessionID = responseDeserializeObject["data"]["id"].ToString();
-            }
-            else
+            if (response != "ok")
             {
                 return false;
             }
 
+            currentSessionID = responseDeserializeObject["data"]["id"].ToString();
+            
             return true;
         }
 
@@ -123,7 +107,7 @@ namespace VirtualReality
 
         /// <summary>GetRunningSessions does <c>Getting a all running sessions from the server</c> returns <returns>A Dictionary<string, string> containing all users as key and a value of all data</returns> sends data using SendDataToTCP and then Receive it using ReceiveFromTcp</summary>
         ///
-        private Dictionary<string, string> GetRunningSessions()
+        private List<(string,string)> GetRunningSessions()
         {
             JObject sessionJson = new JObject();
             sessionJson.Add("id", "session/list");
@@ -135,23 +119,23 @@ namespace VirtualReality
 
             // parse the received data
             dynamic jsonData = JsonConvert.DeserializeObject(receivedData);
-
             JArray jsonDataArray = jsonData.data;
 
-            Dictionary<string, string> userSessionsMap = new Dictionary<string, string>();
-            List<string> sessions = new List<string>(); 
+            // add session ids to the sessions list if they have an id, clientinfo and have a tunnel feature
+            List<(string,string)> sessions = new List<(string,string)>(); 
             foreach (JObject jObject in jsonDataArray)
             {
                 if (jObject.ContainsKey("id") && jObject.ContainsKey("clientinfo"))
                 {
-                    string user = jObject["clientinfo"]["user"].ToString();
-                    if (!userSessionsMap.ContainsKey(user))
+                    JArray features = (JArray)jObject.GetValue("features");
+                    if (features.Count != 0 && features[0].ToString() == "tunnel")
                     {
-                        userSessionsMap.Add(jObject["clientinfo"]["user"].ToString(), jObject["id"].ToString());
+                        string user = ((JObject)(jObject.GetValue("clientinfo"))).GetValue("user").ToString();
+                        sessions.Add((jObject.GetValue("id").ToString(), user));
                     }
                 }
             }
-            return userSessionsMap;
+            return sessions;
         }
 
         /// <summary>SendViaTunnel does <c> a tcp data send via a tunnel</c> as long as you have made a connection first </summary>
@@ -166,17 +150,18 @@ namespace VirtualReality
             }
             else
             {
-                id = tunnelCreationResponseJsonData.data.id;
-                Console.WriteLine("Id to send to the tunnel: " + id);
+                JObject tunnelJSon = new JObject();
+                tunnelJSon.Add("id", "tunnel/send");
+                JObject tunnelJObject = new JObject();
+                tunnelJObject.Add("dest", currentSessionID);
+                tunnelJObject.Add("data", jObject);
+                tunnelJSon.Add("data", tunnelJObject);
+                Console.WriteLine(tunnelJSon.ToString());
+                SendToTcp(tunnelJSon.ToString());
             }
-
-            Dictionary<string, string> nodes = new Dictionary<string, string>();
-            GetScene(networkStream, id, ref nodes);
-            DeleteNode(networkStream, id, ref nodes);
-            ResetScene(networkStream, id);
         }
 
-        public static void DeleteNode(NetworkStream networkStream, string destId, ref Dictionary<string, string> nodes)
+        public void DeleteNode(NetworkStream networkStream, string destId, ref Dictionary<string, string> nodes)
         {
             // Get user input for which node to delete
             string userInput = "";
@@ -194,26 +179,26 @@ namespace VirtualReality
             // Send the message to the tunnel on what Node to delete
             string response;
             string data = @"""id"" : """ + nodes.GetValueOrDefault(userInput) + @"""";
-            SendToTunnelWithData(networkStream, destId, @"scene/node/delete", data, out response);
+            JObject message = new JObject { { "id", "scene/node/delete" } };
+            JObject jsonData = new JObject { { "id", nodes.GetValueOrDefault(userInput)} };
+            message.Add("data", jsonData);
+            SendViaTunnel(message);
         }
 
-        public static void SendToTunnelWithData(NetworkStream networkStream, string destId, string id, string data, out string response)
-        {
-            string json = @"{""id"" : ""tunnel/send"",""data"" :{""dest"" : """ + destId + @""",""data"" : {""id"" : """ + id + @""",""data"" :{" + data + @"}}}}";
-            SendToTunnel(networkStream, json, out response);
-        }
-
-        public static void ResetScene(NetworkStream networkStream, string destId)
+        public void ResetScene(NetworkStream networkStream, string destId)
         {
             string response;
-            SendToTunnelWithoutData(networkStream, destId, "scene/reset", out response);
+            JObject message = new JObject { {"id", "scene/reset" } };
+            SendViaTunnel(message);
         }
 
-        public static void GetScene(NetworkStream networkStream, string destId, ref Dictionary<string, string> nodes)
+        public void GetScene(NetworkStream networkStream, string destId, ref Dictionary<string, string> nodes)
         {
             string response;
-            SendToTunnelWithoutData(networkStream, destId, "scene/get", out response);
+            JObject message = new JObject { { "id", "scene/get" } };
+            SendViaTunnel(message);
 
+            ReceiveFromTcp(out response);
             dynamic responseData = JsonConvert.DeserializeObject(response);
             nodes.Add(responseData.data.data.data.name.ToString(), responseData.data.data.data.uuid.ToString());
             JArray children = responseData.data.data.data.children;
@@ -226,23 +211,7 @@ namespace VirtualReality
             }
         }
 
-        public static void SendToTunnel(NetworkStream networkStream, string message, out string response)
-        {
-            Console.WriteLine("Press any key to send to tunnel");
-            Console.ReadLine();
-            SendToTcp(networkStream, message);
-
-            ReceiveFromTcp(networkStream, out response);
-            Console.WriteLine("Response: " + response);
-        }
-
-        public static void SendToTunnelWithoutData(NetworkStream networkStream, string destId, string id, out string response)
-        {
-            string json = @"{""id"" : ""tunnel/send"",""data"" :{""dest"" : """ + destId + @""",""data"" : {""id"" : """ + id + @"""}}}";
-            SendToTunnel(networkStream, json, out response);
-        }
-
-        public static void SendToTcp(NetworkStream networkStream, string data)
+        public void SendToTcp(NetworkStream networkStream, string data)
         {
             byte[] dataBytes = System.Text.Encoding.ASCII.GetBytes(data);
             int dataLength = dataBytes.Length;
@@ -250,15 +219,6 @@ namespace VirtualReality
             networkStream.Write(BitConverter.GetBytes(dataLength));
             networkStream.Write(dataBytes);
             networkStream.Flush();
-                JObject tunnelJSon = new JObject();
-                tunnelJSon.Add("id", "tunnel/send");
-                JObject tunnelJObject = new JObject();
-                tunnelJObject.Add("dest", currentSessionID);
-                tunnelJObject.Add("data", jObject);
-                tunnelJSon.Add("data", tunnelJObject);
-                Console.WriteLine(tunnelJSon.ToString());
-                SendToTcp(tunnelJSon.ToString());
-            }
         }
 
         /// <summary>ReceiveFromTcp does <c>recieving data from a tcp stream</c> using a network stream decodes using ASCII to a string</summary>
