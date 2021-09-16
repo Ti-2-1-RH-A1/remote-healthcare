@@ -1,9 +1,10 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
+name: Feature request Realease 2
+about: Suggest an idea for this project Release 2
 title: ''
 labels: ''
 assignees: ''
+milestones: 'Release 2'
 
 ---
 
