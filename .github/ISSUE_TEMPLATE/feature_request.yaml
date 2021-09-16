@@ -27,7 +27,7 @@ body:
     id: terms
     attributes:
       label: Style Guide
-      description: By submitting this issue, you agree to follow our https://github.com/Ti-2-1-RH-A1/remote-healthcare/blob/development/.github/STYLE_GUIDELINES.md#methodes
+      description: By submitting this issue, you agree to follow our Style Guide
       options:
-        - label: I agree to follow this project's Style Guide
+        - label: I agree to follow this project Style Guide
           required: true
