@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Robin (Code Beheer)
+    url: https://teams.microsoft.com/l/chat/0/0?users=r.luijten2@student.avans.nl
+    about: Voor directe besluiten neem contact met mij op.
+  - name: Raoul (Code review)
+    url: https://teams.microsoft.com/l/chat/0/0?users=rcc.deheer@student.avans.nl
+    about: Voor vragen over style en issues neem contact met mij op.
