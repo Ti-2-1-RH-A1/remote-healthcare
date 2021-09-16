@@ -1,27 +1,20 @@
-name: 
-description: File a bug report
-title: "[Feature]: "
+---
+name: Feature request
+about: Suggest an idea for this project
+title: ''
 labels: ''
 assignees: ''
-milestone: "Release 2"
-body:
-  - type: markdown
-    attributes:
-      value: |
-        Hieronder vul je de nieuwe feature in!
-  - type: input
-    id: feature
-    attributes:
-      label: Feature
-      description: Wat is de feature in enkel woorden?
-      placeholder: ex. De fiets moet 2 geven
-    validations:
-      required: true
-  - type: textarea
-    id: feature-detail
-    attributes:
-      label: Details van Feature
-      description: In detail vertel wat er moet gebeuren
-      placeholder: Vertel wat er moet gebeuren
-    validations:
-      required: true
+
+---
+
+**Is your feature request related to a problem? Please describe.**
+A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+
+**Describe the solution you'd like**
+A clear and concise description of what you want to happen.
+
+**Describe alternatives you've considered**
+A clear and concise description of any alternative solutions or features you've considered.
+
+**Additional context**
+Add any other context or screenshots about the feature request here.
