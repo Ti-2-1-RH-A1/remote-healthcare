@@ -94,6 +94,7 @@ namespace VirtualReality
 
             return true;
         }
+
         /// <summary>SendToTcp does <c>Sending a String over Tcp</c> using ASCII encoding</summary>
         ///
         
