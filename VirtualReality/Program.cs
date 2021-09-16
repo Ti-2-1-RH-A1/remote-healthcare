@@ -17,32 +17,8 @@ namespace VirtualReality
         {
             Program program = new Program();
             program.Start();
-            Console.Write("Enter time between 0 - 24 : ");
-            float entryAmount = 0;
-            bool validEntery = false;
-            while (!validEntery)
-            {
-                try
-                {
-                    entryAmount = int.Parse(Console.ReadLine());
-                    if (entryAmount < 0 || entryAmount > 24)
-                    {
-                        throw new Exception();
-                    }
-
-                    validEntery = true;
-                }
-                catch (Exception)
-                {
-                    Console.BackgroundColor = ConsoleColor.DarkRed;
-                    Console.WriteLine("Getal invoer is niet correct probeer opnieuw");
-                    Console.BackgroundColor = ConsoleColor.Black;
-                }
+            program.SetSkyBox(program);
             }
-
-            TimeChange timeChange = new TimeChange(entryAmount, program);
-            timeChange.SetStatic();
-        }
 
         public Program()
         {
@@ -219,6 +195,47 @@ namespace VirtualReality
             }
 
             receivedData = System.Text.Encoding.ASCII.GetString(packetBuffer);
+        }
+
+        public void SetSkyBox(Program program)
+        {
+
+            TimeChange timeChange = new TimeChange(program);
+            Console.WriteLine("static [of] dynamic");
+            switch (Console.ReadLine())
+            {
+                case "static":
+                    timeChange.sendData();
+                    break;
+                case "dynamic":
+                    Console.Write("Enter time between 0 - 24 : ");
+                    float entryAmount = 0;
+                    bool validEntery = false;
+                    while (!validEntery)
+                    {
+                        try
+                        {
+                            entryAmount = float.Parse(Console.ReadLine());
+                            if (entryAmount < 0 || entryAmount > 24)
+                            {
+                                throw new Exception();
+                            }
+
+                            validEntery = true;
+                        }
+                        catch (Exception)
+                        {
+                            Console.BackgroundColor = ConsoleColor.DarkRed;
+                            Console.WriteLine("Getal invoer is niet correct probeer opnieuw");
+                            Console.BackgroundColor = ConsoleColor.Black;
+                        }
+                    }
+
+                    timeChange.sendData(entryAmount);
+                    break;
+            }
+
+            
         }
     }
 }

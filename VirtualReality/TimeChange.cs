@@ -10,20 +10,11 @@ namespace VirtualReality
 {
     class TimeChange
     {
-        public float time { get; set; }
         private readonly Program program;
 
-        public TimeChange(float time, Program program)
+        public TimeChange(Program program)
         {
             this.program = program;
-            this.time = time;
-         //   sendData(time);
-        }
-
-        public void setTime(float time)
-        {
-            this.time = time;
-           // sendData(time);
         }
 
         /// <summary>
@@ -39,7 +30,7 @@ namespace VirtualReality
             JObject dataJson = new JObject { { "time", time } };
 
             tunnelCreateJson.Add("data", dataJson);
-            program.SendToTcp(tunnelCreateJson.ToString());
+            program.SendViaTunnel(tunnelCreateJson);
             string tunnelCreationResponse = "";
 
            
@@ -47,42 +38,48 @@ namespace VirtualReality
             program.ReceiveFromTcp(out tunnelCreationResponse);
 
             dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
-            string response = responseDeserializeObject["data"]["status"].ToString();
+            string response = responseDeserializeObject.ToString();
         }
-        public void sendData(bool back)
+        public void sendData()
         {
-            string sendString = @"{
-            ""id"" : ""scene/skybox/update"",
-            ""data"" :
-            {
-                ""type"" : ""static"",
-                ""files"" :
-                {
-                    ""xpos"" : ""data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_rt.png"",
-                    ""xneg"" : ""data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_lf.png"",
-                    ""ypos"" : ""data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_up.png"",
-                    ""yneg"" : ""data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_dn.png"",
-                    ""zpos"" : ""data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_bk.png"",
-                    ""zneg"" : ""data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_ft.png""
+             
 
-                }
-            }
-        }";
-            JObject sendJson = JObject.Parse(sendString);
-            program.SendToTcp(sendJson.ToString());
+            
+
+            //JObject sendJson = JObject.Parse(sendString);
+
+            JObject sendJson = new JObject();
+            sendJson.Add("id","scene/skybox/update");
+
+            JObject jsonData = new JObject();
+            jsonData.Add("type","static");
+
+            JObject jsonFiles = new JObject();
+            jsonFiles.Add("xpos" , @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_rt.png");
+            jsonFiles.Add("xneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_lf.png");
+            jsonFiles.Add("ypos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_up.png");
+            jsonFiles.Add("yneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_dn.png");
+            jsonFiles.Add("zpos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_bk.pn");
+            jsonFiles.Add("zneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_ft.png");
+            
+            jsonData.Add("files",jsonFiles);
+            sendJson.Add("data",jsonData);
+
+            Console.WriteLine(sendJson);
+
+
+
+            program.SendViaTunnel(sendJson);
             string tunnelCreationResponse = "";
 
 
 
             program.ReceiveFromTcp(out tunnelCreationResponse);
 
-            dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
-            string response = responseDeserializeObject["data"]["status"].ToString();
-        }
+            Console.WriteLine(tunnelCreationResponse);
 
-        public void SetStatic()
-        {
-            sendData(true);
+            //dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
+            //string response = responseDeserializeObject["data"]["status"].ToString();
         }
         
     }
