@@ -29,7 +29,10 @@ namespace VirtualReality
             userSessionsMap = GetRunningSessions();
         }
 
-        /// <summary>Start does <c>The beginning of the Program</c> This is the beginning of the program, als sometimes called the start of a programs life</summary>
+        /// <summary>Start does <c>The beginning of the Program</c> This is the beginning of the program, als 
+        /// sometimes called the start of a programs life</summary>
+        ///
+        
         public void Start()
         {
 
