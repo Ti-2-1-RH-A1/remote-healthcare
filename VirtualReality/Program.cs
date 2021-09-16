@@ -125,6 +125,21 @@ namespace VirtualReality
 
             JArray jsonDataArray = jsonData.data;
 
+            private Dictionary<string, string> getRunningSessions()
+        {
+            JObject sessionJson = new JObject();
+            sessionJson.Add("id", "session/list");
+            sendToTcp(networkStream, sessionJson.ToString());
+
+            // receive the response
+            string receivedData;
+            ReceiveFromTcp(networkStream, out receivedData);
+
+            // parse the received data
+            dynamic jsonData = JsonConvert.DeserializeObject(receivedData);
+
+            JArray jsonDataArray = jsonData.data;
+
             Dictionary<string, string> userSessionsMap = new Dictionary<string, string>();
             foreach (JObject jObject in jsonDataArray)
             {
