@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Avans.TI.BLE;
 
 using avansBikeData = Avans.TI.BLE.BLESubscriptionValueChangedEventArgs;
 
@@ -19,14 +18,10 @@ namespace RemoteHealthcare
         private RealBike realBike = null;
         private SimulatorBike simBike = null;
 
-        public BikeManager()
-        {
-        }
-
         public void StartSim()
         {
             this.simBike = new SimulatorBike();
-            this.simBike.startSim();
+            this.simBike.StartSim();
         }
 
         public void SimRunStep()
@@ -79,9 +74,7 @@ namespace RemoteHealthcare
                     }
                 }
             }
-            return;
         }
-
 
         public bool CloseConnections()
         {
@@ -94,9 +87,9 @@ namespace RemoteHealthcare
             return false;
         }
 
-        private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
+        private static void BleBike_SubscriptionValueChanged(object sender, avansBikeData e)
         {
-            Bluetooth.BleBike_SubscriptionValueChanged(e, false);
+            Bluetooth.BleBike_SubscriptionValueChanged(e);
         }
     }
 }
