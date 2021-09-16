@@ -9,8 +9,6 @@ namespace VirtualReality
 {
     class Program
     {
-
-
         private NetworkStream networkStream;
         private Dictionary<string, string> userSessionsMap;
 
