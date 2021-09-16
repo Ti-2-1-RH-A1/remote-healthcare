@@ -53,17 +53,20 @@ namespace VirtualReality
                 Console.WriteLine("couldn't connect to that client");
             }
 
-             // A Simple Test code
-            // JObject jObject = new JObject();
-            // jObject.Add("id", "scene/reset");
-            //
-            // jObject.Add("data", new JObject());
-            //
-            // SendViaTunnel(jObject);
-            //
-            // string test;
-            // ReceiveFromTcp(out test);
-            // Console.WriteLine(test);
+            GenerateTerrain();
+
+            // A Simple Test code
+            //JObject jObject = new JObject();
+            //jObject.Add("id", "scene/reset");
+
+            //jObject.Add("data", new JObject());
+
+            //SendViaTunnel(jObject);
+
+            //string test;
+            //ReceiveFromTcp(out test);
+            //Console.WriteLine(test);
+            //GenerateTerrain();
             // Expected Response
             // {"id":"tunnel/send","data":{"id":"13bc8b1f-36fa-4464-850d-7b9d5e99ae2a","data":{"id":"scene/reset","status":"ok"}}}
         }
@@ -194,6 +197,26 @@ namespace VirtualReality
             }
 
             receivedData = System.Text.Encoding.ASCII.GetString(packetBuffer);
+        }
+
+        /// <summary>Method generates a terrain <c>This</c> by sending a json datastring that contains the function id along with the size and height data.</summary>
+        ///
+
+
+        // comment: after making the terrain a new node needs to be made or an existing node needs to be updated to see changes see: Documentatie VR scene/node/add and scene/terrain/add.
+        public void GenerateTerrain()
+        {
+            JObject terrainJSON = new JObject();
+            terrainJSON.Add("id", "scene/terrain/add");
+            JObject terrainData = new JObject();
+            terrainData.Add("size", "[ 1, 1 ]");
+            terrainData.Add("heights", "[ 1 ]");
+            terrainJSON.Add("data", terrainData);
+
+            SendViaTunnel(terrainJSON);
+            string receivedData;
+            ReceiveFromTcp(out receivedData);
+            Console.WriteLine(receivedData);
         }
     }
 }
