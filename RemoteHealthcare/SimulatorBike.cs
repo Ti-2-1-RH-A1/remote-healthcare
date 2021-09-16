@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Diagnostics;
 
+using avansBikeData = Avans.TI.BLE.BLESubscriptionValueChangedEventArgs;
+
 namespace RemoteHealthcare
 {
     public class SimulatorBike : IBike
@@ -66,12 +68,12 @@ namespace RemoteHealthcare
                 }
             }
         }
-        
+
         public void RunStep(ref int i, ref Stopwatch stopwatch)
-        {              
-            FakeBike fakeBike = new FakeBike();
-            fakeBike.Data = GenerateSpeedData(i, stopwatch);
-            Bluetooth.BleBike_SubscriptionValueChanged(fakeBike, false);
+        {
+            avansBikeData bikeData = new avansBikeData();
+            bikeData.Data = GenerateSpeedData(i, stopwatch);
+            Bluetooth.BleBike_SubscriptionValueChanged(bikeData, false);
             i++;
         }
 
@@ -123,9 +125,15 @@ namespace RemoteHealthcare
         }
     }
 
-    class FakeBike : IBikeData
+    internal class FakeBikeData : BikeData
     {
         public byte[] Data { get; set; }
         public string ServiceName { get; set; }
+
+        public FakeBikeData(byte[] data, string serviceName) : base(new avansBikeData())
+        {
+            Data = data;
+            ServiceName = serviceName;
+        }
     }
 }

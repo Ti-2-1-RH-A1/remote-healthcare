@@ -9,8 +9,7 @@ namespace RemoteHealthcare
         static Task Main(string[] args)
         {
             bool validSelection = false;
-            SimulatorBike simulator = new SimulatorBike();
-            BikeManager bike = new BikeManager();
+            BikeManager bikeManager = new BikeManager();
             HRManager hr = new HRManager();
             while (!validSelection)
             {
@@ -18,7 +17,7 @@ namespace RemoteHealthcare
                 {
                     case "0":
                         Console.Clear();
-                        simulator.startSim();
+                        this.
                         break;
                     case "1":
                         Console.Clear();
@@ -53,7 +52,7 @@ namespace RemoteHealthcare
                             break;
                         }
                         Console.Clear();
-                        bike.MakeConnectionAsync(serie, amount);
+                        bikeManager.MakeConnectionAsync(serie, amount).Wait();
                         break;
                     case "3":
                         Console.Clear();
@@ -76,7 +75,7 @@ namespace RemoteHealthcare
                         hr.MakeConnection(amountHR);
                         break;
                     case "4":
-                        bike.closeConnections();
+                        bikeManager.CloseConnections();
                         hr.closeConnections();
                         break;
                     case "5":
