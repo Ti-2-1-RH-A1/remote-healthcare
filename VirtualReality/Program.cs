@@ -71,8 +71,6 @@ namespace VirtualReality
                 dataJson.Add("key", sessionKey);
 
                 tunnelCreateJson.Add("data", dataJson);
-
-
                 SendToTcp(networkStream, tunnelCreateJson.ToString());
                 string tunnelCreationResponse = "";
 
