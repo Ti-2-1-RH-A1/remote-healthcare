@@ -1,33 +1,34 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Avans.TI.BLE;
+
+using avansBikeData = Avans.TI.BLE.BLESubscriptionValueChangedEventArgs;
 
 namespace RemoteHealthcare
 {
     class BikeManager
     {
-        private static int amountDataSend = 0;
-        private static int ThresholdDataAmount = 0;
-        private static int OriginalrequestedDataAmount = 0;
-        private static bool exit = false;
-        private static bool reachedThreshold = false;
+        private int amountDataSend = 0;
+        private int ThresholdDataAmount = 0;
+        private int OriginalrequestedDataAmount = 0;
+        private bool exit = false;
+        private bool reachedThreshold = false;
 
-        private static BLE bleBike = null;
+        private RealBike realBike = null;
+        private SimulatorBike simBike = null;
 
-        class RealBike : IBikeData
+        public void StartSim()
         {
-            public byte[] Data { get; set; }
-            public string ServiceName { get; set; }
-
-            public RealBike(BLESubscriptionValueChangedEventArgs e)
-            {
-                this.Data = e.Data;
-                this.ServiceName = e.ServiceName;
-            }
+            this.simBike = new SimulatorBike();
+            this.simBike.StartSim();
         }
-        public BikeManager()
+
+        public void SimRunStep()
         {
+            int i = 0;
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            this.simBike.RunStep(ref i, ref stopwatch);
         }
 
         public async Task MakeConnectionAsync(string deviceName, int dataBlocks)
@@ -36,11 +37,11 @@ namespace RemoteHealthcare
             ThresholdDataAmount = dataBlocks;
             int errorCode = 0;
 
-            bleBike = new BLE();
+            realBike = new RealBike();
             Console.WriteLine($"Connectie met fiets {deviceName} wordt gemaakt");
             Thread.Sleep(1000); // We need some time to list available devices
 
-            errorCode = await Bluetooth.SetConnectionAsync(bleBike, "Tacx Flux 00472", "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e", BleBike_SubscriptionValueChanged, "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+            errorCode = await Bluetooth.SetConnectionAsync(realBike, "Tacx Flux 00472", "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e", BleBike_SubscriptionValueChanged, "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
             if (errorCode >= 1)
             {
                 Console.BackgroundColor = ConsoleColor.DarkRed;
@@ -50,6 +51,7 @@ namespace RemoteHealthcare
                 return;
             }
             Console.WriteLine($"Subscription op fiets {deviceName} is ingesteld.");
+
             while (!exit)
             {
                 if (amountDataSend >= ThresholdDataAmount)
@@ -62,37 +64,32 @@ namespace RemoteHealthcare
 
                     if (Console.ReadLine() == "y")
                     {
-
                         ThresholdDataAmount = ThresholdDataAmount + OriginalrequestedDataAmount;
-
                         reachedThreshold = !reachedThreshold;
                     }
                     else
                     {
-                        bleBike.CloseDevice();
+                        realBike.CloseDevice();
                         exit = true;
                     }
                 }
             }
-            return;
         }
 
-
-        public bool closeConnections()
+        public bool CloseConnections()
         {
-            if (bleBike != null)
+            if (realBike != null)
             {
-                bleBike.CloseDevice();
+                realBike.CloseDevice();  
                 return true;
             }
 
             return false;
         }
 
-        private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
+        private static void BleBike_SubscriptionValueChanged(object sender, avansBikeData e)
         {
-            RealBike realBike = new RealBike(e);
-            Bluetooth.BleBike_SubscriptionValueChanged(realBike, false);
+            Bluetooth.BleBike_SubscriptionValueChanged(e);
         }
     }
 }

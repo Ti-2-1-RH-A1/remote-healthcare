@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Avans.TI.BLE;
 
 namespace RemoteHealthcare
@@ -14,11 +11,7 @@ namespace RemoteHealthcare
         private static int OriginalrequestedDataAmount = 0;
         private static bool exit = false;
         private static bool reachedThreshold = false;
-
         private static BLE bleHeart = null;
-        public HRManager()
-        {
-        }
 
         public async void MakeConnection(int dataBlocks)
         {
@@ -64,8 +57,6 @@ namespace RemoteHealthcare
                     }
                 }
             }
-
-            return;
         }
 
         private static void BleHeart_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
@@ -80,7 +71,7 @@ namespace RemoteHealthcare
             }
         }
 
-        public bool closeConnections()
+        public bool CloseConnections()
         {
             if (bleHeart != null)
             {
