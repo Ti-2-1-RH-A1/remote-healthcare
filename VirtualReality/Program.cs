@@ -21,7 +21,7 @@ namespace VirtualReality
 
             NetworkStream networkStream = client.GetStream();           
 
-            sendToTcp(networkStream, data);
+            SendToTcp(networkStream, data);
             // receive the response
             string receivedData;
             ReceiveFromTcp(networkStream, out receivedData);
@@ -71,7 +71,7 @@ namespace VirtualReality
                                                             ""key"" : """"
                                                         }
                                                     }";
-                sendToTcp(networkStream, tunnelCreationDataString);
+                SendToTcp(networkStream, tunnelCreationDataString);
                 
                 ReceiveFromTcp(networkStream, out tunnelCreationResponse);
             } else
@@ -89,9 +89,49 @@ namespace VirtualReality
             }
 
             /*ResetScene(networkStream, id);*/
-            GetScene(networkStream, id);
+            Dictionary<string, string> nodes = new Dictionary<string, string>();
+            GetScene(networkStream, id, ref nodes);
+            DeleteNode(networkStream, id, ref nodes);
+            /*FindNode(networkStream, id, ref nodes);*/
             ResetScene(networkStream, id);
-            GetScene(networkStream, id);
+        }
+
+        public static void DeleteNode(NetworkStream networkStream, string destId, ref Dictionary<string, string> nodes)
+        {
+            Console.WriteLine("Select a node to remove from the following list:");
+            foreach (string s in  nodes.Keys)
+            {
+                Console.WriteLine(s);
+            }
+            string userInput = "";
+            while (!nodes.ContainsKey(userInput))
+            {
+                userInput = Console.ReadLine();
+            }
+            Console.WriteLine("Selected: " + userInput);
+            string response;
+            /*SendToTunnelWithData(networkStream, destId, "scene/node/delete", @"""id"" : {" + nodes.GetValueOrDefault(userInput) + @"}", out response);*/
+            string json = @"{""id"" : ""tunnel/send"",""data"" :{""dest"" : """ + destId + @""",""data"" : {""id"" : ""scene/node/delete"",""data"" :{""id"" : """ + nodes.GetValueOrDefault(userInput) + @"""}}}}";
+
+
+            SendToTunnel(networkStream, json, out response);
+        }
+
+        public static void FindNode(NetworkStream networkStream, string destId, ref Dictionary<string, string> nodes)
+        {
+            Console.WriteLine("Select a node to find from the following list:");
+            foreach (string s in nodes.Keys)
+            {
+                Console.WriteLine(s);
+            }
+            string userInput = "";
+            while (!nodes.ContainsKey(userInput))
+            {
+                userInput = Console.ReadLine();
+            }
+            Console.WriteLine("Selected: " + userInput);
+            string response;
+            SendToTunnelWithData(networkStream, destId, "scene/node/find", @"""name"" : " + userInput, out response);
         }
 
         public static void ResetScene(NetworkStream networkStream, string destId)
@@ -100,14 +140,14 @@ namespace VirtualReality
             SendToTunnelWithoutData(networkStream, destId, "scene/reset", out response);
         }
 
-        public static void GetScene(NetworkStream networkStream, string destId)
+        public static void GetScene(NetworkStream networkStream, string destId, ref Dictionary<string, string> nodes)
         {
             string response;
             SendToTunnelWithoutData(networkStream, destId, "scene/get", out response);
 
             dynamic responseData = JsonConvert.DeserializeObject(response);
+            nodes.Add(responseData.data.data.data.name.ToString(), responseData.data.data.data.uuid.ToString());
             JArray children = responseData.data.data.data.children;
-            Dictionary<string, string> nodes = new Dictionary<string, string>();
             foreach (JObject jObject in children)
             {
                 nodes.Add(jObject.GetValue("name").ToString(), jObject.GetValue("uuid").ToString());
@@ -121,7 +161,8 @@ namespace VirtualReality
         {
             Console.WriteLine("Press any key to send to tunnel");
             Console.ReadLine();
-            sendToTcp(networkStream, message);
+            SendToTcp(networkStream, message);
+
 
             ReceiveFromTcp(networkStream, out response);
             Console.WriteLine("Response: " + response);
@@ -129,42 +170,45 @@ namespace VirtualReality
 
         public static void SendToTunnelWithData(NetworkStream networkStream, string destId, string id, string data, out string response)
         {
-            SendToTunnel(networkStream, @"{
-    ""id"" : ""tunnel/send"",
-	""data"" :
-	{
-                ""dest"" : """ + destId + @""",
-		""data"" : 
-		{
-                    ""id"" : """ + id + @""",
-                    ""data"" : """ + data + @"""
-                }
-            }
+            SendToTunnel(networkStream, 
+                @"{
+                    ""id"" : ""tunnel/send"",
+	                ""data"" :
+	                    {
+                            ""dest"" : """ + destId + @""",
+		                    ""data"" : 
+		                        {
+                                    ""id"" : """ + id + @""",
+                                    ""data"" : {" + data + @"}
+                                }
+                        }
         }", out response);
         }
 
         public static void SendToTunnelWithoutData(NetworkStream networkStream, string destId, string id, out string response)
         {
-            SendToTunnel(networkStream, @"{
-    ""id"" : ""tunnel/send"",
-	""data"" :
-	{
-                ""dest"" : """ + destId + @""",
-		""data"" : 
-		{
-                    ""id"" : """ + id + @"""
-                }
-            }
+            SendToTunnel(networkStream, 
+                @"{
+                    ""id"" : ""tunnel/send"",
+	                ""data"" :
+	                    {
+                            ""dest"" : """ + destId + @""",
+		                    ""data"" : 
+		                        {
+                                    ""id"" : """ + id + @"""
+                                 }
+                        }
         }", out response);
         }
 
-        public static void sendToTcp(NetworkStream networkStream, string data)
+        public static void SendToTcp(NetworkStream networkStream, string data)
         {
             byte[] dataBytes = System.Text.Encoding.ASCII.GetBytes(data);
             int dataLength = dataBytes.Length;
 
             networkStream.Write(BitConverter.GetBytes(dataLength));
             networkStream.Write(dataBytes);
+            networkStream.Flush();
         }
 
         public static void ReceiveFromTcp(NetworkStream networkStream, out string receivedData)
