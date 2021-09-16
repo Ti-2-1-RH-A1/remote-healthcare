@@ -17,7 +17,7 @@ namespace VirtualReality
         static void Main(string[] args)
         {
             Program program = new Program();
-            program.start();
+            program.Start();
         }
 
         public Program()
@@ -28,11 +28,11 @@ namespace VirtualReality
             client.Connect("145.48.6.10", 6666);
             // Request the session list from the server
             networkStream = client.GetStream();
-            userSessionsMap = getRunningSessions();
+            userSessionsMap = GetRunningSessions();
         }
 
-
-        public void start()
+        /// <summary>Start does <c>The beginning of the Program</c> This is the beginning of the program, als sometimes called the start of a programs life</summary>
+        public void Start()
         {
 
             foreach (KeyValuePair<string, string> keyValuePair in userSessionsMap)
@@ -44,7 +44,7 @@ namespace VirtualReality
             Console.WriteLine("Which client should be connected to?");
             string userInput = Console.ReadLine();
 
-            if (createTunnel(userInput))
+            if (CreateTunnel(userInput))
             {
                 Console.WriteLine("Succes connected to " + userInput);
             }
@@ -55,7 +55,10 @@ namespace VirtualReality
 
         }
 
-        public Boolean createTunnel(String sessionID)
+
+
+        /// <summary>CreateTunnel does <c>Creating a network tunnel</c> returns <returns>A Boolean</returns> sends the correct json and then checks connection status based on that it returns a boolean</summary>
+        public Boolean CreateTunnel(String sessionID)
         {
             if (userSessionsMap.ContainsKey(sessionID))
             {
@@ -71,7 +74,7 @@ namespace VirtualReality
                 tunnelCreateJson.Add("data", dataJson);
 
 
-                sendToTcp(networkStream, tunnelCreateJson.ToString());
+                SendToTcp(networkStream, tunnelCreateJson.ToString());
                 string tunnelCreationResponse = "";
 
 
@@ -97,10 +100,8 @@ namespace VirtualReality
 
 
 
-
-
-
-        public void sendToTcp(NetworkStream networkStream, string data)
+        /// <summary>SendToTcp does <c>Sending a String over Tcp</c> using ASCII encoding</summary>
+        public void SendToTcp(NetworkStream networkStream, string data)
         {
             byte[] dataBytes = System.Text.Encoding.ASCII.GetBytes(data);
             int dataLength = dataBytes.Length;
@@ -109,12 +110,12 @@ namespace VirtualReality
             networkStream.Write(dataBytes);
         }
 
-
-        private Dictionary<string, string> getRunningSessions()
+        /// <summary>GetRunningSessions does <c>Getting a all running sessions from the server</c> returns <returns>A Dictionary<string, string> containing all users as key and a value of all data</returns> sends data using SendDataToTCP and then Receive it using ReceiveFromTcp</summary>
+        private Dictionary<string, string> GetRunningSessions()
         {
             JObject sessionJson = new JObject();
             sessionJson.Add("id", "session/list");
-            sendToTcp(networkStream, sessionJson.ToString());
+            SendToTcp(networkStream, sessionJson.ToString());
 
             // receive the response
             string receivedData;
@@ -142,13 +143,13 @@ namespace VirtualReality
             return userSessionsMap;
         }
 
-
+        /// <summary>ReceiveFromTcp does <c>recieving data from a tcp stream</c> using a network stream decodes using ASCII to a string</summary>
         public void ReceiveFromTcp(NetworkStream networkStream, out string receivedData)
         {
             // read a small part of the packet and receive the packet length
             byte[] buffer = new byte[4];
             int rc = networkStream.Read(buffer, 0, 4);
-            // read from the stream untill the entire packet is written to the buffer
+            // read from the stream until the entire packet is written to the buffer
             int packetLength = BitConverter.ToInt32(buffer);
             byte[] packetBuffer = new byte[packetLength];
             int receivedTotal = 0;
@@ -159,7 +160,6 @@ namespace VirtualReality
             }
 
             receivedData = System.Text.Encoding.ASCII.GetString(packetBuffer);
-            //Console.WriteLine(receivedData);
         }
     }
 }
