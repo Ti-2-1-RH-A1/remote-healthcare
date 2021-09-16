@@ -1,9 +1,6 @@
 name: "Nieuwe Feature"
 description: File a bug report
 title: "[Feature]: "
-labels: ""
-assignees: ""
-milestone: "Release 2"
 body:
   - type: markdown
     attributes:
