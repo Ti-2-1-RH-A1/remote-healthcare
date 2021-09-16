@@ -142,6 +142,8 @@ namespace VirtualReality
         }
 
         /// <summary>ReceiveFromTcp does <c>recieving data from a tcp stream</c> using a network stream decodes using ASCII to a string</summary>
+        ///
+        
         public void ReceiveFromTcp(NetworkStream networkStream, out string receivedData)
         {
             // read a small part of the packet and receive the packet length
