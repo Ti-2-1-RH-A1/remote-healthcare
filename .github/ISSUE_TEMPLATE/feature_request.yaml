@@ -23,11 +23,12 @@ body:
       placeholder: What are the details?
     validations:
       required: true
-   - type: checkboxes
-      id: terms
-      attributes:
-        label: Style Guide
-        description: By submitting this issue, you agree to follow our Style guide
-        options:
-          - label: I agree to follow the style guide
-            required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Style Guide
+      description: By submitting this issue, you agree to follow our Style guide
+      options:
+        - label: I agree to follow the style guide
+    validations:    
+      required: true
