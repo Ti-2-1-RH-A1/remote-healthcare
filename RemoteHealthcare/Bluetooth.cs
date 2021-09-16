@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Avans.TI.BLE;
 
@@ -22,62 +19,24 @@ namespace RemoteHealthcare
             return errorCode;
         }
 
-        private static void BleHeart_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
+        private static void BleHeart_SubscriptionValueChanged(object sender, avansBikeData e)
         {
-            if (e.Data[0] != 0x16)
-                return;
+            if (e.Data[0] != 0x16) { return; }
             Console.WriteLine($"Heartrate: {e.Data[1]} BPM");
         }
 
-        //public class RealBikeData : BikeData
-        //{
-        //    public byte[] Data { get; set; }
-        //    public string ServiceName { get; set; }
-
-        //    public RealBikeData(BLESubscriptionValueChangedEventArgs e)
-        //    {
-        //        this.Data = e.Data;
-        //        this.ServiceName = e.ServiceName;
-        //    }
-
-        //    public RealBikeData()
-        //    {
-        //    }
-        //}
-
-        //private static void BleBike_SubscriptionValueChanged(object sender, BLESubscriptionValueChangedEventArgs e)
-        //{
-        //    RealBikeData realBike = new RealBikeData(e);
-        //    BleBike_SubscriptionValueChanged(realBike, true);
-        //}
-
-        public static void BleBike_SubscriptionValueChanged(avansBikeData e, bool isLogging)
+        public static void BleBike_SubscriptionValueChanged(avansBikeData bikeData)
         {
-            if (isLogging) Console.WriteLine("Received from {0}: {1}, {2}", e.ServiceName,
-                BitConverter.ToString(e.Data).Replace("-", " "),
-                Encoding.UTF8.GetString(e.Data));
-            var sync = e.Data[0];                   
-            int msgLength = e.Data[1];
-            var msgID = e.Data[2];
-            int channelNumber = e.Data[3];
-            var cs = e.Data[msgLength + 3];
-            var msg = new Byte[msgLength];
-            Array.Copy(e.Data, 4, msg, 0, msgLength);
+            var sync = bikeData.Data[0];                   
+            int msgLength = bikeData.Data[1];
+            var msgID = bikeData.Data[2];
+            int channelNumber = bikeData.Data[3];
+            var cs = bikeData.Data[msgLength + 3];
+            var msg = new byte[msgLength];
+            Array.Copy(bikeData.Data, 4, msg, 0, msgLength);
             int dataPageNumber = msg[0];
 
-            if (isLogging)
-            {
-                //logging
-                Console.WriteLine("sync: " + sync.ToString());
-                Console.WriteLine("msgLength" + msgLength.ToString());
-                Console.WriteLine("msgID: " + msgID.ToString());
-                Console.WriteLine("channelNumber: " + channelNumber.ToString());
-                Console.WriteLine("dataPageNumber: " + dataPageNumber.ToString());
-                Console.WriteLine("cs: " + cs.ToString());
-                Console.WriteLine(BitConverter.ToString(msg).Replace("-", " "));
-            }
-
-            //Parse msg data
+            // Parse msg data
             ParseData(msg);
         }
 
@@ -94,7 +53,6 @@ namespace RemoteHealthcare
                 default:
                     return false;
             }
-            return false;
         }
 
         public static void Page16(byte[] data)

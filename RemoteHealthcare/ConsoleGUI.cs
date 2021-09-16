@@ -1,102 +1,47 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RemoteHealthcare
 {
+    enum MenuOptions
+    {
+        START_SIM = '0',
+        RUN_STEP = '1',
+        READ_BIKE = '2',
+        READ_HEARTHRATE = '3',
+        CLOSE_CONNECTION = '4',
+    }
+
     class ConsoleGUI
     {
-        public Task SelectionHandler(Program program)
+        readonly Program program;
+
+        public ConsoleGUI(Program program)
+        {
+            this.program = program;
+        }
+
+        public Task SelectionHandler()
         {
             bool validSelection = false;
             while (!validSelection)
             {
-                switch (this.mainMenu())
+                switch (this.MainMenu())
                 {
-                    case "0":
-                        Console.Clear();
-                        program.simulator.startSim();
+                    case (char)MenuOptions.START_SIM:
+                        StartSim();
                         break;
-                    case "1":
-                        Console.Clear();
-                        Console.BackgroundColor = ConsoleColor.DarkRed;
-                        Console.WriteLine("Hieronder 1 item gegenereerd door de simulator.");
-                        Console.BackgroundColor = ConsoleColor.Black;
-                        int i = 0;
-                        Stopwatch stopwatch = Stopwatch.StartNew();
-                        program.simulator.RunStep(ref i, ref stopwatch);
-                        Console.BackgroundColor = ConsoleColor.DarkRed;
-                        Console.WriteLine("Druk op een knop om door te gaan.");
-                        Console.BackgroundColor = ConsoleColor.Black;
-                        Console.ReadKey();
+                    case (char)MenuOptions.RUN_STEP:
+                        RunStep();
                         break;
-                    case "2":
-                        Console.Clear();
-                        Console.Write("Wat is het serie nummer van de fiets? : ");
-                        string serie = Console.ReadLine();
-                        bool enteryValid = false;
-                        int amountEntry = 0;
-                        while (!enteryValid)
-                        {
-                            Console.Clear();
-
-                            Console.Write("Hoeveel data pakketen wil je ontvangen: ");
-                            try
-                            {
-                                amountEntry = Int32.Parse(Console.ReadLine());
-                                if (amountEntry! > 0)
-                                {
-                                    throw new Exception();
-                                }
-
-                                enteryValid = true;
-                            }
-                            catch (Exception)
-                            {
-                                Console.BackgroundColor = ConsoleColor.DarkRed;
-                                Console.WriteLine("Getal invoer is niet correct probeer opnieuw (Druk op een knop)");
-                                Console.BackgroundColor = ConsoleColor.Black;
-                                Console.ReadKey();
-                            }
-                        }
-
-                        Console.Clear();
-                        program.bikeManager.MakeConnectionAsync(serie, amountEntry).Wait();
+                    case (char)MenuOptions.READ_BIKE:
+                        ReadBike();
                         break;
-                    case "3":
-                        bool validEntery = false;
-                        int entryAmount = 0;
-                        while (!validEntery)
-                        {
-                            Console.Clear();
-
-                            Console.Write("Hoeveel data pakketen wil je ontvangen: ");
-                            try
-                            {
-                                entryAmount = Int32.Parse(Console.ReadLine());
-                                if (entryAmount! > 0)
-                                {
-                                    throw new Exception();
-                                }
-
-                                validEntery = true;
-                            }
-                            catch (Exception)
-                            {
-                                Console.BackgroundColor = ConsoleColor.DarkRed;
-                                Console.WriteLine("Getal invoer is niet correct probeer opnieuw (Druk op een knop)");
-                                Console.BackgroundColor = ConsoleColor.Black;
-                                Console.ReadKey();
-                            }
-                        }
-                        Console.Clear();
-                        program.hrManager.MakeConnection(entryAmount);
+                    case (char)MenuOptions.READ_HEARTHRATE:
+                        ReadHearthrate();
                         break;
-                    case "4":
-                        program.bikeManager.closeConnections();
-                        program.hrManager.closeConnections();
+                    case (char)MenuOptions.CLOSE_CONNECTION:
+                        CloseConnection();
                         break;
                 }
             }
@@ -104,8 +49,101 @@ namespace RemoteHealthcare
             return Task.CompletedTask;
         }
 
+        private void CloseConnection()
+        {
+            this.program.bikeManager.CloseConnections();
+            this.program.hrManager.CloseConnections();
+        }
 
-        public string mainMenu()
+        private void ReadHearthrate()
+        {
+            bool validEntery = false;
+            int entryAmount = 0;
+            while (!validEntery)
+            {
+                Console.Clear();
+
+                Console.Write("Hoeveel data pakketen wil je ontvangen: ");
+                try
+                {
+                    entryAmount = int.Parse(Console.ReadLine());
+                    if (entryAmount! > 0)
+                    {
+                        throw new Exception();
+                    }
+
+                    validEntery = true;
+                }
+                catch (Exception)
+                {
+                    Console.BackgroundColor = ConsoleColor.DarkRed;
+                    Console.WriteLine("Getal invoer is niet correct probeer opnieuw (Druk op een knop)");
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.ReadKey();
+                }
+            }
+            Console.Clear();
+            program.hrManager.MakeConnection(entryAmount);
+        }
+
+        private void ReadBike()
+        {
+            Console.Clear();
+            Console.Write("Wat is het serie nummer van de fiets? : ");
+            string serie = Console.ReadLine();
+            bool enteryValid = false;
+            int amountEntry = 0;
+            while (!enteryValid)
+            {
+                Console.Clear();
+
+                Console.Write("Hoeveel data pakketen wil je ontvangen: ");
+                try
+                {
+                    amountEntry = int.Parse(Console.ReadLine());
+                    if (amountEntry! > 0)
+                    {
+                        throw new Exception();
+                    }
+
+                    enteryValid = true;
+                }
+                catch (Exception)
+                {
+                    Console.BackgroundColor = ConsoleColor.DarkRed;
+                    Console.WriteLine("Getal invoer is niet correct probeer opnieuw (Druk op een knop)");
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.ReadKey();
+                }
+            }
+
+            Console.Clear();
+            program.bikeManager.MakeConnectionAsync(serie, amountEntry).Wait();
+        }
+
+        private void RunStep()
+        {
+            Console.Clear();
+            PrintLine(ConsoleColor.DarkRed, "Hieronder 1 item gegenereerd door de simulator.");
+            this.program.bikeManager.SimRunStep();
+            PrintLine(ConsoleColor.DarkRed, "Druk op een knop om door te gaan.");
+            Console.ReadKey();
+        }
+
+        private void StartSim()
+        {
+            Console.Clear();
+            this.program.bikeManager.StartSim();
+        }
+
+        private static void PrintLine(ConsoleColor color, string toPrint)
+        {
+            Console.BackgroundColor = color;
+            Console.WriteLine();
+            Console.BackgroundColor = ConsoleColor.Black;
+        }
+
+        public char MainMenu()
         {
             Console.Clear();
             string menuTitle = @"
@@ -128,7 +166,7 @@ namespace RemoteHealthcare
     ";
             Console.WriteLine(menuOption);
             Console.Write("Select option: ");
-            return Console.ReadKey().KeyChar.ToString();
+            return Console.ReadKey().KeyChar;
         }
 
     }
