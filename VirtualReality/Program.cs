@@ -107,6 +107,8 @@ namespace VirtualReality
         }
 
         /// <summary>GetRunningSessions does <c>Getting a all running sessions from the server</c> returns <returns>A Dictionary<string, string> containing all users as key and a value of all data</returns> sends data using SendDataToTCP and then Receive it using ReceiveFromTcp</summary>
+        ///
+        
         private Dictionary<string, string> GetRunningSessions()
         {
             JObject sessionJson = new JObject();
