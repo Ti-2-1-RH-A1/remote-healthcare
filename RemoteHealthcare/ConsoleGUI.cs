@@ -8,19 +8,16 @@ namespace RemoteHealthcare
 {
     class ConsoleGUI
     {
-        public Task SelectionHandler()
+        public Task SelectionHandler(Program program)
         {
             bool validSelection = false;
-            SimulatorBike simulator = new SimulatorBike();
-            BikeManager bike = new BikeManager();
-            HRManager hr = new HRManager();
             while (!validSelection)
             {
                 switch (this.mainMenu())
                 {
                     case "0":
                         Console.Clear();
-                        simulator.startSim();
+                        program.simulator.startSim();
                         break;
                     case "1":
                         Console.Clear();
@@ -29,7 +26,7 @@ namespace RemoteHealthcare
                         Console.BackgroundColor = ConsoleColor.Black;
                         int i = 0;
                         Stopwatch stopwatch = Stopwatch.StartNew();
-                        simulator.RunStep(ref i, ref stopwatch);
+                        program.simulator.RunStep(ref i, ref stopwatch);
                         Console.BackgroundColor = ConsoleColor.DarkRed;
                         Console.WriteLine("Druk op een knop om door te gaan.");
                         Console.BackgroundColor = ConsoleColor.Black;
@@ -66,7 +63,7 @@ namespace RemoteHealthcare
                         }
 
                         Console.Clear();
-                        bike.MakeConnectionAsync(serie, amountEntry).Wait();
+                        program.bikeManager.MakeConnectionAsync(serie, amountEntry).Wait();
                         break;
                     case "3":
                         bool validEntery = false;
@@ -95,15 +92,11 @@ namespace RemoteHealthcare
                             }
                         }
                         Console.Clear();
-                        hr.MakeConnection(entryAmount);
+                        program.hrManager.MakeConnection(entryAmount);
                         break;
                     case "4":
-                        bike.closeConnections();
-                        hr.closeConnections();
-                        break;
-                    case "5":
-                        // validSelection = true;
-                        // Console.WriteLine("Selected 5");
+                        program.bikeManager.closeConnections();
+                        program.hrManager.closeConnections();
                         break;
                 }
             }

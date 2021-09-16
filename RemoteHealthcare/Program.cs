@@ -6,10 +6,15 @@ namespace RemoteHealthcare
 {
     class Program
     {
+        public SimulatorBike simulator = new SimulatorBike();
+        public BikeManager bikeManager = new BikeManager();
+        public HRManager hrManager = new HRManager();
+
         static void Main(string[] args)
         {
             ConsoleGUI cGUI = new ConsoleGUI();
-            cGUI.SelectionHandler();
+            Program program = new Program();
+            cGUI.SelectionHandler(program);
         }
     }
 }
