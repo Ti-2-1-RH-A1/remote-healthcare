@@ -152,7 +152,7 @@ namespace VirtualReality
                 }
             }
             return userSessionsMap;
-        } 
+        }
 
         /// <summary>SendViaTunnel does <c> a tcp data send via a tunnel</c> as long as you have made a connection first </summary>
         ///
