@@ -9,7 +9,7 @@ using Newtonsoft.Json.Schema;
 
 namespace VirtualReality
 {
-    class Program
+    class VrManager
     {
         private NetworkStream networkStream;
         private List<(string, string)> userSessions;
@@ -18,13 +18,13 @@ namespace VirtualReality
 
         static void Main(string[] args)
         {
-            Program program = new Program();
+            VrManager program = new VrManager();
             program.Start();
             
         }
 
 
-        public Program()
+        public VrManager()
         {
             // Initialise and connect to the TcpClient
             // On server: 145.48.6.10 and port: 6666
