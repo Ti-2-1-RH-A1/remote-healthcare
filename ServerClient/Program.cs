@@ -13,11 +13,16 @@ namespace ServerClient
 
         static void Main(string[] args)
         {
-            listener = new TcpListener(IPAddress.Any, 7777);
-            listener.Start();
-            listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
+            new Client();
 
             Console.ReadLine();
+
+
+            //listener = new TcpListener(IPAddress.Any, 7777);
+            //listener.Start();
+            //listener.BeginAcceptTcpClient(new AsyncCallback(OnConnect), null);
+
+            //Console.ReadLine();
         }
 
         private static void OnConnect(IAsyncResult ar)
@@ -44,10 +49,10 @@ namespace ServerClient
 
         internal static void SendToUser(string user, string packet)
         {
-            foreach (var client in clients.Where(c => c.UserName == user))
-            {
-                client.Write(packet);
-            }
+            //foreach (var client in clients.Where(c => c.UserName == user))
+            //{
+            //    client.Write(packet);
+            //}
         }
     }
 }

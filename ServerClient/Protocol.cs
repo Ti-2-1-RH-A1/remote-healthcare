@@ -22,9 +22,9 @@ namespace ServerClient
             for (int i = 0; i < length; i++)
             {
                 string dataKey = rawData.Substring(0, rawData.IndexOf(separator));
-                rawData = rawData[rawData.IndexOf(separator)..];
-                string dataValue = rawData.Substring(0, rawData.IndexOf(separator));
-                rawData = rawData[rawData.IndexOf(separator)..];
+                rawData = rawData[(rawData.IndexOf(separator)+ separator.Length)..];
+                string dataValue = rawData.Contains(separator)?rawData.Substring(0, rawData.IndexOf(separator)) : rawData;
+                rawData = rawData.Contains(separator)? rawData[(rawData.IndexOf(separator)+ separator.Length)..]: rawData;
                 resultData.Add(dataKey, dataValue);
             }
             return (resultData, rawData);
