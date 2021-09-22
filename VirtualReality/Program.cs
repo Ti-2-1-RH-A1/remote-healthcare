@@ -205,7 +205,7 @@ namespace VirtualReality
             switch (Console.ReadLine())
             {
                 case "static":
-                    timeChange.sendData();
+                    timeChange.sendData(true);
                     break;
                 case "dynamic":
                     Console.Write("Enter time between 0 - 24 : ");
