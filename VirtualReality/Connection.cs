@@ -74,7 +74,8 @@ namespace VirtualReality
 
         /// <summary>SendViaTunnel does <c> a tcp data send via a tunnel</c> as long as you have made a connection first </summary>
         /// Returns a string with the response
-        public void SendViaTunnel(JObject jObject)
+
+        public string SendViaTunnel(JObject jObject)
         {
             if (currentSessionID.Length == 0)
             {
@@ -110,7 +111,6 @@ namespace VirtualReality
 
 
         }
-
 
     }
 }
