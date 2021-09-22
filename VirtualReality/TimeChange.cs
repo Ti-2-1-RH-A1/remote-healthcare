@@ -30,12 +30,11 @@ namespace VirtualReality
             JObject dataJson = new JObject { { "time", time } };
 
             tunnelSetTimeJson.Add("data", dataJson);
-            program.SendViaTunnel(tunnelSetTimeJson);
-            string tunnelCreationResponse = "";
-
            
+            string tunnelCreationResponse = program.SendViaTunnel(tunnelSetTimeJson);
 
-            program.ReceiveFromTcp(out tunnelCreationResponse);
+
+
 
             dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
             string response = responseDeserializeObject.ToString();
@@ -67,9 +66,8 @@ namespace VirtualReality
                 sendJson.Add("data", jsonData);
 
                 Console.WriteLine(sendJson);
-                program.SendViaTunnel(sendJson);
-                string tunnelCreationResponse = "";
-                program.ReceiveFromTcp(out tunnelCreationResponse);
+                
+                string tunnelCreationResponse = program.SendViaTunnel(sendJson);
                 Console.WriteLine(tunnelCreationResponse);
             }
             else
@@ -83,9 +81,7 @@ namespace VirtualReality
                 sendJson.Add("data", jsonData);
 
                 Console.WriteLine(sendJson);
-                program.SendViaTunnel(sendJson);
-                string tunnelCreationResponse = "";
-                program.ReceiveFromTcp(out tunnelCreationResponse);
+                string tunnelCreationResponse = program.SendViaTunnel(sendJson);
                 Console.WriteLine(tunnelCreationResponse);
             }
         }
