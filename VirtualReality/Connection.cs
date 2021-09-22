@@ -12,8 +12,8 @@ namespace VirtualReality
         private delegate void Reconnect();
 
         private Reconnect reconnect;
-        
-        public Connection(NetworkStream networkStream,VrManager vrManager)
+
+        public Connection(NetworkStream networkStream, VrManager vrManager)
         {
             this.networkStream = networkStream;
             //Sets a timeout if this time is hit a timeout exception will be thrown
@@ -22,11 +22,9 @@ namespace VirtualReality
         }
 
 
-
         /// <summary>ReceiveFromTcp does <c>recieving data from a tcp stream</c> using a network stream decodes using ASCII to a string</summary>
         public void ReceiveFromTcp(out string receivedData)
         {
-
             // read a small part of the packet and receive the packet length
             byte[] buffer = new byte[4];
             int rc = 0;
@@ -72,7 +70,6 @@ namespace VirtualReality
             networkStream.Write(dataBytes);
             networkStream.Flush();
         }
-
 
 
         /// <summary>SendViaTunnel does <c> a tcp data send via a tunnel</c> as long as you have made a connection first </summary>
