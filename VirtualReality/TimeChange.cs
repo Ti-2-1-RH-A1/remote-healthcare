@@ -30,10 +30,11 @@ namespace VirtualReality
 
             tunnelSetTimeJson.Add("data", dataJson);
 
-            string tunnelCreationResponse = connection.SendViaTunnel(tunnelSetTimeJson);
-
-            dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
-            string response = responseDeserializeObject.ToString();
+            string tunnelCreationResponse ="";
+            connection.SendViaTunnel(tunnelSetTimeJson, response => tunnelCreationResponse=response);
+            //
+            // dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
+            // string response = responseDeserializeObject.ToString();
         }
 
         /// <summary>
@@ -63,7 +64,10 @@ namespace VirtualReality
 
                 Console.WriteLine(sendJson);
 
-                string tunnelCreationResponse = connection.SendViaTunnel(sendJson);
+
+                string tunnelCreationResponse = "";
+                connection.SendViaTunnel(sendJson, response => tunnelCreationResponse = response);
+
                 Console.WriteLine(tunnelCreationResponse);
             }
             else
@@ -77,7 +81,11 @@ namespace VirtualReality
                 sendJson.Add("data", jsonData);
 
                 Console.WriteLine(sendJson);
-                string tunnelCreationResponse = connection.SendViaTunnel(sendJson);
+                string tunnelCreationResponse = "";
+                connection.SendViaTunnel(sendJson, response => tunnelCreationResponse = response);
+
+
+
                 Console.WriteLine(tunnelCreationResponse);
             }
         }
