@@ -17,7 +17,8 @@ namespace VirtualReality
         {
             Program program = new Program();
             program.Start();
-            program.SetSkyBox(program);
+            Ground_Add addGround = new Ground_Add(program);
+            addGround.SetTerrain();
             }
 
         public Program()

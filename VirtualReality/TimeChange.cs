@@ -21,7 +21,7 @@ namespace VirtualReality
         /// 
         /// </summary>
         /// <param name="time"></param>
-        
+
         public void sendData(float time)
         {
             // create a tunnel
@@ -33,7 +33,7 @@ namespace VirtualReality
             program.SendViaTunnel(tunnelCreateJson);
             string tunnelCreationResponse = "";
 
-           
+
 
             program.ReceiveFromTcp(out tunnelCreationResponse);
 
@@ -42,28 +42,28 @@ namespace VirtualReality
         }
         public void sendData()
         {
-             
 
-            
+
+
 
             //JObject sendJson = JObject.Parse(sendString);
 
             JObject sendJson = new JObject();
-            sendJson.Add("id","scene/skybox/update");
+            sendJson.Add("id", "scene/skybox/update");
 
             JObject jsonData = new JObject();
-            jsonData.Add("type","static");
+            jsonData.Add("type", "static");
 
             JObject jsonFiles = new JObject();
-            jsonFiles.Add("xpos" , @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_rt.png");
+            jsonFiles.Add("xpos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_rt.png");
             jsonFiles.Add("xneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_lf.png");
             jsonFiles.Add("ypos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_up.png");
             jsonFiles.Add("yneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_dn.png");
             jsonFiles.Add("zpos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_bk.pn");
             jsonFiles.Add("zneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_ft.png");
-            
-            jsonData.Add("files",jsonFiles);
-            sendJson.Add("data",jsonData);
+
+            jsonData.Add("files", jsonFiles);
+            sendJson.Add("data", jsonData);
 
             Console.WriteLine(sendJson);
             program.SendViaTunnel(sendJson);
@@ -72,6 +72,6 @@ namespace VirtualReality
 
             Console.WriteLine(tunnelCreationResponse);
         }
-        
+
     }
 }
