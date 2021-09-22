@@ -48,9 +48,22 @@ namespace VirtualReality
             ResetScene();
 
             nodes = GetScene();
+            JArray position = new JArray { 1, 0, 1 };
+            JArray rotation = new JArray { 0, 0, 0 };
+            string bikename1 = "Bike1";
+            AddModelBike(bikename1, position, rotation);
+            Random rnd = new Random();
+            for (int i = 0; i < 200; i++)
+            {
+                JArray positionTree = new JArray { rnd.Next(-30, 30), 0, rnd.Next(-30, 30) };
+                JArray rotationTree = new JArray { 0, rnd.Next(1, 360), 0 };
+                AddStaticModel("Tree" + i, positionTree, rotationTree, 1.25, @"data/NetworkEngine/models/trees/fantasy/tree6.obj");
+            }
 
-            DeleteNodeViaUserInput();
+            //DeleteNodeViaUserInput();
             SetSkyBox();
+
+            
         }
 
 
@@ -346,6 +359,67 @@ namespace VirtualReality
                     timeChange.sendData(entryAmount);
                     break;
             }
+        }
+
+        public void AddModelBike(string bikeName, JArray position, JArray rotation)
+        {
+            JObject jsonModelBike = new JObject();
+            jsonModelBike.Add("id", "scene/node/add");
+
+            JObject jsonModelBikeData = new JObject();
+            jsonModelBikeData.Add("name", bikeName);
+
+            JObject jsonModelBikeComponents = new JObject();
+
+            JObject jsonModelBikeComponentTransform = new JObject();
+            jsonModelBikeComponentTransform.Add("position", position);
+            jsonModelBikeComponentTransform.Add("scale", 0.01);
+            jsonModelBikeComponentTransform.Add("rotation", rotation);
+
+            JObject jsonModelBikeComponentModel = new JObject();
+            jsonModelBikeComponentModel.Add("file", @"data/NetworkEngine/models/bike/bike_anim.fbx");
+            jsonModelBikeComponentModel.Add("cullbackfaces", true);
+            jsonModelBikeComponentModel.Add("animated", true);
+            jsonModelBikeComponentModel.Add("animation", "Armature|Fietsen");
+
+            // Adding every header to their parent.
+            jsonModelBikeComponents.Add("transform", jsonModelBikeComponentTransform);
+            jsonModelBikeComponents.Add("model", jsonModelBikeComponentModel);
+            jsonModelBikeData.Add("components", jsonModelBikeComponents);
+            jsonModelBike.Add("data", jsonModelBikeData);
+
+            Console.WriteLine(jsonModelBike);
+            SendViaTunnel(jsonModelBike);
+        }
+
+        public void AddStaticModel(string modelName, JArray position, JArray rotation, double scale, string file)
+        {
+            JObject jsonModel = new JObject();
+            jsonModel.Add("id", "scene/node/add");
+
+            JObject jsonModelData = new JObject();
+            jsonModelData.Add("name", modelName);
+
+            JObject jsonModelComponents = new JObject();
+
+            JObject jsonModelComponentTransform = new JObject();
+            jsonModelComponentTransform.Add("position", position);
+            jsonModelComponentTransform.Add("scale", scale);
+            jsonModelComponentTransform.Add("rotation", rotation);
+
+            JObject jsonModelComponentModel = new JObject();
+            jsonModelComponentModel.Add("file", file);
+            jsonModelComponentModel.Add("cullbackfaces", true);
+            jsonModelComponentModel.Add("animated", false);
+
+            // Adding every header to their parent.
+            jsonModelComponents.Add("transform", jsonModelComponentTransform);
+            jsonModelComponents.Add("model", jsonModelComponentModel);
+            jsonModelData.Add("components", jsonModelComponents);
+            jsonModel.Add("data", jsonModelData);
+
+            Console.WriteLine(jsonModel);
+            SendViaTunnel(jsonModel);
         }
     }
 }
