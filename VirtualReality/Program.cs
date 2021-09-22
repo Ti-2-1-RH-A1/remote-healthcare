@@ -13,7 +13,7 @@ namespace VirtualReality
     {
         private NetworkStream networkStream;
         private List<(string, string)> userSessions;
-        private String currentSessionID;
+        private string currentSessionID;
         private Dictionary<string, string> nodes;
 
         static void Main(string[] args)
@@ -32,6 +32,9 @@ namespace VirtualReality
             client.Connect("145.48.6.10", 6666);
             // Request the session list from the server
             networkStream = client.GetStream();
+
+            //Sets a timeout if this time is hit a timeout exception will be thrown
+            networkStream.ReadTimeout = 1000;
             userSessions = GetRunningSessions();
         }
 
@@ -210,8 +213,8 @@ namespace VirtualReality
             }
 
             Console.WriteLine("Selected: " + userInput);
-            Console.WriteLine(DeleteNode(userInput));
-            
+            DeleteNode(userInput);
+
         }
 
         public bool DeleteNode(string nodeName)
@@ -244,7 +247,7 @@ namespace VirtualReality
             response = SendViaTunnel(message);
 
             //ReceiveFromTcp(out response);
-            Console.WriteLine(response);
+            //Console.WriteLine(response);
             dynamic responseData = JsonConvert.DeserializeObject(response);
             if (responseData != null)
             {
@@ -273,9 +276,16 @@ namespace VirtualReality
         ///
         public void ReceiveFromTcp(out string receivedData)
         {
+            
             // read a small part of the packet and receive the packet length
             byte[] buffer = new byte[4];
+            
+            
+
             int rc = networkStream.Read(buffer, 0, 4);
+
+
+
             // read from the stream until the entire packet is written to the buffer
             int packetLength = BitConverter.ToInt32(buffer);
             byte[] packetBuffer = new byte[packetLength];
