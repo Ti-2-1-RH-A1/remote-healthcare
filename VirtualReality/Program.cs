@@ -276,27 +276,38 @@ namespace VirtualReality
         ///
         public void ReceiveFromTcp(out string receivedData)
         {
-            
+
             // read a small part of the packet and receive the packet length
             byte[] buffer = new byte[4];
-            
-            
+            int rc = 0;
 
-            int rc = networkStream.Read(buffer, 0, 4);
-
-
-
-            // read from the stream until the entire packet is written to the buffer
-            int packetLength = BitConverter.ToInt32(buffer);
-            byte[] packetBuffer = new byte[packetLength];
-            int receivedTotal = 0;
-            while (receivedTotal < packetLength)
+            try
             {
-                rc = networkStream.Read(packetBuffer, receivedTotal, packetLength - receivedTotal);
-                receivedTotal += rc;
+                rc = networkStream.Read(buffer, 0, 4);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
 
-            receivedData = System.Text.Encoding.ASCII.GetString(packetBuffer);
+            if (rc > 0)
+            {
+                // read from the stream until the entire packet is written to the buffer
+                int packetLength = BitConverter.ToInt32(buffer);
+                byte[] packetBuffer = new byte[packetLength];
+                int receivedTotal = 0;
+                while (receivedTotal < packetLength)
+                {
+                    rc = networkStream.Read(packetBuffer, receivedTotal, packetLength - receivedTotal);
+                    receivedTotal += rc;
+                }
+
+                receivedData = System.Text.Encoding.ASCII.GetString(packetBuffer);
+            }
+            else
+            {
+                receivedData = String.Empty;
+            }
         }
 
         public void SetSkyBox()
@@ -306,7 +317,7 @@ namespace VirtualReality
             switch (Console.ReadLine())
             {
                 case "static":
-                    timeChange.sendData();
+                    timeChange.sendData(true);
                     break;
                 case "dynamic":
                     Console.Write("Enter time between 0 - 24 : ");
