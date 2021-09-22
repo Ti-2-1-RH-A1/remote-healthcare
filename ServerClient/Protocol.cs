@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ServerClient
 {
@@ -20,24 +16,18 @@ namespace ServerClient
 
         private static (Dictionary<string, string>, string) StringToDict(string dataString, string separator)
         {
-            if (int.TryParse(dataString.Substring(0, 1), out int length))
+            int length = (byte)dataString[0];
+            Dictionary<string, string> resultData = new();
+            string rawData = dataString[1..];
+            for (int i = 0; i < length; i++)
             {
-                Dictionary<string, string> resultData = new();
-                string rawData = dataString[1..];
-                for (int i = 0; i < length; i++)
-                {
-                    string dataKey = rawData.Substring(0, rawData.IndexOf(separator));
-                    rawData = rawData[rawData.IndexOf(separator)..];
-                    string dataValue = rawData.Substring(0, rawData.IndexOf(separator));
-                    rawData = rawData[rawData.IndexOf(separator)..];
-                    resultData.Add(dataKey, dataValue);
-                }
-                return (resultData, rawData);
+                string dataKey = rawData.Substring(0, rawData.IndexOf(separator));
+                rawData = rawData[rawData.IndexOf(separator)..];
+                string dataValue = rawData.Substring(0, rawData.IndexOf(separator));
+                rawData = rawData[rawData.IndexOf(separator)..];
+                resultData.Add(dataKey, dataValue);
             }
-            else
-            {
-                return (new Dictionary<string, string>(), dataString[1..]);
-            }
+            return (resultData, rawData);
         }
 
         public static string StringifyHeaders(Dictionary<string, string> headers) => DictToString(headers, "\r\n");

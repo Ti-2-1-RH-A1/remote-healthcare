@@ -7,18 +7,20 @@ namespace ServerClient
 {
     class Client
     {
-        private string authKey;
-        private TcpClient client;
+        private readonly string authKey;
+        private readonly TcpClient client;
         private NetworkStream stream;
-        private readonly byte[] buffer = new byte[1024];
+        private readonly byte[] buffer;
         private string totalBuffer;
-        private bool loggedIn = false;
+        private bool loggedIn;
 
-        public Client()
+        public Client(string authkey = "fiets")
         {
-            authKey = "fiets";
+            authKey = authkey;
             client = new TcpClient();
-            client.BeginConnect("localhost", 7777, new AsyncCallback(OnConnect), null);
+            client.BeginConnect("145.49.15.68", 7777, new AsyncCallback(OnConnect), null);
+            buffer = new byte[1024];
+            loggedIn = false;
 
             while (true)
             {
@@ -30,7 +32,6 @@ namespace ServerClient
                     Console.WriteLine("Je bent nog niet ingelogd");
             }
         }
-
 
         private void OnConnect(IAsyncResult ar)
         {
