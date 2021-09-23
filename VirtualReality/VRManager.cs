@@ -61,21 +61,21 @@ namespace VirtualReality
 
             nodes = GetScene();
 
-            Ground_Add groundAdd = new Ground_Add(connection);
+            /*Ground_Add groundAdd = new Ground_Add(connection);
 
-            groundAdd.SetTerrain();
+            groundAdd.SetTerrain();*/
 
-            /*JArray position = new JArray { 1, 0, 1 };
+            JArray position = new JArray { 1, 0, 1 };
             JArray rotation = new JArray { 0, 0, 0 };
             string bikename1 = "Bike";
-            AddModelBike(bikename1, position, rotation);
+            string bikeUUID = AddModelBike(bikename1, position, rotation);
             Random rnd = new Random();
             for (int i = 0; i < 20; i++) /// Note: Dont try to add 200 trees. Thank you.
             {
                 JArray positionTree = new JArray { rnd.Next(-30, 30), 0, rnd.Next(-30, 30) };
                 JArray rotationTree = new JArray { 0, rnd.Next(1, 360), 0 };
                 AddStaticModel("Tree" + i, positionTree, rotationTree, 1.25, @"data/NetworkEngine/models/trees/fantasy/tree6.obj");
-            }*/
+            }
 
             /// routeNodes tupple: Item 1 = positions, Item 2 = Directions(dir). Every tupple is 1 point in the route.
             List<(JArray, JArray)> routeNodes = new List<(JArray, JArray)>();
@@ -100,8 +100,10 @@ namespace VirtualReality
             routeNode4.Item2 = new JArray { -5, 0, -5 };
             routeNodes.Add(routeNode4);
 
-            GenerateRoute(routeNodes);
-            
+            string routeUUID = GenerateRoute(routeNodes);
+
+            FollowRoute(routeUUID, bikeUUID);
+
             DeleteNodeViaUserInput();
             SetSkyBox();
         }
@@ -373,7 +375,7 @@ namespace VirtualReality
             }
         }
 
-        public void AddModelBike(string bikeName, JArray position, JArray rotation)
+        public string AddModelBike(string bikeName, JArray position, JArray rotation)
         {
             JObject jsonModelBike = new JObject();
             jsonModelBike.Add("id", "scene/node/add");
@@ -400,8 +402,18 @@ namespace VirtualReality
             jsonModelBikeData.Add("components", jsonModelBikeComponents);
             jsonModelBike.Add("data", jsonModelBikeData);
 
+            string response = "";
+            connection.SendViaTunnel(jsonModelBike, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            dynamic routeRespond = JsonConvert.DeserializeObject(response);
+
             Console.WriteLine(jsonModelBike);
-            connection.SendViaTunnel(jsonModelBike);
+
+            return routeRespond.data.uuid;
         }
 
         public void AddStaticModel(string modelName, JArray position, JArray rotation, double scale, string file)
@@ -434,7 +446,7 @@ namespace VirtualReality
             connection.SendViaTunnel(jsonModel);
         }
 
-        public void GenerateRoute(List<(JArray, JArray)> routeNodes)
+        public string GenerateRoute(List<(JArray, JArray)> routeNodes)
         {
             JArray nodesArray = new JArray();
 
@@ -460,7 +472,39 @@ namespace VirtualReality
                 Thread.Sleep(10);
             }
 
+            dynamic routeRespond = JsonConvert.DeserializeObject(response);
+
+
             Console.WriteLine(response);
+
+            return routeRespond.data.uuid;
+        }
+
+        public void FollowRoute(string routeID, string nodeID)
+        {
+            JObject dataRoute = new JObject();
+
+            dataRoute.Add("route", routeID);
+            dataRoute.Add("node", nodeID);
+            dataRoute.Add("speed", 1.0);
+            dataRoute.Add("offset", 0.0);
+            dataRoute.Add("rotate", "XZ");
+            dataRoute.Add("smoothing", 1.0);
+            dataRoute.Add("followHeight", false);
+            dataRoute.Add("rotateOffset", new JArray { 0, 0, 0 });
+            dataRoute.Add("positionOffset", new JArray { 0, 0, 0 });
+
+            JObject routeObject = new JObject { { "id", JsonID.ROUTE_FOLLOW } };
+            routeObject.Add("data", dataRoute);
+
+            string response = "";
+            connection.SendViaTunnel(routeObject, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            dynamic routeRespond = JsonConvert.DeserializeObject(response);
 
         }
     }
