@@ -102,6 +102,8 @@ namespace VirtualReality
 
             string routeUUID = GenerateRoute(routeNodes);
 
+            AddRoad(routeUUID);
+
             FollowRoute(routeUUID, bikeUUID);
 
             DeleteNodeViaUserInput();
@@ -478,6 +480,29 @@ namespace VirtualReality
             Console.WriteLine(response);
 
             return routeRespond.data.uuid;
+        }
+
+        public void AddRoad(string routeID)
+        {
+            JObject dataRoad = new JObject();
+
+            dataRoad.Add("route", routeID);
+            dataRoad.Add("diffuse", @"data/NetworkEngine/textures/tarmac_diffuse.png");
+            dataRoad.Add("normal", @"data/NetworkEngine/textures/tarmac_normal.png");
+            dataRoad.Add("specular", @"data/NetworkEngine/textures/tarmac_specular.png");
+            dataRoad.Add("heightoffset", 0.01);
+
+            JObject roadObject = new JObject { { "id", JsonID.SCENE_ROAD_ADD } };
+            roadObject.Add("data", dataRoad);
+
+            string response = "";
+            connection.SendViaTunnel(roadObject, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            dynamic routeRespond = JsonConvert.DeserializeObject(response);
         }
 
         public void FollowRoute(string routeID, string nodeID)
