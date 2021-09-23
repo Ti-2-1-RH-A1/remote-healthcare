@@ -10,27 +10,31 @@ namespace VirtualReality
 {
     class TimeChange
     {
-        private readonly Connection connection;
+        private readonly Program program;
 
-        public TimeChange(Connection connection)
+        public TimeChange(Program program)
         {
-            this.connection = connection;
+            this.program = program;
         }
 
         /// <summary>
         /// Change the <c>time</c> to the float specified
         /// </summary>
         /// <param name="time"></param>
+
         public void sendData(float time)
         {
             sendData(false);
-            JObject tunnelSetTimeJson = new JObject {{"id", "scene/skybox/settime"}};
+            JObject tunnelSetTimeJson = new JObject { { "id", "scene/skybox/settime" } };
 
-            JObject dataJson = new JObject {{"time", time}};
+            JObject dataJson = new JObject { { "time", time } };
 
             tunnelSetTimeJson.Add("data", dataJson);
+           
+            string tunnelCreationResponse = program.SendViaTunnel(tunnelSetTimeJson);
 
-            string tunnelCreationResponse = connection.SendViaTunnel(tunnelSetTimeJson);
+
+
 
             dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
             string response = responseDeserializeObject.ToString();
@@ -62,8 +66,8 @@ namespace VirtualReality
                 sendJson.Add("data", jsonData);
 
                 Console.WriteLine(sendJson);
-
-                string tunnelCreationResponse = connection.SendViaTunnel(sendJson);
+                
+                string tunnelCreationResponse = program.SendViaTunnel(sendJson);
                 Console.WriteLine(tunnelCreationResponse);
             }
             else
@@ -77,9 +81,10 @@ namespace VirtualReality
                 sendJson.Add("data", jsonData);
 
                 Console.WriteLine(sendJson);
-                string tunnelCreationResponse = connection.SendViaTunnel(sendJson);
+                string tunnelCreationResponse = program.SendViaTunnel(sendJson);
                 Console.WriteLine(tunnelCreationResponse);
             }
         }
+
     }
 }
