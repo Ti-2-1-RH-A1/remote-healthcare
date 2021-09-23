@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Threading;
 
 namespace VirtualReality
 {
@@ -22,6 +23,7 @@ namespace VirtualReality
         public void SetTerrain()
         {
 
+            Console.WriteLine("Enter a path to an heightmap");
 
             string entryPath = @"" + Console.ReadLine();
             if (!File.Exists(entryPath))
@@ -33,10 +35,8 @@ namespace VirtualReality
             Bitmap bitmap = new Bitmap(entryPath);
             int width = 256;
             int height = 256;
-            float offset = 0.0f;
+            float offset = 10f;
             float[] widthHeight = {width, height};
-
-
 
             float[] heightMap = new float[width * height];
 
@@ -45,7 +45,7 @@ namespace VirtualReality
             {
                 for (int j = 0; j < height; j++)
                 {
-                    heightMap[index++] = bitmap.GetPixel(i, j).R * offset;
+                    heightMap[index++] = bitmap.GetPixel(i, j).R / 255f * offset;
                 }
             }
 
@@ -56,9 +56,15 @@ namespace VirtualReality
             JObject dataJson = new JObject();
 
             tunnelDelterrainJson.Add("data", dataJson);
-            connection.SendViaTunnel(tunnelDelterrainJson);
+            
             string tunnelCreationResponse = "";
-            connection.ReceiveFromTcp(out tunnelCreationResponse, false);
+            connection.SendViaTunnel(tunnelDelterrainJson, (callbackResponse => tunnelCreationResponse = callbackResponse));
+            while (tunnelCreationResponse.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            Console.WriteLine(tunnelCreationResponse);
 
             dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
             string response = responseDeserializeObject.ToString();
@@ -79,7 +85,7 @@ namespace VirtualReality
 
             JObject dataAddJson = new JObject();
             dataAddJson.Add("size", jarrayWH);
-            dataAddJson.Add("height", heightMapJArray);
+            dataAddJson.Add("heights", heightMapJArray);
 
             tunnelAddterrainJson.Add("data", dataAddJson);
             connection.SendViaTunnel(tunnelAddterrainJson);
@@ -99,7 +105,7 @@ namespace VirtualReality
             jsonTransform.Add("position", transPostion);
             jsonTransform.Add("scale", 1);
             jsonTransform.Add("rotation", transPostion);
-            jsonComponents.Add("tranform", jsonTransform);
+            jsonComponents.Add("transform", jsonTransform);
             JObject jsonTerrain = new JObject();
             jsonTerrain.Add("smoothnormals", true);
             jsonComponents.Add("terrain", jsonTerrain);
