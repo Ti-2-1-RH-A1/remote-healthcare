@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace ServerClient
@@ -9,6 +12,7 @@ namespace ServerClient
     {
         private readonly string authKey;
         private readonly TcpClient client;
+        //private SslStream stream;
         private NetworkStream stream;
         private readonly byte[] buffer;
         private string totalBuffer;
@@ -18,7 +22,7 @@ namespace ServerClient
         {
             authKey = authkey;
             client = new TcpClient();
-            client.BeginConnect("145.49.15.68", 7777, new AsyncCallback(OnConnect), null);
+            client.BeginConnect("localhost", 7777, new AsyncCallback(OnConnect), null);
             buffer = new byte[1024];
             loggedIn = false;
 
@@ -38,6 +42,8 @@ namespace ServerClient
             client.EndConnect(ar);
             Console.WriteLine("Verbonden!");
             stream = client.GetStream();
+            //stream = new SslStream(client.GetStream(), false, (a,b,c,d) => true, null);
+            //stream.AuthenticateAsClient("127.0.0.1", null, SslProtocols.Tls13, false);
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
             SendPacket(new Dictionary<string, string>() {
                 { "Method", "Login" },
@@ -65,7 +71,7 @@ namespace ServerClient
 
         private void Write(string data)
         {
-            var dataAsBytes = Encoding.ASCII.GetBytes(data + "\r\n\r\n\r\n");
+            byte[] dataAsBytes = Encoding.ASCII.GetBytes(data + "\r\n\r\n\r\n");
             stream.Write(dataAsBytes, 0, dataAsBytes.Length);
             stream.Flush();
         }
