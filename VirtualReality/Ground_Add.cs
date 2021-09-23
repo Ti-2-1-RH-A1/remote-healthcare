@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Threading;
 
 namespace VirtualReality
 {
@@ -22,6 +23,7 @@ namespace VirtualReality
         public void SetTerrain()
         {
 
+            Console.WriteLine("Enter a path to an heightmap");
 
             string entryPath = @"" + Console.ReadLine();
             if (!File.Exists(entryPath))
@@ -33,7 +35,7 @@ namespace VirtualReality
             Bitmap bitmap = new Bitmap(entryPath);
             int width = 256;
             int height = 256;
-            float offset = 0.0f;
+            float offset = 1f;
             float[] widthHeight = {width, height};
 
 
@@ -45,7 +47,7 @@ namespace VirtualReality
             {
                 for (int j = 0; j < height; j++)
                 {
-                    heightMap[index++] = bitmap.GetPixel(i, j).R * offset;
+                    heightMap[index++] = bitmap.GetPixel(i, j).R / 255f * offset;
                 }
             }
 
@@ -56,8 +58,15 @@ namespace VirtualReality
             JObject dataJson = new JObject();
 
             tunnelDelterrainJson.Add("data", dataJson);
-            connection.SendViaTunnel(tunnelDelterrainJson);
+            
             string tunnelCreationResponse = "";
+            connection.SendViaTunnel(tunnelDelterrainJson, (callbackResponse => tunnelCreationResponse = callbackResponse));
+            while (tunnelCreationResponse.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            Console.WriteLine(tunnelCreationResponse);
             connection.ReceiveFromTcp(out tunnelCreationResponse, false);
 
             dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);

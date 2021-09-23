@@ -14,7 +14,7 @@ namespace VirtualReality
         //private NetworkStream networkStream;
         private Dictionary<string, string> userSessions;
         private Connection connection;
-
+        private Ground_Add groundAdd;
         private Dictionary<string, string> nodes;
 
         static void Main(string[] args)
@@ -34,6 +34,7 @@ namespace VirtualReality
             // Request the session list from the server
 
             connection = new Connection(client.GetStream(), this);
+
 
             userSessions = GetRunningSessions();
         }
@@ -59,6 +60,10 @@ namespace VirtualReality
             ResetScene();
 
             nodes = GetScene();
+
+            Ground_Add groundAdd = new Ground_Add(connection);
+
+            groundAdd.SetTerrain();
 
             /*JArray position = new JArray { 1, 0, 1 };
             JArray rotation = new JArray { 0, 0, 0 };
@@ -96,7 +101,7 @@ namespace VirtualReality
             routeNodes.Add(routeNode4);
 
             GenerateRoute(routeNodes);
-
+            
             DeleteNodeViaUserInput();
             SetSkyBox();
         }
