@@ -32,9 +32,6 @@ namespace VirtualReality
 
             string tunnelCreationResponse = "";
             connection.SendViaTunnel(tunnelSetTimeJson, response => tunnelCreationResponse = response);
-            //
-            // dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
-            // string response = responseDeserializeObject.ToString();
         }
 
         /// <summary>
