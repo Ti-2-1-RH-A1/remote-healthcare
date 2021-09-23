@@ -61,11 +61,11 @@ namespace VirtualReality
 
             nodes = GetScene();
 
-            /*Ground_Add groundAdd = new Ground_Add(connection);
+            Ground_Add groundAdd = new Ground_Add(connection);
 
-            groundAdd.SetTerrain();*/
+            groundAdd.SetTerrain();
 
-            JArray position = new JArray { 1, 0, 1 };
+            JArray position = new JArray { 20, 0, 20 };
             JArray rotation = new JArray { 0, 0, 0 };
             string bikename1 = "Bike";
             string bikeUUID = AddModelBike(bikename1, position, rotation);
@@ -81,22 +81,22 @@ namespace VirtualReality
             List<(JArray, JArray)> routeNodes = new List<(JArray, JArray)>();
 
             (JArray, JArray) routeNode1;
-            routeNode1.Item1 = new JArray { 0, 0, 0 };
+            routeNode1.Item1 = new JArray { 20, 0, 20 };
             routeNode1.Item2 = new JArray { 5, 0, -5 };
             routeNodes.Add(routeNode1);
 
             (JArray, JArray) routeNode2;
-            routeNode2.Item1 = new JArray { 50, 0, 0 };
+            routeNode2.Item1 = new JArray { 70, 0, 20 };
             routeNode2.Item2 = new JArray { 5, 0, 5 };
             routeNodes.Add(routeNode2);
 
             (JArray, JArray) routeNode3;
-            routeNode3.Item1 = new JArray { 50, 0, 50 };
+            routeNode3.Item1 = new JArray { 70, 0, 70 };
             routeNode3.Item2 = new JArray { -5, 0, 5 };
             routeNodes.Add(routeNode3);
 
             (JArray, JArray) routeNode4;
-            routeNode4.Item1 = new JArray { 0, 0, 50 };
+            routeNode4.Item1 = new JArray { 20, 0, 70 };
             routeNode4.Item2 = new JArray { -5, 0, -5 };
             routeNodes.Add(routeNode4);
 
@@ -490,7 +490,7 @@ namespace VirtualReality
             dataRoad.Add("diffuse", @"data/NetworkEngine/textures/tarmac_diffuse.png");
             dataRoad.Add("normal", @"data/NetworkEngine/textures/tarmac_normal.png");
             dataRoad.Add("specular", @"data/NetworkEngine/textures/tarmac_specular.png");
-            dataRoad.Add("heightoffset", 0.01);
+            dataRoad.Add("heightoffset", 0);
 
             JObject roadObject = new JObject { { "id", JsonID.SCENE_ROAD_ADD } };
             roadObject.Add("data", dataRoad);
@@ -515,7 +515,7 @@ namespace VirtualReality
             dataRoute.Add("offset", 0.0);
             dataRoute.Add("rotate", "XZ");
             dataRoute.Add("smoothing", 1.0);
-            dataRoute.Add("followHeight", false);
+            dataRoute.Add("followHeight", true);
             dataRoute.Add("rotateOffset", new JArray { 0, 0, 0 });
             dataRoute.Add("positionOffset", new JArray { 0, 0, 0 });
 
