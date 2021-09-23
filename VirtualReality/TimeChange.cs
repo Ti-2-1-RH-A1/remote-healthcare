@@ -10,18 +10,17 @@ namespace VirtualReality
 {
     class TimeChange
     {
-        private readonly Program program;
+        private readonly Connection connection;
 
-        public TimeChange(Program program)
+        public TimeChange(Connection connection)
         {
-            this.program = program;
+            this.connection = connection;
         }
 
         /// <summary>
         /// Change the <c>time</c> to the float specified
         /// </summary>
         /// <param name="time"></param>
-
         public void sendData(float time)
         {
             sendData(false);
@@ -30,15 +29,12 @@ namespace VirtualReality
             JObject dataJson = new JObject { { "time", time } };
 
             tunnelSetTimeJson.Add("data", dataJson);
-            program.SendViaTunnel(tunnelSetTimeJson);
+
             string tunnelCreationResponse = "";
-
-           
-
-            program.ReceiveFromTcp(out tunnelCreationResponse);
-
-            dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
-            string response = responseDeserializeObject.ToString();
+            connection.SendViaTunnel(tunnelSetTimeJson, response => tunnelCreationResponse = response);
+            //
+            // dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
+            // string response = responseDeserializeObject.ToString();
         }
 
         /// <summary>
@@ -67,9 +63,10 @@ namespace VirtualReality
                 sendJson.Add("data", jsonData);
 
                 Console.WriteLine(sendJson);
-                program.SendViaTunnel(sendJson);
+
                 string tunnelCreationResponse = "";
-                program.ReceiveFromTcp(out tunnelCreationResponse);
+                connection.SendViaTunnel(sendJson, response => tunnelCreationResponse = response);
+
                 Console.WriteLine(tunnelCreationResponse);
             }
             else
@@ -80,15 +77,23 @@ namespace VirtualReality
                 JObject jsonData = new JObject();
                 jsonData.Add("type", "dynamic");
 
+                JObject jsonFiles = new JObject();
+                jsonFiles.Add("xpos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_rt.png");
+                jsonFiles.Add("xneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_lf.png");
+                jsonFiles.Add("ypos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_up.png");
+                jsonFiles.Add("yneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_dn.png");
+                jsonFiles.Add("zpos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_bk.pn");
+                jsonFiles.Add("zneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_ft.png");
+
+                jsonData.Add("files", jsonFiles);
                 sendJson.Add("data", jsonData);
 
                 Console.WriteLine(sendJson);
-                program.SendViaTunnel(sendJson);
                 string tunnelCreationResponse = "";
-                program.ReceiveFromTcp(out tunnelCreationResponse);
+                connection.SendViaTunnel(sendJson, response => tunnelCreationResponse = response);
+
                 Console.WriteLine(tunnelCreationResponse);
             }
         }
-
     }
 }
