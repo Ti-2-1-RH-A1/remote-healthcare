@@ -12,11 +12,11 @@ namespace VirtualReality
 {
     class Ground_Add
     {
-        private readonly Program program;
+        private readonly Connection connection;
 
-        public Ground_Add(Program program)
+        public Ground_Add(Connection connection)
         {
-            this.program = program;
+            this.connection = connection;
         }
 
         public void SetTerrain()
@@ -56,9 +56,9 @@ namespace VirtualReality
             JObject dataJson = new JObject();
 
             tunnelDelterrainJson.Add("data", dataJson);
-            program.SendViaTunnel(tunnelDelterrainJson);
+            connection.SendViaTunnel(tunnelDelterrainJson);
             string tunnelCreationResponse = "";
-            program.ReceiveFromTcp(out tunnelCreationResponse);
+            connection.ReceiveFromTcp(out tunnelCreationResponse);
 
             dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
             string response = responseDeserializeObject.ToString();
@@ -82,7 +82,7 @@ namespace VirtualReality
             dataAddJson.Add("height", heightMapJArray);
 
             tunnelAddterrainJson.Add("data", dataAddJson);
-            program.SendViaTunnel(tunnelAddterrainJson);
+            connection.SendViaTunnel(tunnelAddterrainJson);
 
 
             JObject tunnelAddTerrainNode = new JObject {{"id", "scene/node/add"}};
@@ -109,7 +109,7 @@ namespace VirtualReality
 
             tunnelAddTerrainNode.Add("data", dataAddNodeJson);
 
-            program.SendViaTunnel(tunnelAddTerrainNode);
+            connection.SendViaTunnel(tunnelAddTerrainNode);
 
 
         }
