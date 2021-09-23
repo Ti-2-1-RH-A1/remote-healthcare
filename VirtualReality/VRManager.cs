@@ -487,10 +487,13 @@ namespace VirtualReality
             JObject dataRoad = new JObject();
 
             dataRoad.Add("route", routeID);
-            dataRoad.Add("diffuse", @"data/NetworkEngine/textures/tarmac_diffuse.png");
+            /*dataRoad.Add("diffuse", @"data/NetworkEngine/textures/tarmac_diffuse.png");
             dataRoad.Add("normal", @"data/NetworkEngine/textures/tarmac_normal.png");
-            dataRoad.Add("specular", @"data/NetworkEngine/textures/tarmac_specular.png");
-            dataRoad.Add("heightoffset", 0);
+            dataRoad.Add("specular", @"data/NetworkEngine/textures/tarmac_specular.png");*/
+            dataRoad.Add("diffuse", @"data/NetworkEngine/textures/terrain/grass_rocky_d.jpg");
+            dataRoad.Add("normal", @"data/NetworkEngine/textures/terrain/grass_rocky_d.jpg");
+            dataRoad.Add("specular", @"data/NetworkEngine/textures/terrain/grass_rocky_d.jpg");
+            dataRoad.Add("heightoffset", 12);
 
             JObject roadObject = new JObject { { "id", JsonID.SCENE_ROAD_ADD } };
             roadObject.Add("data", dataRoad);

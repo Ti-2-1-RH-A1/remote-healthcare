@@ -35,7 +35,7 @@ namespace VirtualReality
             Bitmap bitmap = new Bitmap(entryPath);
             int width = 256;
             int height = 256;
-            float offset = 10f;
+            float offset = 0.01f;
             float[] widthHeight = {width, height};
 
             float[] heightMap = new float[width * height];
@@ -45,7 +45,7 @@ namespace VirtualReality
             {
                 for (int j = 0; j < height; j++)
                 {
-                    heightMap[index++] = bitmap.GetPixel(i, j).R / 255f * offset;
+                    heightMap[index++] = bitmap.GetPixel(i, j).R * offset;
                 }
             }
 
