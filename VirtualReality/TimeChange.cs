@@ -10,68 +10,100 @@ namespace VirtualReality
 {
     class TimeChange
     {
-        private readonly Program program;
+        private readonly Connection connection;
 
-        public TimeChange(Program program)
+        public TimeChange(Connection connection)
         {
-            this.program = program;
+            this.connection = connection;
         }
 
         /// <summary>
-        /// 
+        /// Change the <c>time</c> to the float specified
         /// </summary>
         /// <param name="time"></param>
-
         public void sendData(float time)
         {
-            // create a tunnel
-            JObject tunnelCreateJson = new JObject { { "id", "scene/skybox/settime" } };
+            sendData(false);
+            JObject tunnelSetTimeJson = new JObject { { "id", "scene/skybox/settime" } };
 
             JObject dataJson = new JObject { { "time", time } };
 
-            tunnelCreateJson.Add("data", dataJson);
-            program.SendViaTunnel(tunnelCreateJson);
+            tunnelSetTimeJson.Add("data", dataJson);
+
             string tunnelCreationResponse = "";
-
-
-
-            program.ReceiveFromTcp(out tunnelCreationResponse);
-
-            dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
-            string response = responseDeserializeObject.ToString();
+            connection.SendViaTunnel(tunnelSetTimeJson, response => tunnelCreationResponse = response);
+            //
+            // dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
+            // string response = responseDeserializeObject.ToString();
         }
-        public void sendData()
+
+        /// <summary>
+        /// Set the <c>skybox</c> to static 
+        /// </summary>
+        /// <param name="mode"></param>
+        public void sendData(bool mode)
         {
+            if (mode)
+            {
+                JObject sendJson = new JObject();
+                sendJson.Add("id", "scene/skybox/update");
+
+                JObject jsonData = new JObject();
+                jsonData.Add("type", "static");
+
+                JObject jsonFiles = new JObject();
+                jsonFiles.Add("xpos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_rt.png");
+                jsonFiles.Add("xneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_lf.png");
+                jsonFiles.Add("ypos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_up.png");
+                jsonFiles.Add("yneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_dn.png");
+                jsonFiles.Add("zpos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_bk.pn");
+                jsonFiles.Add("zneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_ft.png");
+
+                jsonData.Add("files", jsonFiles);
+                sendJson.Add("data", jsonData);
+
+                Console.WriteLine(sendJson);
+
+
+                string tunnelCreationResponse = "";
+                connection.SendViaTunnel(sendJson, response => tunnelCreationResponse = response);
+
+                Console.WriteLine(tunnelCreationResponse);
+            }
+            else
+            {
+                JObject sendJson = new JObject();
+                sendJson.Add("id", "scene/skybox/update");
+
+                JObject jsonData = new JObject();
+                jsonData.Add("type", "dynamic");
+
+                JObject sendJson = new JObject();
+                sendJson.Add("id", "scene/skybox/update");
+
+                JObject jsonData = new JObject();
+                jsonData.Add("type", "static");
+
+                JObject jsonFiles = new JObject();
+                jsonFiles.Add("xpos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_rt.png");
+                jsonFiles.Add("xneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_lf.png");
+                jsonFiles.Add("ypos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_up.png");
+                jsonFiles.Add("yneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_dn.png");
+                jsonFiles.Add("zpos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_bk.pn");
+                jsonFiles.Add("zneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_ft.png");
+
+                jsonData.Add("files", jsonFiles);
+                sendJson.Add("data", jsonData);
+
+
+                Console.WriteLine(sendJson);
+                string tunnelCreationResponse = "";
+                connection.SendViaTunnel(sendJson, response => tunnelCreationResponse = response);
 
 
 
-
-            //JObject sendJson = JObject.Parse(sendString);
-
-            JObject sendJson = new JObject();
-            sendJson.Add("id", "scene/skybox/update");
-
-            JObject jsonData = new JObject();
-            jsonData.Add("type", "static");
-
-            JObject jsonFiles = new JObject();
-            jsonFiles.Add("xpos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_rt.png");
-            jsonFiles.Add("xneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_lf.png");
-            jsonFiles.Add("ypos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_up.png");
-            jsonFiles.Add("yneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_dn.png");
-            jsonFiles.Add("zpos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_bk.pn");
-            jsonFiles.Add("zneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_ft.png");
-
-            jsonData.Add("files", jsonFiles);
-            sendJson.Add("data", jsonData);
-
-            Console.WriteLine(sendJson);
-            program.SendViaTunnel(sendJson);
-            string tunnelCreationResponse = "";
-            program.ReceiveFromTcp(out tunnelCreationResponse);
-
-            Console.WriteLine(tunnelCreationResponse);
+                Console.WriteLine(tunnelCreationResponse);
+            }
         }
-
     }
 }
