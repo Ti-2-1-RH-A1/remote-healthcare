@@ -24,14 +24,14 @@ namespace VirtualReality
         public void sendData(float time)
         {
             sendData(false);
-            JObject tunnelSetTimeJson = new JObject {{"id", "scene/skybox/settime"}};
+            JObject tunnelSetTimeJson = new JObject { { "id", "scene/skybox/settime" } };
 
-            JObject dataJson = new JObject {{"time", time}};
+            JObject dataJson = new JObject { { "time", time } };
 
             tunnelSetTimeJson.Add("data", dataJson);
 
-            string tunnelCreationResponse ="";
-            connection.SendViaTunnel(tunnelSetTimeJson, response => tunnelCreationResponse=response);
+            string tunnelCreationResponse = "";
+            connection.SendViaTunnel(tunnelSetTimeJson, response => tunnelCreationResponse = response);
             //
             // dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
             // string response = responseDeserializeObject.ToString();
@@ -64,7 +64,6 @@ namespace VirtualReality
 
                 Console.WriteLine(sendJson);
 
-
                 string tunnelCreationResponse = "";
                 connection.SendViaTunnel(sendJson, response => tunnelCreationResponse = response);
 
@@ -78,13 +77,20 @@ namespace VirtualReality
                 JObject jsonData = new JObject();
                 jsonData.Add("type", "dynamic");
 
+                JObject jsonFiles = new JObject();
+                jsonFiles.Add("xpos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_rt.png");
+                jsonFiles.Add("xneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_lf.png");
+                jsonFiles.Add("ypos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_up.png");
+                jsonFiles.Add("yneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_dn.png");
+                jsonFiles.Add("zpos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_bk.pn");
+                jsonFiles.Add("zneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_ft.png");
+
+                jsonData.Add("files", jsonFiles);
                 sendJson.Add("data", jsonData);
 
                 Console.WriteLine(sendJson);
                 string tunnelCreationResponse = "";
                 connection.SendViaTunnel(sendJson, response => tunnelCreationResponse = response);
-
-
 
                 Console.WriteLine(tunnelCreationResponse);
             }
