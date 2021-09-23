@@ -62,10 +62,10 @@ namespace VirtualReality
 
             /*JArray position = new JArray { 1, 0, 1 };
             JArray rotation = new JArray { 0, 0, 0 };
-            string bikename1 = "Bike1";
+            string bikename1 = "Bike";
             AddModelBike(bikename1, position, rotation);
             Random rnd = new Random();
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 20; i++) /// Note: Dont try to add 200 trees. Thank you.
             {
                 JArray positionTree = new JArray { rnd.Next(-30, 30), 0, rnd.Next(-30, 30) };
                 JArray rotationTree = new JArray { 0, rnd.Next(1, 360), 0 };
