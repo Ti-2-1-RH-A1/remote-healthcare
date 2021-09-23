@@ -38,11 +38,11 @@ namespace ServerClient
             var client = listener.EndAcceptTcpClient(ar);
             // A client has connected. Create the
             // SslStream using the client's network stream.
-            SslStream sslStream = new SslStream(
-                client.GetStream(), true);
+            // SslStream sslStream = new SslStream(
+            //     client.GetStream(), true);
             // Authenticate the server but don't require the client to authenticate.
-            sslStream.AuthenticateAsServer(serverCertificate, clientCertificateRequired: false, checkCertificateRevocation: true);
-            clients.Add(new ClientHandler(client, sslStream));
+            //sslStream.AuthenticateAsServer(serverCertificate, clientCertificateRequired: false, checkCertificateRevocation: true);
+            clients.Add(new ClientHandler(client));
             listener.BeginAcceptTcpClient(new AsyncCallback(ProcessClient), null);
         }
 
