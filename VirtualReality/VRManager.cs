@@ -46,6 +46,11 @@ namespace VirtualReality
         {
             userSessions = GetRunningSessions();
             ConnectToAClient();
+            updateSceneList();
+        }
+
+        private void updateSceneList()
+        {
             nodes = GetScene();
         }
 
@@ -69,12 +74,20 @@ namespace VirtualReality
             JArray rotation = new JArray { 0, 0, 0 };
             string bikename1 = "Bike";
             string bikeUUID = AddModelBike(bikename1, position, rotation);
+
+            CreateBikePanel();
+            drawOnBikePanel("hoegaboega");
+
+            updateSceneList();
+
+
             Random rnd = new Random();
             for (int i = 0; i < 20; i++) /// Note: Dont try to add 200 trees. Thank you.
             {
-                JArray positionTree = new JArray { rnd.Next(-30, 30), 0, rnd.Next(-30, 30) };
-                JArray rotationTree = new JArray { 0, rnd.Next(1, 360), 0 };
-                AddStaticModel("Tree" + i, positionTree, rotationTree, 1.25, @"data/NetworkEngine/models/trees/fantasy/tree6.obj");
+                JArray positionTree = new JArray {rnd.Next(-30, 30), 0, rnd.Next(-30, 30)};
+                JArray rotationTree = new JArray {0, rnd.Next(1, 360), 0};
+                AddStaticModel("Tree" + i, positionTree, rotationTree, 1.25,
+                    @"data/NetworkEngine/models/trees/fantasy/tree6.obj");
             }
 
             /// routeNodes tupple: Item 1 = positions, Item 2 = Directions(dir). Every tupple is 1 point in the route.
@@ -106,6 +119,201 @@ namespace VirtualReality
 
             DeleteNodeViaUserInput();
             SetSkyBox();
+        }
+
+        /// <summary>
+        /// create and draw a panel on the bike
+        /// </summary>
+        /// <param name="text">the text to draw</param>
+        /// <param name="panelName">optional</param>
+        private void drawOnBikePanel(string text, string panelName = "bikePanel")
+        {
+            int[] position = {100, 100};
+            int[] color = {0, 0, 0, 1};
+
+            ClearPanel(GetIdFromNodeName(panelName));
+            drawtext(panelName, text, position, 32, color, "segoeui");
+            SwapPanel(GetIdFromNodeName(panelName));
+        }
+
+        private void drawtext(string panelNodeName, string text, int[] position, int size, int[] color, string font)
+        {
+            JObject message = new JObject();
+            message.Add("id", JsonID.SCENE_PANEL_DRAWTEXT);
+
+            JObject dataJObject = new JObject();
+            dataJObject.Add("id", GetIdFromNodeName(panelNodeName));
+            dataJObject.Add("text", text);
+            dataJObject.Add("position", JArray.FromObject(position));
+            dataJObject.Add("size", size);
+            dataJObject.Add("color", JArray.FromObject(color));
+            dataJObject.Add("font", font);
+
+            message.Add("data", dataJObject);
+
+            string response = "";
+            connection.SendViaTunnel(message, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            Console.WriteLine(response);
+        }
+
+
+        /// <summary>
+        /// creates a bike panel using some default values
+        /// </summary>
+        private void CreateBikePanel(string panelName = "bikePanel")
+        {
+            int[] position = {-50, 115, 0};
+            int[] rotation = {315, 90, 0};
+            int[] size = {50, 25};
+            //int[] resolution = {256, 128};
+            int[] resolution = {512, 512};
+            int[] background = {1, 1, 1, 1};
+
+            CreatePanel(panelName, position, rotation, size, resolution, background, true, getBikeID());
+        }
+
+
+        private void ClearPanel(string nodeID)
+        {
+            JObject message = new JObject();
+            message.Add("id", JsonID.SCENE_PANEL_CLEAR);
+
+
+            JObject dataJObject = new JObject();
+            dataJObject.Add("id", nodeID);
+
+            message.Add("data", dataJObject);
+
+            connection.SendViaTunnel(message);
+        }
+
+        private void SwapPanel(string nodeID)
+        {
+            JObject message = new JObject();
+            message.Add("id", JsonID.SCENE_PANEL_SWAP);
+
+
+            JObject dataJObject = new JObject();
+            dataJObject.Add("id", nodeID);
+
+            message.Add("data", dataJObject);
+
+            connection.SendViaTunnel(message);
+        }
+
+
+        public string getBikeID()
+        {
+            return GetIdFromNodeName("Bike");
+        }
+
+        /// <summary>
+        /// Createsa panel
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="position"></param>
+        /// <param name="rotation"></param>
+        /// <param name="size"></param>
+        /// <param name="resolution"></param>
+        /// <param name="background"></param>
+        /// <param name="castShadows"></param>
+        /// <param name="parent"></param>
+        public void CreatePanel(string name, int[] position, int[] rotation, int[] size, int[] resolution,
+            int[] background, bool castShadows = true, string parent = null)
+        {
+            JObject components = new JObject();
+
+            JObject transform = new JObject();
+            transform.Add("position", JArray.FromObject(position));
+            transform.Add("scale", 1);
+            transform.Add("rotation", JArray.FromObject(rotation));
+
+            components.Add("transform", transform);
+
+            JObject panel = new JObject();
+            panel.Add("size", JArray.FromObject(size));
+            panel.Add("resolution", JArray.FromObject(resolution));
+            panel.Add("background", JArray.FromObject(background));
+            panel.Add("castShadow", castShadows);
+
+            components.Add("panel", panel);
+
+
+            JObject node = CreateNode(name, components, parent);
+
+            Console.WriteLine("\n\n" + node.ToString() + "\n\n");
+
+            string response = "";
+            connection.SendViaTunnel(node, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            Console.WriteLine(response);
+        }
+
+
+        /// <summary>
+        /// Creates a node with the components
+        /// </summary>
+        /// <param name="name">the name of the node</param>
+        /// <param name="components">the components of the node</param>
+        /// <param name="parent">the parent of the node</param>
+        /// <returns>a new node jObject</returns>
+        private JObject CreateNode(string name, JToken components, string parent = null)
+        {
+            JObject message = new JObject {{"id", JsonID.SCENE_NODE_ADD}};
+
+            JObject dataJObject = new JObject {{"name", name}};
+            if (parent != null)
+            {
+                dataJObject.Add("parent", parent);
+            }
+
+            dataJObject.Add("components", components);
+
+
+            message.Add("data", dataJObject);
+
+            return message;
+        }
+
+
+        /// <summary>
+        /// GetIdFromNodeName does <c></c>
+        /// </summary>
+        /// <returns>a string with the bikes current id</returns>
+        public string GetIdFromNodeName(string nodeName)
+        {
+            JObject message = new JObject {{"id", JsonID.SCENE_NODE_FIND}};
+            JObject data = new JObject {{"name", nodeName}};
+            message.Add("data", data);
+
+            string response = "";
+            connection.SendViaTunnel(message, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            Console.WriteLine("this one: \n" + response);
+
+            JObject responseJObject = JObject.Parse(response);
+            JObject responseData = (JObject) (responseJObject.GetValue("data")?[0]);
+            if (responseData != null)
+            {
+                string s = responseData.GetValue("uuid")?.ToString();
+                Console.WriteLine(s);
+                return s;
+            }
+
+            return string.Empty;
         }
 
 
@@ -163,7 +371,7 @@ namespace VirtualReality
             tunnelCreateJson.Add("data", dataJson);
             connection.SendToTcp(tunnelCreateJson.ToString());
 
-            connection.ReceiveFromTcp(out var tunnelCreationResponse,true);
+            connection.ReceiveFromTcp(out var tunnelCreationResponse, true);
 
             dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
             //string response = responseDeserializeObject["data"]["status"].ToString();
@@ -202,7 +410,7 @@ namespace VirtualReality
 
             // receive the response
             string receivedData;
-            connection.ReceiveFromTcp(out receivedData,true);
+            connection.ReceiveFromTcp(out receivedData, true);
 
             // parse the received data
             dynamic jsonData = JsonConvert.DeserializeObject(receivedData);
@@ -270,11 +478,10 @@ namespace VirtualReality
             JObject message = new JObject {{"id", JsonID.SCENE_NODE_DELETE}};
             JObject jsonData = new JObject {{"id", nodes.GetValueOrDefault(nodeName)}};
             message.Add("data", jsonData);
-           
+
 
             string response = "";
             connection.SendViaTunnel(message, callbackResponse => response = callbackResponse);
-
 
 
             Console.WriteLine("Delete node response: " + response);
@@ -422,6 +629,9 @@ namespace VirtualReality
                 Thread.Sleep(10);
             }
 
+
+            //ReceiveFromTcp(out response);
+            //Console.WriteLine(response);
             dynamic responseData = JsonConvert.DeserializeObject(response);
             if (responseData != null)
             {
@@ -572,7 +782,7 @@ namespace VirtualReality
             jsonModelData.Add("components", jsonModelComponents);
             jsonModel.Add("data", jsonModelData);
 
-            Console.WriteLine(jsonModel);
+            //Console.WriteLine(jsonModel);
             connection.SendViaTunnel(jsonModel);
         }
 
