@@ -58,7 +58,7 @@ namespace VirtualReality
             tunnelDelterrainJson.Add("data", dataJson);
             connection.SendViaTunnel(tunnelDelterrainJson);
             string tunnelCreationResponse = "";
-            connection.ReceiveFromTcp(out tunnelCreationResponse);
+            connection.ReceiveFromTcp(out tunnelCreationResponse, false);
 
             dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
             string response = responseDeserializeObject.ToString();
