@@ -16,15 +16,16 @@ namespace ServerClient
 
         private static (Dictionary<string, string>, string) StringToDict(string dataString, string separator)
         {
+            while (dataString.StartsWith("\r\n")) dataString = dataString[2..];
             int length = (byte)dataString[0];
             Dictionary<string, string> resultData = new();
             string rawData = dataString[1..];
             for (int i = 0; i < length; i++)
             {
                 string dataKey = rawData.Substring(0, rawData.IndexOf(separator));
-                rawData = rawData[(rawData.IndexOf(separator)+ separator.Length)..];
-                string dataValue = rawData.Contains(separator)?rawData.Substring(0, rawData.IndexOf(separator)) : rawData;
-                rawData = rawData.Contains(separator)? rawData[(rawData.IndexOf(separator)+ separator.Length)..]: rawData;
+                rawData = rawData[(rawData.IndexOf(separator) + separator.Length)..];
+                string dataValue = rawData.Contains(separator) ? rawData.Substring(0, rawData.IndexOf(separator)) : rawData;
+                rawData = rawData.Contains(separator) ? rawData[(rawData.IndexOf(separator) + separator.Length)..] : rawData;
                 resultData.Add(dataKey, dataValue);
             }
             return (resultData, rawData);
