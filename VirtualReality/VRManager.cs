@@ -70,11 +70,24 @@ namespace VirtualReality
             string bikename1 = "Bike";
             string bikeUUID = AddModelBike(bikename1, position, rotation);
             Random rnd = new Random();
-            for (int i = 0; i < 20; i++) /// Note: Dont try to add 200 trees. Thank you.
+            for (int i = 0; i < 120; i++) /// Note: Dont try to add 200 trees. Thank you.
             {
-                JArray positionTree = new JArray { rnd.Next(-30, 30), 0, rnd.Next(-30, 30) };
+                JArray positionTree = new JArray { rnd.Next(25, 65), 0.5, rnd.Next(25, 65) };
                 JArray rotationTree = new JArray { 0, rnd.Next(1, 360), 0 };
-                AddStaticModel("Tree" + i, positionTree, rotationTree, 1.25, @"data/NetworkEngine/models/trees/fantasy/tree6.obj");
+                if(i < 30)
+                {
+                    AddStaticModel("Tree" + i, positionTree, rotationTree, 1.25, @"data/NetworkEngine/models/trees/fantasy/tree6.obj");
+                } else if(i < 60)
+                {
+                    AddStaticModel("Tree" + i, positionTree, rotationTree, 1.25, @"data/NetworkEngine/models/trees/fantasy/tree5.obj");
+                } else if(i < 90)
+                {
+                    AddStaticModel("Tree" + i, positionTree, rotationTree, 1.25, @"data/NetworkEngine/models/trees/fantasy/tree4.obj");
+                } else
+                {
+                    AddStaticModel("Tree" + i, positionTree, rotationTree, 1.25, @"data/NetworkEngine/models/trees/fantasy/tree3.obj");
+                }
+                
             }
 
             /// routeNodes tupple: Item 1 = positions, Item 2 = Directions(dir). Every tupple is 1 point in the route.
@@ -490,9 +503,9 @@ namespace VirtualReality
             /*dataRoad.Add("diffuse", @"data/NetworkEngine/textures/tarmac_diffuse.png");
             dataRoad.Add("normal", @"data/NetworkEngine/textures/tarmac_normal.png");
             dataRoad.Add("specular", @"data/NetworkEngine/textures/tarmac_specular.png");*/
-            dataRoad.Add("diffuse", @"data/NetworkEngine/textures/terrain/grass_rocky_d.jpg");
-            dataRoad.Add("normal", @"data/NetworkEngine/textures/terrain/grass_rocky_d.jpg");
-            dataRoad.Add("specular", @"data/NetworkEngine/textures/terrain/grass_rocky_d.jpg");
+            dataRoad.Add("diffuse", @"data/NetworkEngine/textures/terrain/mntn_black_d.jpg");
+            dataRoad.Add("normal", @"data/NetworkEngine/textures/terrain/mntn_black_d.jpg");
+            dataRoad.Add("specular", @"data/NetworkEngine/textures/terrain/mntn_black_d.jpg");
             dataRoad.Add("heightoffset", 12);
 
             JObject roadObject = new JObject { { "id", JsonID.SCENE_ROAD_ADD } };
