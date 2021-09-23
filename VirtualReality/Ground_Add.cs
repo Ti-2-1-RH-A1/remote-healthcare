@@ -35,10 +35,8 @@ namespace VirtualReality
             Bitmap bitmap = new Bitmap(entryPath);
             int width = 256;
             int height = 256;
-            float offset = 1f;
+            float offset = 10f;
             float[] widthHeight = {width, height};
-
-
 
             float[] heightMap = new float[width * height];
 
@@ -67,7 +65,6 @@ namespace VirtualReality
             }
 
             Console.WriteLine(tunnelCreationResponse);
-            connection.ReceiveFromTcp(out tunnelCreationResponse, false);
 
             dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
             string response = responseDeserializeObject.ToString();
@@ -88,7 +85,7 @@ namespace VirtualReality
 
             JObject dataAddJson = new JObject();
             dataAddJson.Add("size", jarrayWH);
-            dataAddJson.Add("height", heightMapJArray);
+            dataAddJson.Add("heights", heightMapJArray);
 
             tunnelAddterrainJson.Add("data", dataAddJson);
             connection.SendViaTunnel(tunnelAddterrainJson);
@@ -108,7 +105,7 @@ namespace VirtualReality
             jsonTransform.Add("position", transPostion);
             jsonTransform.Add("scale", 1);
             jsonTransform.Add("rotation", transPostion);
-            jsonComponents.Add("tranform", jsonTransform);
+            jsonComponents.Add("transform", jsonTransform);
             JObject jsonTerrain = new JObject();
             jsonTerrain.Add("smoothnormals", true);
             jsonComponents.Add("terrain", jsonTerrain);
