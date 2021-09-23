@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Threading;
 using Newtonsoft.Json.Linq;
 
 namespace VirtualReality
@@ -12,20 +14,34 @@ namespace VirtualReality
         private delegate void Reconnect();
 
         private Reconnect reconnect;
-        
-        public Connection(NetworkStream networkStream,VrManager vrManager)
+
+        private static Random random = new Random();
+
+        public Connection(NetworkStream networkStream, VrManager vrManager)
         {
             this.networkStream = networkStream;
+            currentSessionID = "";
             //Sets a timeout if this time is hit a timeout exception will be thrown
-            networkStream.ReadTimeout = 1000;
+            networkStream.ReadTimeout = 10000;
             reconnect = vrManager.Reconnect;
+            Thread t = new Thread(run);
+            t.Start();
         }
 
 
-
         /// <summary>ReceiveFromTcp does <c>recieving data from a tcp stream</c> using a network stream decodes using ASCII to a string</summary>
-        public void ReceiveFromTcp(out string receivedData)
+        public void ReceiveFromTcp(out string receivedData,bool useTimeOut)
         {
+            if (useTimeOut)
+            {
+                networkStream.ReadTimeout = 10000;
+            }
+            else
+            {
+                networkStream.ReadTimeout = -1;
+            }
+
+
 
             // read a small part of the packet and receive the packet length
             byte[] buffer = new byte[4];
@@ -74,29 +90,70 @@ namespace VirtualReality
         }
 
 
-
         /// <summary>SendViaTunnel does <c> a tcp data send via a tunnel</c> as long as you have made a connection first </summary>
         /// Returns a string with the response
-        public string SendViaTunnel(JObject jObject)
+        public void SendViaTunnel(JObject jObject, Callback callback = null)
         {
             if (currentSessionID.Length == 0)
             {
-                return "Not Connected to a Tunnel";
+                Console.WriteLine("not connected");
             }
             else
             {
+                string randomIntAsString = random.Next(111111, 999999).ToString();
                 JObject tunnelJSon = new JObject();
                 tunnelJSon.Add("id", "tunnel/send");
                 JObject tunnelJObject = new JObject();
                 tunnelJObject.Add("dest", currentSessionID);
+
+                jObject.Add("serial", randomIntAsString);
+
+                if (callback != null)
+                {
+                    callbacks.Add(randomIntAsString, callback);
+                }
+
+
                 tunnelJObject.Add("data", jObject);
                 tunnelJSon.Add("data", tunnelJObject);
                 //Console.WriteLine(tunnelJSon.ToString());
                 SendToTcp(tunnelJSon.ToString());
+            }
+        }
 
+        public delegate void Callback(string response);
+        private Dictionary<string, Callback> callbacks = new();
 
-                ReceiveFromTcp(out var receivedData);
-                return receivedData;
+        /// <summary>
+        /// entry of the network thread
+        /// </summary>
+        void run()
+        {
+            bool running = true;
+            while (running)
+            {
+                if (currentSessionID.Length > 1)
+                {
+                    ReceiveFromTcp(out var receivedData,false);
+                    Console.WriteLine(receivedData);
+
+                    JObject tunnel = JObject.Parse(receivedData);
+                    JObject idObject = (JObject) tunnel.GetValue("data");
+                    JObject dataObject = (JObject) idObject.GetValue("data");
+                    if (dataObject.ContainsKey("serial"))
+                    {
+                        JToken jToken = dataObject.GetValue("serial");
+                        string serial = jToken.ToString();
+                        Console.WriteLine(serial);
+
+                        if (callbacks.ContainsKey(serial))
+                        {
+                            callbacks[serial](dataObject.ToString());
+                            callbacks.Remove(serial);
+                        }
+                    }
+                    
+                }
             }
         }
     }

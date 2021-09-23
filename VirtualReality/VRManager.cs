@@ -119,7 +119,7 @@ namespace VirtualReality
             tunnelCreateJson.Add("data", dataJson);
             connection.SendToTcp(tunnelCreateJson.ToString());
 
-            connection.ReceiveFromTcp(out var tunnelCreationResponse);
+            connection.ReceiveFromTcp(out var tunnelCreationResponse,true);
 
             dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
             //string response = responseDeserializeObject["data"]["status"].ToString();
@@ -158,7 +158,7 @@ namespace VirtualReality
 
             // receive the response
             string receivedData;
-            connection.ReceiveFromTcp(out receivedData);
+            connection.ReceiveFromTcp(out receivedData,true);
 
             // parse the received data
             dynamic jsonData = JsonConvert.DeserializeObject(receivedData);
@@ -226,7 +226,13 @@ namespace VirtualReality
             JObject message = new JObject {{"id", JsonID.SCENE_NODE_DELETE}};
             JObject jsonData = new JObject {{"id", nodes.GetValueOrDefault(nodeName)}};
             message.Add("data", jsonData);
-            string response = connection.SendViaTunnel(message);
+           
+
+            string response = "";
+            connection.SendViaTunnel(message, callbackResponse => response = callbackResponse);
+
+
+
             Console.WriteLine("Delete node response: " + response);
 
             return isStatusOk(response);
@@ -249,18 +255,23 @@ namespace VirtualReality
             var dictionary = new Dictionary<string, string>();
 
 
-            string response;
             JObject message = new JObject {{"id", JsonID.SCENE_GET}};
-            response = connection.SendViaTunnel(message);
+            string response = ""; 
+            connection.SendViaTunnel(message,   (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+            
 
             //ReceiveFromTcp(out response);
             //Console.WriteLine(response);
             dynamic responseData = JsonConvert.DeserializeObject(response);
             if (responseData != null)
             {
-                dictionary.Add(responseData.data.data.data.name.ToString(),
-                    responseData.data.data.data.uuid.ToString());
-                JArray children = responseData.data.data.data.children;
+                dictionary.Add(responseData.data.name.ToString(),
+                    responseData.data.uuid.ToString());
+                JArray children = responseData.data.children;
                 foreach (var jToken in children)
                 {
                     var jObject = (JObject) jToken;
