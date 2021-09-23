@@ -19,16 +19,16 @@ namespace ServerClient
         // containing the machine certificate.
         public static void RunServer(string certificate, string privateKeyPath)
         {
-            serverCertificate = X509Certificate2.CreateFromPemFile(certificate, privateKeyPath);
+            //serverCertificate = X509Certificate2.CreateFromPemFile(certificate, privateKeyPath);
             // Create a TCP/IP (IPv4) socket and listen for incoming connections.
             listener = new TcpListener(IPAddress.Any, 7777);
             listener.Start();
+
+            Console.WriteLine("Waiting for a client to connect...");
+            // Application blocks while waiting for an incoming connection.
+            // Type CNTL-C to terminate the server.
+            listener.BeginAcceptTcpClient(new AsyncCallback(ProcessClient), null);
             
-                Console.WriteLine("Waiting for a client to connect...");
-                // Application blocks while waiting for an incoming connection.
-                // Type CNTL-C to terminate the server.
-                listener.BeginAcceptTcpClient(new AsyncCallback(ProcessClient), null);
-                Console.ReadLine();
 
         }
 
@@ -60,18 +60,22 @@ namespace ServerClient
         }
         public static int Main(string[] args)
         {
-             string certificate = @"C:\Users\robin\Documents\Avans\TI2.1\Proftaak\cert.cer";
-             string privatekey = @"C:\Users\robin\Documents\Avans\TI2.1\Proftaak\private.key";
+            string certificate = @"C:\Users\robin\Documents\Avans\TI2.1\Proftaak\cert.cer";
+            string privatekey = @"C:\Users\robin\Documents\Avans\TI2.1\Proftaak\private.key";
             // if (args == null || args.Length < 1)
             // {
             //     DisplayUsage();
             // }
-           // certificate = args[0];
+            // certificate = args[0];
             RunServer(certificate, privatekey);
+            
+
+            new Client();
+
             return 0;
         }
 
-        
+
 
 
     }
