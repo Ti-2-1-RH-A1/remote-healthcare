@@ -64,7 +64,6 @@ namespace VirtualReality
 
                 Console.WriteLine(sendJson);
 
-
                 string tunnelCreationResponse = "";
                 connection.SendViaTunnel(sendJson, response => tunnelCreationResponse = response);
 
@@ -78,12 +77,6 @@ namespace VirtualReality
                 JObject jsonData = new JObject();
                 jsonData.Add("type", "dynamic");
 
-                JObject sendJson = new JObject();
-                sendJson.Add("id", "scene/skybox/update");
-
-                JObject jsonData = new JObject();
-                jsonData.Add("type", "static");
-
                 JObject jsonFiles = new JObject();
                 jsonFiles.Add("xpos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_rt.png");
                 jsonFiles.Add("xneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_lf.png");
@@ -95,12 +88,9 @@ namespace VirtualReality
                 jsonData.Add("files", jsonFiles);
                 sendJson.Add("data", jsonData);
 
-
                 Console.WriteLine(sendJson);
                 string tunnelCreationResponse = "";
                 connection.SendViaTunnel(sendJson, response => tunnelCreationResponse = response);
-
-
 
                 Console.WriteLine(tunnelCreationResponse);
             }
