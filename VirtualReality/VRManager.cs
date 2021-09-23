@@ -60,7 +60,7 @@ namespace VirtualReality
 
             nodes = GetScene();
 
-            JArray position = new JArray { 1, 0, 1 };
+            /*JArray position = new JArray { 1, 0, 1 };
             JArray rotation = new JArray { 0, 0, 0 };
             string bikename1 = "Bike";
             AddModelBike(bikename1, position, rotation);
@@ -70,7 +70,32 @@ namespace VirtualReality
                 JArray positionTree = new JArray { rnd.Next(-30, 30), 0, rnd.Next(-30, 30) };
                 JArray rotationTree = new JArray { 0, rnd.Next(1, 360), 0 };
                 AddStaticModel("Tree" + i, positionTree, rotationTree, 1.25, @"data/NetworkEngine/models/trees/fantasy/tree6.obj");
-            }
+            }*/
+
+            /// routeNodes tupple: Item 1 = positions, Item 2 = Directions(dir). Every tupple is 1 point in the route.
+            List<(JArray, JArray)> routeNodes = new List<(JArray, JArray)>();
+
+            (JArray, JArray) routeNode1;
+            routeNode1.Item1 = new JArray { 0, 0, 0 };
+            routeNode1.Item2 = new JArray { 5, 0, -5 };
+            routeNodes.Add(routeNode1);
+
+            (JArray, JArray) routeNode2;
+            routeNode2.Item1 = new JArray { 50, 0, 0 };
+            routeNode2.Item2 = new JArray { 5, 0, 5 };
+            routeNodes.Add(routeNode2);
+
+            (JArray, JArray) routeNode3;
+            routeNode3.Item1 = new JArray { 50, 0, 50 };
+            routeNode3.Item2 = new JArray { -5, 0, 5 };
+            routeNodes.Add(routeNode3);
+
+            (JArray, JArray) routeNode4;
+            routeNode4.Item1 = new JArray { 0, 0, 50 };
+            routeNode4.Item2 = new JArray { -5, 0, -5 };
+            routeNodes.Add(routeNode4);
+
+            GenerateRoute(routeNodes);
 
             DeleteNodeViaUserInput();
             SetSkyBox();
@@ -402,6 +427,36 @@ namespace VirtualReality
 
             Console.WriteLine(jsonModel);
             connection.SendViaTunnel(jsonModel);
+        }
+
+        public void GenerateRoute(List<(JArray, JArray)> routeNodes)
+        {
+            JArray nodesArray = new JArray();
+
+            foreach ((JArray, JArray) node in routeNodes)
+            {
+                JObject nodeObject = new JObject();
+                nodeObject.Add("pos", node.Item1);
+                nodeObject.Add("dir", node.Item2);
+                nodesArray.Add(nodeObject);
+            }
+
+            JObject nodesObjectHeader = new JObject { { "nodes", nodesArray } };
+
+            JObject dataObjectHeader = new JObject { { "id", JsonID.ROUTE_ADD } };
+            dataObjectHeader.Add("data", nodesObjectHeader);
+
+            Console.WriteLine(dataObjectHeader);
+
+            string response = "";
+            connection.SendViaTunnel(dataObjectHeader, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            Console.WriteLine(response);
+
         }
     }
 }
