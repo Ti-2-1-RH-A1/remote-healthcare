@@ -12,10 +12,9 @@ namespace ServerClient
     {
         private readonly string authKey;
         private readonly TcpClient client;
-        //private SslStream stream;
-        private NetworkStream stream;
+        private SslStream stream;
         private readonly byte[] buffer;
-        private string totalBuffer;
+        private string totalBufferText;
         private bool loggedIn;
 
         public Client(string authkey = "fiets")
@@ -26,24 +25,36 @@ namespace ServerClient
             buffer = new byte[1024];
             loggedIn = false;
 
-            while (true)
-            {
-                Console.WriteLine("Voer een chatbericht in:");
-                string newChatMessage = Console.ReadLine();
-                if (loggedIn)
-                    Write($"chat\r\n{newChatMessage}");
-                else
-                    Console.WriteLine("Je bent nog niet ingelogd");
-            }
+            Console.WriteLine("Client created");
+        }
+
+        public static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            if (sslPolicyErrors == SslPolicyErrors.None) return true;
+            Console.WriteLine($"Certificate error: {sslPolicyErrors}");
+            return false;
         }
 
         private void OnConnect(IAsyncResult ar)
         {
             client.EndConnect(ar);
             Console.WriteLine("Verbonden!");
-            stream = client.GetStream();
-            //stream = new SslStream(client.GetStream(), false, (a,b,c,d) => true, null);
-            //stream.AuthenticateAsClient("127.0.0.1", null, SslProtocols.Tls13, false);
+            stream = new SslStream(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
+            
+            // Try to authenticate as Client
+            try
+            {
+                stream.AuthenticateAsClient("localhost");
+            }
+            catch (AuthenticationException e)
+            {
+                Console.WriteLine($"Exception: {e.Message}");
+                if (e.InnerException != null) Console.WriteLine($"Inner exception: {e.InnerException.Message}");
+                Console.WriteLine("Authentication failed - closing the connection.");
+                client.Close();
+                return;
+            }
+
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
             SendPacket(new Dictionary<string, string>() {
                 { "Method", "Login" },
@@ -55,12 +66,12 @@ namespace ServerClient
         {
             int receivedBytes = stream.EndRead(ar);
             string receivedText = Encoding.ASCII.GetString(buffer, 0, receivedBytes);
-            totalBuffer += receivedText;
+            totalBufferText += receivedText;
 
-            while (totalBuffer.Contains("\r\n\r\n\r\n"))
+            while (totalBufferText.Contains("\r\n\r\n\r\n"))
             {
-                string packet = totalBuffer.Substring(0, totalBuffer.IndexOf("\r\n\r\n\r\n"));
-                totalBuffer = totalBuffer[(totalBuffer.IndexOf("\r\n\r\n\r\n") + 6)..];
+                string packet = totalBufferText.Substring(0, totalBufferText.IndexOf("\r\n\r\n\r\n"));
+                totalBufferText = totalBufferText[(totalBufferText.IndexOf("\r\n\r\n\r\n") + 6)..];
                 HandleData(packet);
             }
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
