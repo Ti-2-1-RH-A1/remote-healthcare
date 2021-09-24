@@ -6,6 +6,8 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using Newtonsoft.Json.Schema;
+using System.IO;
+using System.Drawing;
 
 namespace VirtualReality
 {
@@ -14,7 +16,6 @@ namespace VirtualReality
         //private NetworkStream networkStream;
         private Dictionary<string, string> userSessions;
         private Connection connection;
-        private Ground_Add groundAdd;
         private Dictionary<string, string> nodes;
 
         static void Main(string[] args)
