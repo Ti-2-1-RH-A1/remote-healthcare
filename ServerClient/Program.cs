@@ -19,7 +19,7 @@ namespace ServerClient
         // containing the machine certificate.
         public static void RunServer(string certificate)
         {
-            serverCertificate = X509Certificate2.CreateFromCertFile(certificate);
+            serverCertificate = X509Certificate.CreateFromCertFile(certificate);
             // Create a TCP/IP (IPv4) socket and listen for incoming connections.
             listener = new TcpListener(IPAddress.Any, 7777);
             listener.Start();
