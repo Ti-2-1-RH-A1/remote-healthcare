@@ -17,7 +17,7 @@ namespace ServerClient
         public static X509Certificate serverCertificate = null;
         // The certificate parameter specifies the name of the file
         // containing the machine certificate.
-        public static void RunServer(string certificate, string privateKeyPath)
+        public static void RunServer(string certificate)
         {
             serverCertificate = X509Certificate.CreateFromCertFile(certificate);
             // Create a TCP/IP (IPv4) socket and listen for incoming connections.
@@ -28,21 +28,23 @@ namespace ServerClient
             // Application blocks while waiting for an incoming connection.
             // Type CNTL-C to terminate the server.
             listener.BeginAcceptTcpClient(new AsyncCallback(ProcessClient), null);
-            
+
 
         }
 
 
         static void ProcessClient(IAsyncResult ar)
         {
-            var client = listener.EndAcceptTcpClient(ar);
-            // A client has connected. Create the
-            // SslStream using the client's network stream.
-            // SslStream sslStream = new SslStream(
-            //     client.GetStream(), true);
-            // Authenticate the server but don't require the client to authenticate.
-            //sslStream.AuthenticateAsServer(serverCertificate, clientCertificateRequired: false, checkCertificateRevocation: true);
-            clients.Add(new ClientHandler(client));
+            TcpClient client = listener.EndAcceptTcpClient(ar);
+
+            // Setup sslStream
+            SslStream sslStream = new(client.GetStream(), false);
+            
+            //Authenticate the server but don't require the client to authenticate.
+            sslStream.AuthenticateAsServer(serverCertificate, clientCertificateRequired: false, checkCertificateRevocation: true);
+            
+            // Start handling client
+            clients.Add(new ClientHandler(client, sslStream));
             listener.BeginAcceptTcpClient(new AsyncCallback(ProcessClient), null);
         }
 
@@ -60,17 +62,19 @@ namespace ServerClient
         }
         public static int Main(string[] args)
         {
-            string certificate = @"C:\Users\robin\Documents\Avans\TI2.1\Proftaak\cert.cer";
-            string privatekey = @"C:\Users\robin\Documents\Avans\TI2.1\Proftaak\private.key";
+            string certificate = @"Server.pfx";
+            
             // if (args == null || args.Length < 1)
             // {
             //     DisplayUsage();
             // }
             // certificate = args[0];
-            RunServer(certificate, privatekey);
-            
+            RunServer(certificate);
+
 
             new Client();
+
+            Console.ReadLine();
 
             return 0;
         }

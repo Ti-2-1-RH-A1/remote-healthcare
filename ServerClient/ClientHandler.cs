@@ -13,32 +13,30 @@ namespace ServerClient
 {
     internal class ClientHandler
     {
-        private TcpClient tcpClient;
-        private NetworkStream stream;
-        private SslStream sslStream;
-        private byte[] buffer = new byte[1024];
-        private string totalBuffer = "";
+        private readonly TcpClient tcpClient;
+        private readonly SslStream stream;
+        private readonly byte[] buffer = new byte[1024];
+        private string totalBufferText = "";
 
-        public bool isDoctor { get; set; }
+        public bool IsDoctor { get; set; }
 
 
-        public ClientHandler(TcpClient tcpClient)
+        public ClientHandler(TcpClient tcpClient, SslStream sslStream)
         {
             this.tcpClient = tcpClient;
-
-            this.stream = this.tcpClient.GetStream();
+            stream = sslStream;
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
-        
+
         private void OnRead(IAsyncResult ar)
         {
             try
             {
                 int receivedBytes = stream.EndRead(ar);
-                string receivedText = System.Text.Encoding.ASCII.GetString(buffer, 0, receivedBytes);
+                string receivedText = Encoding.ASCII.GetString(buffer, 0, receivedBytes);
                 Console.WriteLine(receivedText);
-                
-                totalBuffer += receivedText;
+
+                totalBufferText += receivedText;
             }
             catch (IOException)
             {
@@ -48,35 +46,16 @@ namespace ServerClient
                 return;
             }
 
-            while (totalBuffer.Contains("\r\n\r\n\r\n"))
+            while (totalBufferText.Contains("\r\n\r\n\r\n"))
             {
-
-                (Dictionary<string, string> headerData, string rawData) = ParseHeaders(totalBuffer);
-                Dictionary<string, string> packetData = ParseData(rawData);
-                totalBuffer = totalBuffer.Substring(totalBuffer.IndexOf("\r\n\r\n\r\n") + 6);
-                handleData(packetData, headerData);
+                (Dictionary<string, string> headerData, Dictionary<string, string> packetData) = Protocol.ParsePacket(totalBufferText);
+                totalBufferText = totalBufferText.Substring(totalBufferText.IndexOf("\r\n\r\n\r\n") + 6);
+                HandleData(packetData, headerData);
             }
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
-        } 
-        
-        private static (Dictionary<string, string>, string) StringToDict(string dataString, string separator)
-        {
-            int length = (byte)dataString[0];
-            Dictionary<string, string> resultData = new();
-            string rawData = dataString[1..];
-            for (int i = 0; i < length; i++)
-            {
-                string dataKey = rawData.Substring(0, rawData.IndexOf(separator));
-                rawData = rawData[(rawData.IndexOf(separator)+separator.Length)..];
-                string dataValue = rawData.Substring(0, rawData.IndexOf(separator));
-                rawData = rawData[(rawData.IndexOf(separator) + separator.Length)..];
-                resultData.Add(dataKey, dataValue);
-            }
-            return (resultData, rawData);
         }
-        
 
-        private void handleData(Dictionary<string, string> packetData, Dictionary<string, string> headerData)
+        private void HandleData(Dictionary<string, string> packetData, Dictionary<string, string> headerData)
         {
             headerData.TryGetValue("Method", out string item);
             headerData.TryGetValue("Auth", out string key);
@@ -87,21 +66,21 @@ namespace ServerClient
                 case "Login":
                     // if (*insert auth key auth*)
                     // {
-                        if (key == "fiets")
-                        {
-                            SendPacket(new Dictionary<string, string>() {
+                    if (key == "fiets")
+                    {
+                        SendPacket(new Dictionary<string, string>() {
                                 { "Method", "Login" }
                             }, new Dictionary<string, string>(){
                                 { "Result", "ok" },
                                 {"message","Doctor logged in."}
                             });
-                       
-                            this.isDoctor = true;
-                        }
-                        else
-                        {
-                            this.isDoctor = false; 
-                            SendPacket(new Dictionary<string, string>() {
+
+                        this.IsDoctor = true;
+                    }
+                    else
+                    {
+                        this.IsDoctor = false;
+                        SendPacket(new Dictionary<string, string>() {
                                 { "Method", "Login" }
                             }, new Dictionary<string, string>(){
                                 { "Result", "ok" },
@@ -114,13 +93,11 @@ namespace ServerClient
                     //    Program.Disconnect(this);
                     // }
                     break;
-                
+
             }
-
-
         }
 
-        private bool assertPacketData(string[] packetData, int requiredLength)
+        private bool AssertPacketData(string[] packetData, int requiredLength)
         {
             if (packetData.Length < requiredLength)
             {
@@ -130,35 +107,14 @@ namespace ServerClient
             return true;
         }
 
-        private static string DictToString(Dictionary<string, string> data, string separator)
-        {
-            string result = (char)data.Count + "";
-            foreach (var item in data)
-            {
-                result += item.Key + separator + item.Value + separator;
-            }
-            return result;
-        }
-
         private void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
-            Write($"{StringifyHeaders(headers)}{StringifyData(data)}");
+            Write($"{Protocol.StringifyHeaders(headers)}{Protocol.StringifyData(data)}");
 
         public void Write(string data)
         {
-           
-                byte[] message = Encoding.ASCII.GetBytes(data + "\r\n\r\n\r\n");
-                stream.Write(message);
-                stream.Flush();
+            byte[] message = Encoding.ASCII.GetBytes(data + "\r\n\r\n\r\n");
+            stream.Write(message);
+            stream.Flush();
         }
-        
-
-        private static string StringifyHeaders(Dictionary<string, string> headers) => DictToString(headers, "\r\n");
-        
-        private static (Dictionary<string, string>, string) ParseHeaders(string headersString) => StringToDict(headersString, "\r\n");
-        
-        private static string StringifyData(Dictionary<string, string> data) => DictToString(data, "\r\n\r\n");
-        
-        private static Dictionary<string, string> ParseData(string dataString) => StringToDict(dataString, "\r\n\r\n").Item1;
     }
-
 }
