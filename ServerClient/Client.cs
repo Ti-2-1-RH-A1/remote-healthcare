@@ -20,14 +20,15 @@ namespace ServerClient
         }
     }
 
-    class Client
+    public class Client
     {
-        private readonly string authKey;
+        public readonly string authKey;
         private readonly TcpClient client;
         private SslStream stream;
         private readonly byte[] buffer;
         private string totalBufferText;
-        private bool loggedIn;
+        public bool loggedIn;
+
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
         public event EventHandler DataReceived;
 
