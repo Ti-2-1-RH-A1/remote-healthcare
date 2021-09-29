@@ -1,7 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ServerClient;
 using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace ServerClientTest
@@ -12,8 +11,6 @@ namespace ServerClientTest
         [TestMethod]
         public async Task TestServerAsync()
         {
-            var currentDir = Directory.GetCurrentDirectory();
-
             Program.RunServer("", false);
 
             var client = new Client("fiets", false);
