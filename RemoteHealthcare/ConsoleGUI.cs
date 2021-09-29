@@ -101,7 +101,7 @@ namespace RemoteHealthcare
                 try
                 {
                     amountEntry = int.Parse(Console.ReadLine());
-                    if (amountEntry! > 0)
+                    if (amountEntry <= 0)
                     {
                         throw new Exception();
                     }

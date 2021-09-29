@@ -34,7 +34,7 @@ namespace ServerClient
             TcpClient client = listener.EndAcceptTcpClient(ar);
 
             // Setup sslStream
-            SslStream sslStream = new(client.GetStream(), false);
+            SslStream sslStream = new SslStream(client.GetStream(), false);
             
             //Authenticate the server but don't require the client to authenticate.
             sslStream.AuthenticateAsServer(serverCertificate, clientCertificateRequired: false, checkCertificateRevocation: true);

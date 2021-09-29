@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ServerClient\ServerClient.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="BLELibrary">
       <HintPath>..\BLELibrary.dll</HintPath>
     </Reference>

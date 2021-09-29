@@ -18,7 +18,7 @@ namespace ServerClient
         {
             while (dataString.StartsWith("^(\\r\\n)*")) dataString = dataString[2..];
             int length = (byte)dataString[0];
-            Dictionary<string, string> resultData = new();
+            Dictionary<string, string> resultData = new Dictionary<string, string>();
             string rawData = dataString[1..];
             for (int i = 0; i < length; i++)
             {

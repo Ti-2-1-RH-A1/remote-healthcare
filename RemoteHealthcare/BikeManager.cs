@@ -7,7 +7,7 @@ using avansBikeData = Avans.TI.BLE.BLESubscriptionValueChangedEventArgs;
 
 namespace RemoteHealthcare
 {
-    class BikeManager
+    public class BikeManager
     {
         private int amountDataSend = 0;
         private int ThresholdDataAmount = 0;
@@ -31,6 +31,15 @@ namespace RemoteHealthcare
             this.simBike.RunStep(ref i, ref stopwatch);
         }
 
+        public async Task MakeConnectionAsync(string deviceName)
+        {
+            realBike = new RealBike();
+            Console.WriteLine($"Connectie met fiets {deviceName} wordt gemaakt");
+            Thread.Sleep(1000); // We need some time to list available devices
+            await Bluetooth.SetConnectionAsync(realBike, $"Tacx Flux {deviceName}", "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e", BleBike_SubscriptionValueChanged, "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+        }
+
+
         public async Task MakeConnectionAsync(string deviceName, int dataBlocks)
         {
             OriginalrequestedDataAmount = dataBlocks;
@@ -41,7 +50,7 @@ namespace RemoteHealthcare
             Console.WriteLine($"Connectie met fiets {deviceName} wordt gemaakt");
             Thread.Sleep(1000); // We need some time to list available devices
 
-            errorCode = await Bluetooth.SetConnectionAsync(realBike, "Tacx Flux 00472", "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e", BleBike_SubscriptionValueChanged, "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
+            errorCode = await Bluetooth.SetConnectionAsync(realBike, $"Tacx Flux {deviceName}", "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e", BleBike_SubscriptionValueChanged, "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e");
             if (errorCode >= 1)
             {
                 Console.BackgroundColor = ConsoleColor.DarkRed;
@@ -86,10 +95,23 @@ namespace RemoteHealthcare
 
             return false;
         }
+        
+        
+        public delegate void SendData(BikeDataThing t = null);
 
-        private static void BleBike_SubscriptionValueChanged(object sender, avansBikeData e)
+
+
+        public SendData sendData { get; set; }
+
+
+        private void BleBike_SubscriptionValueChanged(object sender, avansBikeData e)
         {
-            Bluetooth.BleBike_SubscriptionValueChanged(e);
+            BikeDataThing bleBikeSubscriptionValueChanged = Bluetooth.BleBike_SubscriptionValueChanged(e);
+            sendData(bleBikeSubscriptionValueChanged);
         }
+
+
+
+
     }
 }

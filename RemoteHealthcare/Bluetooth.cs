@@ -2,14 +2,14 @@
 using System.Text;
 using System.Threading.Tasks;
 using Avans.TI.BLE;
-
 using avansBikeData = Avans.TI.BLE.BLESubscriptionValueChangedEventArgs;
 
 namespace RemoteHealthcare
 {
     public class Bluetooth
     {
-        public static async Task<int> SetConnectionAsync(BLE ble, string device, string service, BLESubscriptionValueChangedEventHandler sub, string characteristic)
+        public static async Task<int> SetConnectionAsync(BLE ble, string device, string service,
+            BLESubscriptionValueChangedEventHandler sub, string characteristic)
         {
             int errorCode = 0; // set default to 0;
             errorCode += await ble.OpenDevice(device);
@@ -21,13 +21,20 @@ namespace RemoteHealthcare
 
         private static void BleHeart_SubscriptionValueChanged(object sender, avansBikeData e)
         {
-            if (e.Data[0] != 0x16) { return; }
+            if (e.Data[0] != 0x16)
+            {
+                return;
+            }
+
             Console.WriteLine($"Heartrate: {e.Data[1]} BPM");
         }
 
-        public static void BleBike_SubscriptionValueChanged(avansBikeData bikeData)
+
+        
+
+        public static BikeDataThing BleBike_SubscriptionValueChanged(avansBikeData bikeData)
         {
-            var sync = bikeData.Data[0];                   
+            var sync = bikeData.Data[0];
             int msgLength = bikeData.Data[1];
             var msgID = bikeData.Data[2];
             int channelNumber = bikeData.Data[3];
@@ -36,26 +43,26 @@ namespace RemoteHealthcare
             Array.Copy(bikeData.Data, 4, msg, 0, msgLength);
             int dataPageNumber = msg[0];
 
+
             // Parse msg data
-            ParseData(msg);
+            return ParseData(msg);
         }
 
-        public static bool ParseData(byte[] data)
+        public static BikeDataThing ParseData(byte[] data)
         {
             switch (data[0])
             {
                 case 0x10:
-                    Page16(data);
-                    return true;
+                    return Page16(data);
                 case 0x19:
                     Page25(data);
-                    return true;
+                    return null;
                 default:
-                    return false;
+                    return null;
             }
         }
 
-        public static void Page16(byte[] data)
+        public static BikeDataThing Page16(byte[] data)
         {
             // Calculate Elapsed Time.
             float time = ParseElapsedTime(data);
@@ -67,6 +74,9 @@ namespace RemoteHealthcare
             // Calculate speed.
             float speed = ParseSpeed(data);
             Console.WriteLine("\nSpeed: " + speed * 0.001 * 3.6 + "\n");
+
+
+            return new BikeDataThing(time, ParseDistance(data), (speed * 0.001f * 3.6f));
         }
 
         public static void Page25(byte[] data)
@@ -86,7 +96,7 @@ namespace RemoteHealthcare
 
         public static int ParseAccPower(byte[] data) => TwoByteToInt(data[3], data[4]);
 
-        public static int ParseInsPower(byte[] data) => TwoByteToInt(data[5], (byte)(data[6] >> 4));
+        public static int ParseInsPower(byte[] data) => TwoByteToInt(data[5], (byte) (data[6] >> 4));
 
         public static int ParseRPM(byte[] data) => TwoByteToInt(data[2]);
 

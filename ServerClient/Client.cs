@@ -20,7 +20,7 @@ namespace ServerClient
         }
     }
 
-    class Client
+    public class Client
     {
         private readonly string authKey;
         private readonly TcpClient client;
