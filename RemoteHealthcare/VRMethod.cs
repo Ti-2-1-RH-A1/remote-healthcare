@@ -287,12 +287,11 @@ namespace RemoteHealthcare
         /// </summary>
         public static void SetSkyBox(ref Connection connection)
         {
-            TimeChange timeChange = new TimeChange(connection);
             Console.WriteLine("static [of] dynamic");
             switch (Console.ReadLine())
             {
                 case "static":
-                    timeChange.sendData(true);
+                    SetSkyBoxStatic(ref connection);
                     break;
                 case "dynamic":
                     Console.Write("Enter time between 0 - 24 : ");
@@ -317,8 +316,7 @@ namespace RemoteHealthcare
                             Console.BackgroundColor = ConsoleColor.Black;
                         }
                     }
-
-                    timeChange.sendData(entryAmount);
+                    SetSkyBoxTime(ref connection, entryAmount);
                     break;
             }
         }
@@ -573,8 +571,9 @@ namespace RemoteHealthcare
         }
 
         /// <summary>
-        /// Createsa panel
+        /// Creates a panel
         /// </summary>
+        /// <param name="connection"></param>
         /// <param name="name"></param>
         /// <param name="position"></param>
         /// <param name="rotation"></param>
@@ -583,6 +582,7 @@ namespace RemoteHealthcare
         /// <param name="background"></param>
         /// <param name="castShadows"></param>
         /// <param name="parent"></param>
+        /// <returns></returns>
         public static void CreatePanel(ref Connection connection, string name, int[] position, int[] rotation, int[] size, int[] resolution,
             int[] background, bool castShadows = true, string parent = null)
         {
@@ -674,6 +674,70 @@ namespace RemoteHealthcare
             }
 
             return string.Empty;
+        }
+
+        public static void SetSkyBoxStatic(ref Connection connection)
+        {
+            JObject sendJson = new JObject();
+            sendJson.Add("id", JsonID.SCENE_SKYBOX_UPDATE);
+
+            JObject jsonData = new JObject();
+            jsonData.Add("type", "static");
+
+            JObject jsonFiles = new JObject();
+            jsonFiles.Add("xpos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_rt.png");
+            jsonFiles.Add("xneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_lf.png");
+            jsonFiles.Add("ypos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_up.png");
+            jsonFiles.Add("yneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_dn.png");
+            jsonFiles.Add("zpos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_bk.pn");
+            jsonFiles.Add("zneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_ft.png");
+
+            jsonData.Add("files", jsonFiles);
+            sendJson.Add("data", jsonData);
+
+            Console.WriteLine(sendJson);
+            string skyboxUpdateResponse = "";
+            connection.SendViaTunnel(sendJson, response => skyboxUpdateResponse = response);
+
+            Console.WriteLine(skyboxUpdateResponse);
+        }
+
+        public static void SetSkyBoxTime(ref Connection connection, float time)
+        {
+            // set the skybox type to dynamic
+            JObject sendJson = new JObject();
+            sendJson.Add("id", JsonID.SCENE_SKYBOX_UPDATE);
+
+            JObject jsonData = new JObject();
+            jsonData.Add("type", "dynamic");
+
+            JObject jsonFiles = new JObject();
+            jsonFiles.Add("xpos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_rt.png");
+            jsonFiles.Add("xneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_lf.png");
+            jsonFiles.Add("ypos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_up.png");
+            jsonFiles.Add("yneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_dn.png");
+            jsonFiles.Add("zpos", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_bk.pn");
+            jsonFiles.Add("zneg", @"data/NetworkEngine/textures/SkyBoxes/interstellar/interstellar_ft.png");
+
+            jsonData.Add("files", jsonFiles);
+            sendJson.Add("data", jsonData);
+
+            Console.WriteLine(sendJson);
+
+            string skyboxUpdateRespone = "";
+            connection.SendViaTunnel(sendJson, response => skyboxUpdateRespone = response);
+
+            Console.WriteLine(skyboxUpdateRespone);
+
+            // set the time
+            JObject tunnelSetTimeJson = new JObject { { "id", JsonID.SCENE_SKYBOX_SETTIME } };
+
+            JObject dataJson = new JObject { { "time", time } };
+
+            tunnelSetTimeJson.Add("data", dataJson);
+
+            string skyboxSetTimeResponse = "";
+            connection.SendViaTunnel(tunnelSetTimeJson, response => skyboxSetTimeResponse = response);
         }
     }
 }
