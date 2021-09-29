@@ -70,9 +70,9 @@ namespace VirtualReality
             string bikename1 = "Bike";
             string bikeUUID = AddModelBike(bikename1, position, rotation);
             Random rnd = new Random();
-            for (int i = 0; i < 120; i++) /// Note: Dont try to add 200 trees. Thank you.
+            for (int i = 0; i < 200; i++)
             {
-                JArray positionTree = new JArray { rnd.Next(25, 65), 0.5, rnd.Next(25, 65) };
+                JArray positionTree = new JArray { rnd.Next(75, 130), 0.5, rnd.Next(85, 140) };
                 JArray rotationTree = new JArray { 0, rnd.Next(1, 360), 0 };
                 if(i < 30)
                 {
@@ -94,24 +94,44 @@ namespace VirtualReality
             List<(JArray, JArray)> routeNodes = new List<(JArray, JArray)>();
 
             (JArray, JArray) routeNode1;
-            routeNode1.Item1 = new JArray { 20, 0, 20 };
+            routeNode1.Item1 = new JArray { 70, 0, 80 };
             routeNode1.Item2 = new JArray { 5, 0, -5 };
             routeNodes.Add(routeNode1);
 
             (JArray, JArray) routeNode2;
-            routeNode2.Item1 = new JArray { 70, 0, 20 };
-            routeNode2.Item2 = new JArray { 5, 0, 5 };
+            routeNode2.Item1 = new JArray { 90, 0, 82 };
+            routeNode2.Item2 = new JArray { 5, 0, -5 };
             routeNodes.Add(routeNode2);
 
             (JArray, JArray) routeNode3;
-            routeNode3.Item1 = new JArray { 70, 0, 70 };
-            routeNode3.Item2 = new JArray { -5, 0, 5 };
+            routeNode3.Item1 = new JArray { 110, 0, 75 };
+            routeNode3.Item2 = new JArray { 5, 0, 5 };
             routeNodes.Add(routeNode3);
 
             (JArray, JArray) routeNode4;
-            routeNode4.Item1 = new JArray { 20, 0, 70 };
-            routeNode4.Item2 = new JArray { -5, 0, -5 };
+            routeNode4.Item1 = new JArray { 135, 0, 85 };
+            routeNode4.Item2 = new JArray { 5, 0, 5 };
             routeNodes.Add(routeNode4);
+
+            (JArray, JArray) routeNode5;
+            routeNode5.Item1 = new JArray { 135, 0, 115 };
+            routeNode5.Item2 = new JArray { -5, 0, 5 };
+            routeNodes.Add(routeNode5);
+
+            (JArray, JArray) routeNode6;
+            routeNode6.Item1 = new JArray { 138, 0, 145 };
+            routeNode6.Item2 = new JArray { 5, 0, 5 };
+            routeNodes.Add(routeNode6);
+
+            (JArray, JArray) routeNode7;
+            routeNode7.Item1 = new JArray { 65, 0, 140 };
+            routeNode7.Item2 = new JArray { -5, 0, -5 };
+            routeNodes.Add(routeNode7);
+
+            (JArray, JArray) routeNode8;
+            routeNode8.Item1 = new JArray { 70, 0, 105 };
+            routeNode8.Item2 = new JArray { -5, 0, -5 };
+            routeNodes.Add(routeNode8);
 
             string routeUUID = GenerateRoute(routeNodes);
 
