@@ -930,5 +930,29 @@ namespace VirtualReality
             dynamic routeRespond = JsonConvert.DeserializeObject(response);
 
         }
+
+        /// <summary>
+        /// ChangeSpeed method changes the speed of the bike in the VR Environment.
+        /// </summary>
+        /// <param name="bikeId">The id of the bike that needs its speed changed</param>
+        /// <param name="speed">The speed measured in m/s</param>
+        public void ChangeSpeed(string bikeId, float speed)
+        {
+            JObject dataSpeed = new JObject();
+            dataSpeed.Add("node", bikeId);
+            dataSpeed.Add("speed", speed);
+
+            JObject speedObject = new JObject { { "id", JsonID.ROUTE_FOLLOW_SPEED } };
+            speedObject.Add("data", dataSpeed);
+
+            string response = "";
+            connection.SendViaTunnel(speedObject, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            dynamic routeRespond = JsonConvert.DeserializeObject(response);
+        }
     }
 }
