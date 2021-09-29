@@ -67,9 +67,9 @@ namespace VirtualReality
 
             nodes = GetScene();
 
-            Ground_Add groundAdd = new Ground_Add(connection);
+            string terrainUuid = CreateTerrain();
 
-            groundAdd.SetTerrain();
+            SetTexture(terrainUuid);
 
             JArray position = new JArray { 20, 0, 20 };
             JArray rotation = new JArray { 0, 0, 0 };
@@ -85,20 +85,20 @@ namespace VirtualReality
             Random rnd = new Random();
             for (int i = 0; i < 200; i++)
             {
-                JArray positionTree = new JArray { rnd.Next(75, 130), 0.5, rnd.Next(90, 140) };
+                JArray positionTree = new JArray { rnd.Next(75, 130), 1, rnd.Next(90, 140) };
                 JArray rotationTree = new JArray { 0, rnd.Next(1, 360), 0 };
                 if(i < 30)
                 {
-                    AddStaticModel("Tree" + i, positionTree, rotationTree, 1.25, @"data/NetworkEngine/models/trees/fantasy/tree6.obj");
+                    AddStaticModel("Tree" + i, positionTree, rotationTree, 1.9, @"data/NetworkEngine/models/trees/fantasy/tree6.obj");
                 } else if(i < 60)
                 {
-                    AddStaticModel("Tree" + i, positionTree, rotationTree, 1.25, @"data/NetworkEngine/models/trees/fantasy/tree5.obj");
+                    AddStaticModel("Tree" + i, positionTree, rotationTree, 1.8, @"data/NetworkEngine/models/trees/fantasy/tree5.obj");
                 } else if(i < 90)
                 {
-                    AddStaticModel("Tree" + i, positionTree, rotationTree, 1.25, @"data/NetworkEngine/models/trees/fantasy/tree4.obj");
+                    AddStaticModel("Tree" + i, positionTree, rotationTree, 1.75, @"data/NetworkEngine/models/trees/fantasy/tree4.obj");
                 } else
                 {
-                    AddStaticModel("Tree" + i, positionTree, rotationTree, 1.25, @"data/NetworkEngine/models/trees/fantasy/tree3.obj");
+                    AddStaticModel("Tree" + i, positionTree, rotationTree, 1.8, @"data/NetworkEngine/models/trees/fantasy/tree3.obj");
                 }
                 
             }
@@ -112,7 +112,7 @@ namespace VirtualReality
             routeNodes.Add(routeNode1);
 
             (JArray, JArray) routeNode2;
-            routeNode2.Item1 = new JArray { 90, 0, 82 };
+            routeNode2.Item1 = new JArray { 90, 0, 84 };
             routeNode2.Item2 = new JArray { 5, 0, -5 };
             routeNodes.Add(routeNode2);
 
@@ -528,7 +528,7 @@ namespace VirtualReality
         /// Method to create terrain based on a heightmap
         /// </summary>
         /// <param name="connection"> connection to send data to and receive responses from</param>
-        public void CreateTerrain(ref Connection connection)
+        public string CreateTerrain()
         {
 
             Console.WriteLine("Enter a path to an heightmap");
@@ -537,14 +537,14 @@ namespace VirtualReality
             if (!File.Exists(entryPath))
             {
                 Console.WriteLine("No file found");
-                return;
+                return null;
             }
 
             // convert the heightmap to a bitmap and then set that into a heightmap array
             Bitmap bitmap = new Bitmap(entryPath);
             int width = 256;
             int height = 256;
-            float offset = 10f;
+            float offset = 0.03f;
             float[] widthHeight = { width, height };
 
             float[] heightMap = new float[width * height];
@@ -554,7 +554,7 @@ namespace VirtualReality
             {
                 for (int j = 0; j < height; j++)
                 {
-                    heightMap[index++] = bitmap.GetPixel(i, j).R / 255f * offset;
+                    heightMap[index++] = bitmap.GetPixel(i, j).R * offset;
                 }
             }
 
@@ -623,7 +623,20 @@ namespace VirtualReality
 
             tunnelAddTerrainNode.Add("data", dataAddNodeJson);
 
-            connection.SendViaTunnel(tunnelAddTerrainNode);
+            ///connection.SendViaTunnel(tunnelAddTerrainNode);
+
+            string responseTerrain = "";
+            connection.SendViaTunnel(tunnelAddTerrainNode, (callbackResponse => responseTerrain = callbackResponse));
+            while (responseTerrain.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            dynamic terrainRespond = JsonConvert.DeserializeObject(responseTerrain);
+
+            Console.WriteLine(tunnelAddTerrainNode);
+
+            return terrainRespond.data.uuid;
         }
 
         /// <summary>
@@ -646,7 +659,18 @@ namespace VirtualReality
             tunnelSetTerrain.Add("data", dataAddNodeJson);
 
             // Send the message via the connection
-            connection.SendViaTunnel(tunnelSetTerrain);
+            ///connection.SendViaTunnel(tunnelSetTerrain);
+
+            string responseTerrainTexture = "";
+            connection.SendViaTunnel(tunnelSetTerrain, (callbackResponse => responseTerrainTexture = callbackResponse));
+            while (responseTerrainTexture.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            dynamic terrainRespond = JsonConvert.DeserializeObject(responseTerrainTexture);
+
+            Console.WriteLine(tunnelSetTerrain);
         }
 
         /// <summary>GetScene does <c>recieves a scene from a a connected client</c> using a network stream decodes using ASCII to a string</summary>
