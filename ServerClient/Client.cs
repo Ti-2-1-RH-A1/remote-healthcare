@@ -77,7 +77,7 @@ namespace ServerClient
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
-        private void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
+        public void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
             Write($"{Protocol.StringifyHeaders(headers)}{Protocol.StringifyData(data)}");
 
         private void Write(string data)
