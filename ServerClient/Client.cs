@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Authentication;
@@ -24,16 +25,18 @@ namespace ServerClient
     {
         public readonly string authKey;
         private readonly TcpClient client;
-        private SslStream stream;
+        private Stream stream;
         private readonly byte[] buffer;
         private string totalBufferText;
         public bool loggedIn;
+        private bool useSSL;
 
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
         public event EventHandler DataReceived;
 
-        public Client(string authkey = "fiets")
+        public Client(string authkey = "fiets", bool useSSL = true)
         {
+            this.useSSL = useSSL;
             authKey = authkey;
             client = new TcpClient();
             client.BeginConnect("localhost", 7777, new AsyncCallback(OnConnect), null);
@@ -54,12 +57,22 @@ namespace ServerClient
         {
             client.EndConnect(ar);
             Console.WriteLine("Verbonden!");
-            stream = new SslStream(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
-            
-            // Try to authenticate as Client
+
             try
             {
-                stream.AuthenticateAsClient("localhost");
+                if (useSSL)
+                {
+                    SslStream sslStream = new SslStream(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
+
+                    // Try to authenticate as Client
+                    sslStream.AuthenticateAsClient("localhost");
+
+                    stream = sslStream;
+                }
+                else
+                {
+                    stream = client.GetStream();
+                }
             }
             catch (AuthenticationException e)
             {
