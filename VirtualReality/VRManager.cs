@@ -67,11 +67,11 @@ namespace VirtualReality
 
             nodes = GetScene();
 
-            /*Ground_Add groundAdd = new Ground_Add(connection);
+            string terrainUuid = CreateTerrain();
 
-            groundAdd.SetTerrain();*/
+            SetTexture(terrainUuid);
 
-            JArray position = new JArray { 1, 0, 1 };
+            JArray position = new JArray { 20, 0, 20 };
             JArray rotation = new JArray { 0, 0, 0 };
             string bikename1 = "Bike";
             string bikeUUID = AddModelBike(bikename1, position, rotation);
@@ -83,38 +83,72 @@ namespace VirtualReality
 
 
             Random rnd = new Random();
-            for (int i = 0; i < 20; i++) /// Note: Dont try to add 200 trees. Thank you.
+            for (int i = 0; i < 200; i++)
             {
-                JArray positionTree = new JArray {rnd.Next(-30, 30), 0, rnd.Next(-30, 30)};
-                JArray rotationTree = new JArray {0, rnd.Next(1, 360), 0};
-                AddStaticModel("Tree" + i, positionTree, rotationTree, 1.25,
-                    @"data/NetworkEngine/models/trees/fantasy/tree6.obj");
+                JArray positionTree = new JArray { rnd.Next(75, 130), 1, rnd.Next(90, 140) };
+                JArray rotationTree = new JArray { 0, rnd.Next(1, 360), 0 };
+                if(i < 30)
+                {
+                    AddStaticModel("Tree" + i, positionTree, rotationTree, 1.9, @"data/NetworkEngine/models/trees/fantasy/tree6.obj");
+                } else if(i < 60)
+                {
+                    AddStaticModel("Tree" + i, positionTree, rotationTree, 1.8, @"data/NetworkEngine/models/trees/fantasy/tree5.obj");
+                } else if(i < 90)
+                {
+                    AddStaticModel("Tree" + i, positionTree, rotationTree, 1.75, @"data/NetworkEngine/models/trees/fantasy/tree4.obj");
+                } else
+                {
+                    AddStaticModel("Tree" + i, positionTree, rotationTree, 1.8, @"data/NetworkEngine/models/trees/fantasy/tree3.obj");
+                }
+                
             }
 
             /// routeNodes tupple: Item 1 = positions, Item 2 = Directions(dir). Every tupple is 1 point in the route.
             List<(JArray, JArray)> routeNodes = new List<(JArray, JArray)>();
 
             (JArray, JArray) routeNode1;
-            routeNode1.Item1 = new JArray { 0, 0, 0 };
+            routeNode1.Item1 = new JArray { 70, 0, 80 };
             routeNode1.Item2 = new JArray { 5, 0, -5 };
             routeNodes.Add(routeNode1);
 
             (JArray, JArray) routeNode2;
-            routeNode2.Item1 = new JArray { 50, 0, 0 };
-            routeNode2.Item2 = new JArray { 5, 0, 5 };
+            routeNode2.Item1 = new JArray { 90, 0, 84 };
+            routeNode2.Item2 = new JArray { 5, 0, -5 };
             routeNodes.Add(routeNode2);
 
             (JArray, JArray) routeNode3;
-            routeNode3.Item1 = new JArray { 50, 0, 50 };
-            routeNode3.Item2 = new JArray { -5, 0, 5 };
+            routeNode3.Item1 = new JArray { 110, 0, 75 };
+            routeNode3.Item2 = new JArray { 5, 0, 5 };
             routeNodes.Add(routeNode3);
 
             (JArray, JArray) routeNode4;
-            routeNode4.Item1 = new JArray { 0, 0, 50 };
-            routeNode4.Item2 = new JArray { -5, 0, -5 };
+            routeNode4.Item1 = new JArray { 133, 0, 85 };
+            routeNode4.Item2 = new JArray { 5, 0, 5 };
             routeNodes.Add(routeNode4);
 
+            (JArray, JArray) routeNode5;
+            routeNode5.Item1 = new JArray { 132, 0, 110 };
+            routeNode5.Item2 = new JArray { -5, 0, 5 };
+            routeNodes.Add(routeNode5);
+
+            (JArray, JArray) routeNode6;
+            routeNode6.Item1 = new JArray { 138, 0, 145 };
+            routeNode6.Item2 = new JArray { -5, 0, 5 };
+            routeNodes.Add(routeNode6);
+
+            (JArray, JArray) routeNode7;
+            routeNode7.Item1 = new JArray { 60, 0, 140 };
+            routeNode7.Item2 = new JArray { -5, 0, -5 };
+            routeNodes.Add(routeNode7);
+
+            (JArray, JArray) routeNode8;
+            routeNode8.Item1 = new JArray { 70, 0, 105 };
+            routeNode8.Item2 = new JArray { -5, 0, -5 };
+            routeNodes.Add(routeNode8);
+
             string routeUUID = GenerateRoute(routeNodes);
+
+            AddRoad(routeUUID);
 
             FollowRoute(routeUUID, bikeUUID);
 
@@ -494,7 +528,7 @@ namespace VirtualReality
         /// Method to create terrain based on a heightmap
         /// </summary>
         /// <param name="connection"> connection to send data to and receive responses from</param>
-        public void CreateTerrain(ref Connection connection)
+        public string CreateTerrain()
         {
 
             Console.WriteLine("Enter a path to an heightmap");
@@ -503,14 +537,14 @@ namespace VirtualReality
             if (!File.Exists(entryPath))
             {
                 Console.WriteLine("No file found");
-                return;
+                return null;
             }
 
             // convert the heightmap to a bitmap and then set that into a heightmap array
             Bitmap bitmap = new Bitmap(entryPath);
             int width = 256;
             int height = 256;
-            float offset = 10f;
+            float offset = 0.03f;
             float[] widthHeight = { width, height };
 
             float[] heightMap = new float[width * height];
@@ -520,7 +554,7 @@ namespace VirtualReality
             {
                 for (int j = 0; j < height; j++)
                 {
-                    heightMap[index++] = bitmap.GetPixel(i, j).R / 255f * offset;
+                    heightMap[index++] = bitmap.GetPixel(i, j).R * offset;
                 }
             }
 
@@ -589,7 +623,18 @@ namespace VirtualReality
 
             tunnelAddTerrainNode.Add("data", dataAddNodeJson);
 
-            connection.SendViaTunnel(tunnelAddTerrainNode);
+            string responseTerrain = "";
+            connection.SendViaTunnel(tunnelAddTerrainNode, (callbackResponse => responseTerrain = callbackResponse));
+            while (responseTerrain.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            dynamic terrainRespond = JsonConvert.DeserializeObject(responseTerrain);
+
+            Console.WriteLine(tunnelAddTerrainNode);
+
+            return terrainRespond.data.uuid;
         }
 
         /// <summary>
@@ -612,7 +657,16 @@ namespace VirtualReality
             tunnelSetTerrain.Add("data", dataAddNodeJson);
 
             // Send the message via the connection
-            connection.SendViaTunnel(tunnelSetTerrain);
+            string responseTerrainTexture = "";
+            connection.SendViaTunnel(tunnelSetTerrain, (callbackResponse => responseTerrainTexture = callbackResponse));
+            while (responseTerrainTexture.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            dynamic terrainRespond = JsonConvert.DeserializeObject(responseTerrainTexture);
+
+            Console.WriteLine(tunnelSetTerrain);
         }
 
         /// <summary>GetScene does <c>recieves a scene from a a connected client</c> using a network stream decodes using ASCII to a string</summary>
@@ -826,11 +880,29 @@ namespace VirtualReality
             return routeRespond.data.uuid;
         }
 
-        /// <summary>
-        /// Make a given node follow a given route
-        /// </summary>
-        /// <param name="routeID"></param>
-        /// <param name="nodeID"></param>
+        public void AddRoad(string routeID)
+        {
+            JObject dataRoad = new JObject();
+
+            dataRoad.Add("route", routeID);
+            dataRoad.Add("diffuse", @"data/NetworkEngine/textures/terrain/mntn_black_d.jpg");
+            dataRoad.Add("normal", @"data/NetworkEngine/textures/terrain/mntn_black_d.jpg");
+            dataRoad.Add("specular", @"data/NetworkEngine/textures/terrain/mntn_black_d.jpg");
+            dataRoad.Add("heightoffset", 0.05);
+
+            JObject roadObject = new JObject { { "id", JsonID.SCENE_ROAD_ADD } };
+            roadObject.Add("data", dataRoad);
+
+            string response = "";
+            connection.SendViaTunnel(roadObject, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            dynamic routeRespond = JsonConvert.DeserializeObject(response);
+        }
+
         public void FollowRoute(string routeID, string nodeID)
         {
             JObject dataRoute = new JObject();
@@ -841,7 +913,7 @@ namespace VirtualReality
             dataRoute.Add("offset", 0.0);
             dataRoute.Add("rotate", "XZ");
             dataRoute.Add("smoothing", 1.0);
-            dataRoute.Add("followHeight", false);
+            dataRoute.Add("followHeight", true);
             dataRoute.Add("rotateOffset", new JArray { 0, 0, 0 });
             dataRoute.Add("positionOffset", new JArray { 0, 0, 0 });
 

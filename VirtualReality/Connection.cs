@@ -113,7 +113,6 @@ namespace VirtualReality
                     callbacks.Add(randomIntAsString, callback);
                 }
 
-
                 tunnelJObject.Add("data", jObject);
                 tunnelJSon.Add("data", tunnelJObject);
                 //Console.WriteLine(tunnelJSon.ToString());
