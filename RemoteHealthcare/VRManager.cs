@@ -18,13 +18,6 @@ namespace VirtualReality
         private Connection connection;
         private Dictionary<string, string> nodes;
 
-        /*static void Main(string[] args)
-        {
-            VrManager vrManager = new VrManager();
-            vrManager.Start();
-        }*/
-
-
         public VrManager()
         {
             // Initialise and connect to the TcpClient
@@ -35,7 +28,6 @@ namespace VirtualReality
             // Request the session list from the server
 
             connection = new Connection(client.GetStream(), this);
-
 
             userSessions = GetRunningSessions();
         }
@@ -525,7 +517,7 @@ namespace VirtualReality
             }
 
             // First delete old terrain
-            JObject tunnelDelterrainJson = new JObject { { "id", "scene/terrain/delete" } };
+            JObject tunnelDelterrainJson = new JObject { { "id", JsonID.SCENE_TERRAIN_DELETE } };
 
             JObject dataJson = new JObject();
             tunnelDelterrainJson.Add("data", dataJson);
@@ -543,7 +535,7 @@ namespace VirtualReality
             string response = responseDeserializeObject.ToString();
 
             // Start creating the JObject to create the new terrain
-            JObject tunnelAddterrainJson = new JObject { { "id", "scene/terrain/add" } };
+            JObject tunnelAddterrainJson = new JObject { { "id", JsonID.SCENE_TERRAIN_ADD } };
 
             // create a JArray of the dimensions of the heightmap
             JArray jarrayWH = new JArray();
@@ -567,7 +559,7 @@ namespace VirtualReality
             // TODO receive the response to not clog the buffer
 
             // Then add the node linked to the terrain
-            JObject tunnelAddTerrainNode = new JObject { { "id", "scene/node/add" } };
+            JObject tunnelAddTerrainNode = new JObject { { "id", JsonID.SCENE_NODE_ADD } };
             JObject dataAddNodeJson = new JObject();
             dataAddNodeJson.Add("name", "terrain");
 
@@ -599,7 +591,7 @@ namespace VirtualReality
         public void SetTexture(string nodeUuid)
         {
             // Construct the JObject to be able to set the texture on the node
-            JObject tunnelSetTerrain = new JObject { { "id", "scene/node/addlayer" } };
+            JObject tunnelSetTerrain = new JObject { { "id", JsonID.SCENE_NODE_ADDLAYER } };
             JObject dataAddNodeJson = new JObject();
             dataAddNodeJson.Add("id", nodeUuid);
             string file = @"data\NetworkEngine\textures\terrain\grass_green_d.jpg";
@@ -656,7 +648,7 @@ namespace VirtualReality
         public void ResetScene()
         {
             //string response;
-            JObject message = new JObject { { "id", "scene/reset" } };
+            JObject message = new JObject { { "id", JsonID.SCENE_RESET } };
             connection.SendViaTunnel(message);
         }
 
@@ -711,7 +703,7 @@ namespace VirtualReality
         public string AddModelBike(string bikeName, JArray position, JArray rotation)
         {
             JObject jsonModelBike = new JObject();
-            jsonModelBike.Add("id", "scene/node/add");
+            jsonModelBike.Add("id", JsonID.SCENE_NODE_ADD);
 
             JObject jsonModelBikeData = new JObject();
             jsonModelBikeData.Add("name", bikeName);
@@ -760,7 +752,7 @@ namespace VirtualReality
         public void AddStaticModel(string modelName, JArray position, JArray rotation, double scale, string file)
         {
             JObject jsonModel = new JObject();
-            jsonModel.Add("id", "scene/node/add");
+            jsonModel.Add("id", JsonID.SCENE_NODE_ADD);
 
             JObject jsonModelData = new JObject();
             jsonModelData.Add("name", modelName);
