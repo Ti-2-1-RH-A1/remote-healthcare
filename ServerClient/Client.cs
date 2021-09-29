@@ -8,6 +8,18 @@ using System.Text;
 
 namespace ServerClient
 {
+    public class DataReceivedArgs : EventArgs
+    {
+        public Dictionary<string, string> headers { get; }
+        public Dictionary<string, string> data { get; }
+
+        public DataReceivedArgs(Dictionary<string, string> headers, Dictionary<string, string> data)
+        {
+            this.headers = headers;
+            this.data = data;
+        }
+    }
+
     class Client
     {
         private readonly string authKey;
@@ -16,6 +28,8 @@ namespace ServerClient
         private readonly byte[] buffer;
         private string totalBufferText;
         private bool loggedIn;
+        public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
+        public event EventHandler DataReceived;
 
         public Client(string authkey = "fiets")
         {
@@ -77,7 +91,7 @@ namespace ServerClient
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
-        private void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
+        public void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
             Write($"{Protocol.StringifyHeaders(headers)}{Protocol.StringifyData(data)}");
 
         private void Write(string data)
@@ -102,6 +116,8 @@ namespace ServerClient
 
                     case "Get":
                         Console.WriteLine("Get");
+                        DataReceivedArgs PacketInformation = new DataReceivedArgs(headers, data);
+                        DataReceived?.Invoke(this, PacketInformation);
                         break;
                 }
             }

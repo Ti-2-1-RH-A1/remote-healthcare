@@ -25,13 +25,9 @@ namespace ServerClient
             listener.Start();
 
             Console.WriteLine("Waiting for a client to connect...");
-            // Application blocks while waiting for an incoming connection.
-            // Type CNTL-C to terminate the server.
             listener.BeginAcceptTcpClient(new AsyncCallback(ProcessClient), null);
 
-
         }
-
 
         static void ProcessClient(IAsyncResult ar)
         {
@@ -54,33 +50,14 @@ namespace ServerClient
             Console.WriteLine("Client disconnected");
         }
 
-        private static void DisplayUsage()
-        {
-            Console.WriteLine("To start the server specify:");
-            Console.WriteLine("serverSync certificateFile.cer");
-            Environment.Exit(1);
-        }
         public static int Main(string[] args)
         {
-            string certificate = @"Server.pfx";
-            
-            // if (args == null || args.Length < 1)
-            // {
-            //     DisplayUsage();
-            // }
-            // certificate = args[0];
-            RunServer(certificate);
-
+            RunServer(@"Server.pfx");
 
             new Client();
 
             Console.ReadLine();
-
             return 0;
         }
-
-
-
-
     }
 }
