@@ -73,9 +73,9 @@ namespace ServerClient
         public static async Task Main(string[] args)
         {
             string certificate = @"Server.pfx";
-            RunServer(certificate);
+            RunServer(certificate, false);
 
-            new Client();
+            new Client("fiets", false);
 
             await Task.Delay(3000);
         }

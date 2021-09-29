@@ -62,7 +62,7 @@ namespace ServerClient
             {
                 if (useSSL)
                 {
-                    SslStream sslStream = new SslStream(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
+                    SslStream sslStream = new(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
 
                     // Try to authenticate as Client
                     sslStream.AuthenticateAsClient("localhost");
