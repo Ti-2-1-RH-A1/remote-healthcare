@@ -116,7 +116,7 @@ namespace RemoteHealthcare
         /// Method to create terrain based on a heightmap
         /// </summary>
         /// <param name="connection"> connection to send data to and receive responses from</param>
-        public static void CreateTerrain(ref Connection connection)
+        public static dynamic CreateTerrain(ref Connection connection)
         {
 
             Console.WriteLine("Enter a path to an heightmap");
