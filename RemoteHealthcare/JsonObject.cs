@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace VirtualReality
 {
+    /// <summary>
+    /// Possible class to use in case Json usage has to be refactored again
+    /// </summary>
     class JsonObject
     {
         private delegate void dataCallback(dynamic data);

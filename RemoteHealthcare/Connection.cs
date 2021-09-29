@@ -24,7 +24,7 @@ namespace VirtualReality
             //Sets a timeout if this time is hit a timeout exception will be thrown
             networkStream.ReadTimeout = 10000;
             reconnect = vrManager.Reconnect;
-            Thread t = new Thread(run);
+            Thread t = new Thread(Run);
             t.Start();
         }
 
@@ -127,7 +127,7 @@ namespace VirtualReality
         /// <summary>
         /// entry of the network thread
         /// </summary>
-        void run()
+        void Run()
         {
             bool running = true;
             while (running)
