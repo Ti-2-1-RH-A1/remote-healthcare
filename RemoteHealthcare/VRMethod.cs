@@ -125,14 +125,14 @@ namespace RemoteHealthcare
             if (!File.Exists(entryPath))
             {
                 Console.WriteLine("No file found");
-                return;
+                return null;
             }
 
             // convert the heightmap to a bitmap and then set that into a heightmap array
             Bitmap bitmap = new Bitmap(entryPath);
             int width = 256;
             int height = 256;
-            float offset = 10f;
+            float offset = 0.03f;
             float[] widthHeight = { width, height };
 
             float[] heightMap = new float[width * height];
@@ -142,7 +142,7 @@ namespace RemoteHealthcare
             {
                 for (int j = 0; j < height; j++)
                 {
-                    heightMap[index++] = bitmap.GetPixel(i, j).R / 255f * offset;
+                    heightMap[index++] = bitmap.GetPixel(i, j).R * offset;
                 }
             }
 
@@ -211,7 +211,18 @@ namespace RemoteHealthcare
 
             tunnelAddTerrainNode.Add("data", dataAddNodeJson);
 
-            connection.SendViaTunnel(tunnelAddTerrainNode);
+            string responseTerrain = "";
+            connection.SendViaTunnel(tunnelAddTerrainNode, (callbackResponse => responseTerrain = callbackResponse));
+            while (responseTerrain.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            dynamic terrainRespond = JsonConvert.DeserializeObject(responseTerrain);
+
+            Console.WriteLine(tunnelAddTerrainNode);
+
+            return terrainRespond.data.uuid;
         }
 
         /// <summary>
@@ -234,7 +245,16 @@ namespace RemoteHealthcare
             tunnelSetTerrain.Add("data", dataAddNodeJson);
 
             // Send the message via the connection
-            connection.SendViaTunnel(tunnelSetTerrain);
+            string responseTerrainTexture = "";
+            connection.SendViaTunnel(tunnelSetTerrain, (callbackResponse => responseTerrainTexture = callbackResponse));
+            while (responseTerrainTexture.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            dynamic terrainRespond = JsonConvert.DeserializeObject(responseTerrainTexture);
+
+            Console.WriteLine(tunnelSetTerrain);
         }
 
         /// <summary>GetScene does <c>recieves a scene from a a connected client</c> using a network stream decodes using ASCII to a string</summary>
@@ -461,7 +481,7 @@ namespace RemoteHealthcare
             dataRoute.Add("offset", 0.0);
             dataRoute.Add("rotate", "XZ");
             dataRoute.Add("smoothing", 1.0);
-            dataRoute.Add("followHeight", false);
+            dataRoute.Add("followHeight", true);
             dataRoute.Add("rotateOffset", new JArray { 0, 0, 0 });
             dataRoute.Add("positionOffset", new JArray { 0, 0, 0 });
 
@@ -518,7 +538,6 @@ namespace RemoteHealthcare
 
             Console.WriteLine(response);
         }
-
 
         /// <summary>
         /// creates a bike panel using some default values
