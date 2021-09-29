@@ -122,7 +122,7 @@ namespace VirtualReality
         }
 
         public delegate void Callback(string response);
-        private Dictionary<string, Callback> callbacks = new();
+        private Dictionary<string, Callback> callbacks = new Dictionary<string, Callback>();
 
         /// <summary>
         /// entry of the network thread

@@ -18,11 +18,11 @@ namespace VirtualReality
         private Connection connection;
         private Dictionary<string, string> nodes;
 
-        static void Main(string[] args)
+        /*static void Main(string[] args)
         {
             VrManager vrManager = new VrManager();
             vrManager.Start();
-        }
+        }*/
 
 
         public VrManager()
