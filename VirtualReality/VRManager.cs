@@ -6,6 +6,8 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using Newtonsoft.Json.Schema;
+using System.IO;
+using System.Drawing;
 
 namespace VirtualReality
 {
@@ -14,7 +16,6 @@ namespace VirtualReality
         //private NetworkStream networkStream;
         private Dictionary<string, string> userSessions;
         private Connection connection;
-        private Ground_Add groundAdd;
         private Dictionary<string, string> nodes;
 
         static void Main(string[] args)
@@ -46,6 +47,11 @@ namespace VirtualReality
         {
             userSessions = GetRunningSessions();
             ConnectToAClient();
+            updateSceneList();
+        }
+
+        private void updateSceneList()
+        {
             nodes = GetScene();
         }
 
@@ -69,6 +75,13 @@ namespace VirtualReality
             JArray rotation = new JArray { 0, 0, 0 };
             string bikename1 = "Bike";
             string bikeUUID = AddModelBike(bikename1, position, rotation);
+
+            CreateBikePanel();
+            drawOnBikePanel("hoegaboega");
+
+            updateSceneList();
+
+
             Random rnd = new Random();
             for (int i = 0; i < 200; i++)
             {
@@ -143,6 +156,201 @@ namespace VirtualReality
             SetSkyBox();
         }
 
+        /// <summary>
+        /// create and draw a panel on the bike
+        /// </summary>
+        /// <param name="text">the text to draw</param>
+        /// <param name="panelName">optional</param>
+        private void drawOnBikePanel(string text, string panelName = "bikePanel")
+        {
+            int[] position = {100, 100};
+            int[] color = {0, 0, 0, 1};
+
+            ClearPanel(GetIdFromNodeName(panelName));
+            drawtext(panelName, text, position, 32, color, "segoeui");
+            SwapPanel(GetIdFromNodeName(panelName));
+        }
+
+        private void drawtext(string panelNodeName, string text, int[] position, int size, int[] color, string font)
+        {
+            JObject message = new JObject();
+            message.Add("id", JsonID.SCENE_PANEL_DRAWTEXT);
+
+            JObject dataJObject = new JObject();
+            dataJObject.Add("id", GetIdFromNodeName(panelNodeName));
+            dataJObject.Add("text", text);
+            dataJObject.Add("position", JArray.FromObject(position));
+            dataJObject.Add("size", size);
+            dataJObject.Add("color", JArray.FromObject(color));
+            dataJObject.Add("font", font);
+
+            message.Add("data", dataJObject);
+
+            string response = "";
+            connection.SendViaTunnel(message, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            Console.WriteLine(response);
+        }
+
+
+        /// <summary>
+        /// creates a bike panel using some default values
+        /// </summary>
+        private void CreateBikePanel(string panelName = "bikePanel")
+        {
+            int[] position = {-50, 115, 0};
+            int[] rotation = {315, 90, 0};
+            int[] size = {50, 25};
+            //int[] resolution = {256, 128};
+            int[] resolution = {512, 512};
+            int[] background = {1, 1, 1, 1};
+
+            CreatePanel(panelName, position, rotation, size, resolution, background, true, getBikeID());
+        }
+
+
+        private void ClearPanel(string nodeID)
+        {
+            JObject message = new JObject();
+            message.Add("id", JsonID.SCENE_PANEL_CLEAR);
+
+
+            JObject dataJObject = new JObject();
+            dataJObject.Add("id", nodeID);
+
+            message.Add("data", dataJObject);
+
+            connection.SendViaTunnel(message);
+        }
+
+        private void SwapPanel(string nodeID)
+        {
+            JObject message = new JObject();
+            message.Add("id", JsonID.SCENE_PANEL_SWAP);
+
+
+            JObject dataJObject = new JObject();
+            dataJObject.Add("id", nodeID);
+
+            message.Add("data", dataJObject);
+
+            connection.SendViaTunnel(message);
+        }
+
+
+        public string getBikeID()
+        {
+            return GetIdFromNodeName("Bike");
+        }
+
+        /// <summary>
+        /// Createsa panel
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="position"></param>
+        /// <param name="rotation"></param>
+        /// <param name="size"></param>
+        /// <param name="resolution"></param>
+        /// <param name="background"></param>
+        /// <param name="castShadows"></param>
+        /// <param name="parent"></param>
+        public void CreatePanel(string name, int[] position, int[] rotation, int[] size, int[] resolution,
+            int[] background, bool castShadows = true, string parent = null)
+        {
+            JObject components = new JObject();
+
+            JObject transform = new JObject();
+            transform.Add("position", JArray.FromObject(position));
+            transform.Add("scale", 1);
+            transform.Add("rotation", JArray.FromObject(rotation));
+
+            components.Add("transform", transform);
+
+            JObject panel = new JObject();
+            panel.Add("size", JArray.FromObject(size));
+            panel.Add("resolution", JArray.FromObject(resolution));
+            panel.Add("background", JArray.FromObject(background));
+            panel.Add("castShadow", castShadows);
+
+            components.Add("panel", panel);
+
+
+            JObject node = CreateNode(name, components, parent);
+
+            Console.WriteLine("\n\n" + node.ToString() + "\n\n");
+
+            string response = "";
+            connection.SendViaTunnel(node, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            Console.WriteLine(response);
+        }
+
+
+        /// <summary>
+        /// Creates a node with the components
+        /// </summary>
+        /// <param name="name">the name of the node</param>
+        /// <param name="components">the components of the node</param>
+        /// <param name="parent">the parent of the node</param>
+        /// <returns>a new node jObject</returns>
+        private JObject CreateNode(string name, JToken components, string parent = null)
+        {
+            JObject message = new JObject {{"id", JsonID.SCENE_NODE_ADD}};
+
+            JObject dataJObject = new JObject {{"name", name}};
+            if (parent != null)
+            {
+                dataJObject.Add("parent", parent);
+            }
+
+            dataJObject.Add("components", components);
+
+
+            message.Add("data", dataJObject);
+
+            return message;
+        }
+
+
+        /// <summary>
+        /// GetIdFromNodeName does <c></c>
+        /// </summary>
+        /// <returns>a string with the bikes current id</returns>
+        public string GetIdFromNodeName(string nodeName)
+        {
+            JObject message = new JObject {{"id", JsonID.SCENE_NODE_FIND}};
+            JObject data = new JObject {{"name", nodeName}};
+            message.Add("data", data);
+
+            string response = "";
+            connection.SendViaTunnel(message, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            Console.WriteLine("this one: \n" + response);
+
+            JObject responseJObject = JObject.Parse(response);
+            JObject responseData = (JObject) (responseJObject.GetValue("data")?[0]);
+            if (responseData != null)
+            {
+                string s = responseData.GetValue("uuid")?.ToString();
+                Console.WriteLine(s);
+                return s;
+            }
+
+            return string.Empty;
+        }
+
 
         /// <summary>
         /// connect to a client
@@ -198,7 +406,7 @@ namespace VirtualReality
             tunnelCreateJson.Add("data", dataJson);
             connection.SendToTcp(tunnelCreateJson.ToString());
 
-            connection.ReceiveFromTcp(out var tunnelCreationResponse,true);
+            connection.ReceiveFromTcp(out var tunnelCreationResponse, true);
 
             dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
             //string response = responseDeserializeObject["data"]["status"].ToString();
@@ -237,7 +445,7 @@ namespace VirtualReality
 
             // receive the response
             string receivedData;
-            connection.ReceiveFromTcp(out receivedData,true);
+            connection.ReceiveFromTcp(out receivedData, true);
 
             // parse the received data
             dynamic jsonData = JsonConvert.DeserializeObject(receivedData);
@@ -305,11 +513,10 @@ namespace VirtualReality
             JObject message = new JObject {{"id", JsonID.SCENE_NODE_DELETE}};
             JObject jsonData = new JObject {{"id", nodes.GetValueOrDefault(nodeName)}};
             message.Add("data", jsonData);
-           
+
 
             string response = "";
             connection.SendViaTunnel(message, callbackResponse => response = callbackResponse);
-
 
 
             Console.WriteLine("Delete node response: " + response);
@@ -318,13 +525,128 @@ namespace VirtualReality
         }
 
         /// <summary>
-        /// resets the scene
+        /// Method to create terrain based on a heightmap
         /// </summary>
-        public void ResetScene()
+        /// <param name="connection"> connection to send data to and receive responses from</param>
+        public void CreateTerrain(ref Connection connection)
         {
-            //string response;
-            JObject message = new JObject {{"id", "scene/reset"}};
-            connection.SendViaTunnel(message);
+
+            Console.WriteLine("Enter a path to an heightmap");
+
+            string entryPath = @"" + Console.ReadLine();
+            if (!File.Exists(entryPath))
+            {
+                Console.WriteLine("No file found");
+                return;
+            }
+
+            // convert the heightmap to a bitmap and then set that into a heightmap array
+            Bitmap bitmap = new Bitmap(entryPath);
+            int width = 256;
+            int height = 256;
+            float offset = 10f;
+            float[] widthHeight = { width, height };
+
+            float[] heightMap = new float[width * height];
+
+            int index = 0;
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    heightMap[index++] = bitmap.GetPixel(i, j).R / 255f * offset;
+                }
+            }
+
+            // First delete old terrain
+            JObject tunnelDelterrainJson = new JObject { { "id", "scene/terrain/delete" } };
+
+            JObject dataJson = new JObject();
+            tunnelDelterrainJson.Add("data", dataJson);
+
+            string tunnelCreationResponse = "";
+            connection.SendViaTunnel(tunnelDelterrainJson, (callbackResponse => tunnelCreationResponse = callbackResponse));
+            while (tunnelCreationResponse.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            Console.WriteLine(tunnelCreationResponse);
+
+            dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
+            string response = responseDeserializeObject.ToString();
+
+            // Start creating the JObject to create the new terrain
+            JObject tunnelAddterrainJson = new JObject { { "id", "scene/terrain/add" } };
+
+            // create a JArray of the dimensions of the heightmap
+            JArray jarrayWH = new JArray();
+            jarrayWH.Add(width);
+            jarrayWH.Add(height);
+
+            // Create a JArray For the heightmap
+            JArray heightMapJArray = new JArray();
+            foreach (float item in heightMap)
+            {
+                heightMapJArray.Add(item);
+            }
+
+            // Gather the data into a JObject, add it to the wrapper object to create the terrain and send it via the connection
+            JObject dataAddJson = new JObject();
+            dataAddJson.Add("size", jarrayWH);
+            dataAddJson.Add("heights", heightMapJArray);
+
+            tunnelAddterrainJson.Add("data", dataAddJson);
+            connection.SendViaTunnel(tunnelAddterrainJson);
+            // TODO receive the response to not clog the buffer
+
+            // Then add the node linked to the terrain
+            JObject tunnelAddTerrainNode = new JObject { { "id", "scene/node/add" } };
+            JObject dataAddNodeJson = new JObject();
+            dataAddNodeJson.Add("name", "terrain");
+
+            JObject jsonComponents = new JObject();
+            JObject jsonTransform = new JObject();
+            JArray transPostion = new JArray();
+            transPostion.Add(0);
+            transPostion.Add(0);
+            transPostion.Add(0);
+            jsonTransform.Add("position", transPostion);
+            jsonTransform.Add("scale", 1);
+            jsonTransform.Add("rotation", transPostion);
+            jsonComponents.Add("transform", jsonTransform);
+            JObject jsonTerrain = new JObject();
+            jsonTerrain.Add("smoothnormals", true);
+            jsonComponents.Add("terrain", jsonTerrain);
+
+            dataAddNodeJson.Add("components", jsonComponents);
+
+            tunnelAddTerrainNode.Add("data", dataAddNodeJson);
+
+            connection.SendViaTunnel(tunnelAddTerrainNode);
+        }
+
+        /// <summary>
+        /// Set the texture of the specified node id to a set hardcoded texture
+        /// </summary>
+        /// <param name="nodeUuid"></param>
+        public void SetTexture(string nodeUuid)
+        {
+            // Construct the JObject to be able to set the texture on the node
+            JObject tunnelSetTerrain = new JObject { { "id", "scene/node/addlayer" } };
+            JObject dataAddNodeJson = new JObject();
+            dataAddNodeJson.Add("id", nodeUuid);
+            string file = @"data\NetworkEngine\textures\terrain\grass_green_d.jpg";
+            dataAddNodeJson.Add("diffuse", file);
+            dataAddNodeJson.Add("normal", file);
+            dataAddNodeJson.Add("minHeight", -100);
+            dataAddNodeJson.Add("maxHeight", 100);
+            dataAddNodeJson.Add("fadeDist", 1);
+
+            tunnelSetTerrain.Add("data", dataAddNodeJson);
+
+            // Send the message via the connection
+            connection.SendViaTunnel(tunnelSetTerrain);
         }
 
         /// <summary>GetScene does <c>recieves a scene from a a connected client</c> using a network stream decodes using ASCII to a string</summary>
@@ -334,14 +656,14 @@ namespace VirtualReality
             var dictionary = new Dictionary<string, string>();
 
 
-            JObject message = new JObject {{"id", JsonID.SCENE_GET}};
-            string response = ""; 
-            connection.SendViaTunnel(message,   (callbackResponse => response = callbackResponse));
+            JObject message = new JObject { { "id", JsonID.SCENE_GET } };
+            string response = "";
+            connection.SendViaTunnel(message, (callbackResponse => response = callbackResponse));
             while (response.Length == 0)
             {
                 Thread.Sleep(10);
             }
-            
+
 
             //ReceiveFromTcp(out response);
             //Console.WriteLine(response);
@@ -353,20 +675,23 @@ namespace VirtualReality
                 JArray children = responseData.data.children;
                 foreach (var jToken in children)
                 {
-                    var jObject = (JObject) jToken;
+                    var jObject = (JObject)jToken;
                     dictionary.Add(jObject.GetValue("name")?.ToString() ?? string.Empty,
                         jObject.GetValue("uuid")?.ToString());
                 }
             }
 
             return dictionary;
+        }
 
-
-            // no gui stuff in methods please
-            // foreach (string s in nodes.Keys)
-            // {
-            //     Console.WriteLine(s);
-            // }
+        /// <summary>
+        /// resets the scene
+        /// </summary>
+        public void ResetScene()
+        {
+            //string response;
+            JObject message = new JObject { { "id", "scene/reset" } };
+            connection.SendViaTunnel(message);
         }
 
         /// <summary>
@@ -410,6 +735,13 @@ namespace VirtualReality
             }
         }
 
+        /// <summary>
+        /// Add a bike model to the specified position with the specified rotation
+        /// </summary>
+        /// <param name="bikeName"></param>
+        /// <param name="position"></param>
+        /// <param name="rotation"></param>
+        /// <returns></returns>
         public string AddModelBike(string bikeName, JArray position, JArray rotation)
         {
             JObject jsonModelBike = new JObject();
@@ -451,6 +783,14 @@ namespace VirtualReality
             return routeRespond.data.uuid;
         }
 
+        /// <summary>
+        /// Add a specified model
+        /// </summary>
+        /// <param name="modelName"></param>
+        /// <param name="position"></param>
+        /// <param name="rotation"></param>
+        /// <param name="scale"></param>
+        /// <param name="file"></param>
         public void AddStaticModel(string modelName, JArray position, JArray rotation, double scale, string file)
         {
             JObject jsonModel = new JObject();
@@ -477,10 +817,15 @@ namespace VirtualReality
             jsonModelData.Add("components", jsonModelComponents);
             jsonModel.Add("data", jsonModelData);
 
-            Console.WriteLine(jsonModel);
+            //Console.WriteLine(jsonModel);
             connection.SendViaTunnel(jsonModel);
         }
 
+        /// <summary>
+        /// Generate a route using the given routenodes
+        /// </summary>
+        /// <param name="routeNodes">List of JArray,JArray tuples, item1 gives the xyz position of a node and item2 the xyz direction, the route is generated through the different nodes in the list</param>
+        /// <returns></returns>
         public string GenerateRoute(List<(JArray, JArray)> routeNodes)
         {
             JArray nodesArray = new JArray();

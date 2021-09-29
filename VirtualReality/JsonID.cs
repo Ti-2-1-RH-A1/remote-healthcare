@@ -30,7 +30,7 @@
         public static readonly string SCENE_PANEL_DRAWTEXT = "scene/panel/drawtext";
         public static readonly string SCENE_PANEL_IMAGE = "scene/panel/image";
         public static readonly string SCENE_PANEL_SETCLEARCOLOR = "scene/panel/setclearcolor";
-        public static readonly string SCENE_PANEL_SAWP = "scene/panel/sawp";
+        public static readonly string SCENE_PANEL_SWAP = "scene/panel/swap";
 
         // Scene/Skybox ID's
         public static readonly string SCENE_SKYBOX_SETTIME = "scene/skybox/settime";
