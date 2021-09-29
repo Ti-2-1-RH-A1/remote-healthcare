@@ -13,6 +13,8 @@ namespace ServerClientTest
         {
             Program.RunServer("", false);
 
+            await Task.Delay(1000);
+
             var client = new Client("fiets", false);
 
             await Task.Delay(3000);
