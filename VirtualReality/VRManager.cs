@@ -892,7 +892,7 @@ namespace VirtualReality
             dataRoad.Add("diffuse", @"data/NetworkEngine/textures/terrain/mntn_black_d.jpg");
             dataRoad.Add("normal", @"data/NetworkEngine/textures/terrain/mntn_black_d.jpg");
             dataRoad.Add("specular", @"data/NetworkEngine/textures/terrain/mntn_black_d.jpg");
-            dataRoad.Add("heightoffset", 12);
+            dataRoad.Add("heightoffset", 0.05);
 
             JObject roadObject = new JObject { { "id", JsonID.SCENE_ROAD_ADD } };
             roadObject.Add("data", dataRoad);
