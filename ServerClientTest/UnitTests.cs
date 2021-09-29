@@ -51,7 +51,7 @@ namespace ServerClient.Tests
         [TestMethod]
         public void TestNoCertError()
         {
-            Assert.ThrowsException<Exception>(() => Program.RunServer(@"Server.pfx"));
+            Assert.ThrowsException<Exception>(() => Program.RunServer(@"Serhdjfjhdver.pfx"));
         }
 
         [TestMethod()]
