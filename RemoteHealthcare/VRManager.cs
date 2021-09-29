@@ -39,10 +39,10 @@ namespace VirtualReality
         {
             userSessions = GetRunningSessions();
             ConnectToAClient();
-            updateSceneList();
+            UpdateSceneList();
         }
 
-        private void updateSceneList()
+        private void UpdateSceneList()
         {
             nodes = GetScene();
         }
@@ -69,9 +69,9 @@ namespace VirtualReality
             string bikeUUID = AddModelBike(bikename1, position, rotation);
 
             CreateBikePanel();
-            drawOnBikePanel("hoegaboega");
+            DrawOnBikePanel("hoegaboega");
 
-            updateSceneList();
+            UpdateSceneList();
 
 
             Random rnd = new Random();
@@ -109,9 +109,6 @@ namespace VirtualReality
             string routeUUID = GenerateRoute(routeNodes);
 
             FollowRoute(routeUUID, bikeUUID);
-
-            DeleteNodeViaUserInput();
-            SetSkyBox();
         }
 
         /// <summary>
@@ -119,17 +116,17 @@ namespace VirtualReality
         /// </summary>
         /// <param name="text">the text to draw</param>
         /// <param name="panelName">optional</param>
-        private void drawOnBikePanel(string text, string panelName = "bikePanel")
+        private void DrawOnBikePanel(string text, string panelName = "bikePanel")
         {
             int[] position = {100, 100};
             int[] color = {0, 0, 0, 1};
 
             ClearPanel(GetIdFromNodeName(panelName));
-            drawtext(panelName, text, position, 32, color, "segoeui");
+            Drawtext(panelName, text, position, 32, color, "segoeui");
             SwapPanel(GetIdFromNodeName(panelName));
         }
 
-        private void drawtext(string panelNodeName, string text, int[] position, int size, int[] color, string font)
+        private void Drawtext(string panelNodeName, string text, int[] position, int size, int[] color, string font)
         {
             JObject message = new JObject();
             message.Add("id", JsonID.SCENE_PANEL_DRAWTEXT);
@@ -167,7 +164,7 @@ namespace VirtualReality
             int[] resolution = {512, 512};
             int[] background = {1, 1, 1, 1};
 
-            CreatePanel(panelName, position, rotation, size, resolution, background, true, getBikeID());
+            CreatePanel(panelName, position, rotation, size, resolution, background, true, GetBikeID());
         }
 
 
@@ -200,7 +197,7 @@ namespace VirtualReality
         }
 
 
-        public string getBikeID()
+        public string GetBikeID()
         {
             return GetIdFromNodeName("Bike");
         }
@@ -369,7 +366,7 @@ namespace VirtualReality
             dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
             //string response = responseDeserializeObject["data"]["status"].ToString();
 
-            if (isStatusOk(tunnelCreationResponse))
+            if (IsStatusOk(tunnelCreationResponse))
             {
                 connection.currentSessionID = responseDeserializeObject["data"]["id"].ToString();
 
@@ -387,7 +384,7 @@ namespace VirtualReality
         /// </summary>
         /// <param name="jsonResponse"></param>
         /// <returns>a bool stating if a oke message was found</returns>
-        private bool isStatusOk(string jsonResponse)
+        private bool IsStatusOk(string jsonResponse)
         {
             return jsonResponse.Contains("\"ok\"");
         }
@@ -479,7 +476,7 @@ namespace VirtualReality
 
             Console.WriteLine("Delete node response: " + response);
 
-            return isStatusOk(response);
+            return IsStatusOk(response);
         }
 
         /// <summary>
