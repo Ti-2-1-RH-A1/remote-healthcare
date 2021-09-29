@@ -623,8 +623,6 @@ namespace VirtualReality
 
             tunnelAddTerrainNode.Add("data", dataAddNodeJson);
 
-            ///connection.SendViaTunnel(tunnelAddTerrainNode);
-
             string responseTerrain = "";
             connection.SendViaTunnel(tunnelAddTerrainNode, (callbackResponse => responseTerrain = callbackResponse));
             while (responseTerrain.Length == 0)
@@ -659,8 +657,6 @@ namespace VirtualReality
             tunnelSetTerrain.Add("data", dataAddNodeJson);
 
             // Send the message via the connection
-            ///connection.SendViaTunnel(tunnelSetTerrain);
-
             string responseTerrainTexture = "";
             connection.SendViaTunnel(tunnelSetTerrain, (callbackResponse => responseTerrainTexture = callbackResponse));
             while (responseTerrainTexture.Length == 0)
