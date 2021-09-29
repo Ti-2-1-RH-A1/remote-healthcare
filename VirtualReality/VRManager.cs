@@ -72,7 +72,7 @@ namespace VirtualReality
             Random rnd = new Random();
             for (int i = 0; i < 200; i++)
             {
-                JArray positionTree = new JArray { rnd.Next(75, 130), 0.5, rnd.Next(85, 140) };
+                JArray positionTree = new JArray { rnd.Next(75, 130), 0.5, rnd.Next(90, 140) };
                 JArray rotationTree = new JArray { 0, rnd.Next(1, 360), 0 };
                 if(i < 30)
                 {
@@ -109,22 +109,22 @@ namespace VirtualReality
             routeNodes.Add(routeNode3);
 
             (JArray, JArray) routeNode4;
-            routeNode4.Item1 = new JArray { 135, 0, 85 };
+            routeNode4.Item1 = new JArray { 133, 0, 85 };
             routeNode4.Item2 = new JArray { 5, 0, 5 };
             routeNodes.Add(routeNode4);
 
             (JArray, JArray) routeNode5;
-            routeNode5.Item1 = new JArray { 135, 0, 115 };
+            routeNode5.Item1 = new JArray { 132, 0, 110 };
             routeNode5.Item2 = new JArray { -5, 0, 5 };
             routeNodes.Add(routeNode5);
 
             (JArray, JArray) routeNode6;
             routeNode6.Item1 = new JArray { 138, 0, 145 };
-            routeNode6.Item2 = new JArray { 5, 0, 5 };
+            routeNode6.Item2 = new JArray { -5, 0, 5 };
             routeNodes.Add(routeNode6);
 
             (JArray, JArray) routeNode7;
-            routeNode7.Item1 = new JArray { 65, 0, 140 };
+            routeNode7.Item1 = new JArray { 60, 0, 140 };
             routeNode7.Item2 = new JArray { -5, 0, -5 };
             routeNodes.Add(routeNode7);
 
@@ -520,9 +520,6 @@ namespace VirtualReality
             JObject dataRoad = new JObject();
 
             dataRoad.Add("route", routeID);
-            /*dataRoad.Add("diffuse", @"data/NetworkEngine/textures/tarmac_diffuse.png");
-            dataRoad.Add("normal", @"data/NetworkEngine/textures/tarmac_normal.png");
-            dataRoad.Add("specular", @"data/NetworkEngine/textures/tarmac_specular.png");*/
             dataRoad.Add("diffuse", @"data/NetworkEngine/textures/terrain/mntn_black_d.jpg");
             dataRoad.Add("normal", @"data/NetworkEngine/textures/terrain/mntn_black_d.jpg");
             dataRoad.Add("specular", @"data/NetworkEngine/textures/terrain/mntn_black_d.jpg");
