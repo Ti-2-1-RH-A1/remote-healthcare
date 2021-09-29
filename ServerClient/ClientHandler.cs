@@ -97,16 +97,6 @@ namespace ServerClient
             }
         }
 
-        private bool AssertPacketData(string[] packetData, int requiredLength)
-        {
-            if (packetData.Length < requiredLength)
-            {
-                Write("error");
-                return false;
-            }
-            return true;
-        }
-
         private void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
             Write($"{Protocol.StringifyHeaders(headers)}{Protocol.StringifyData(data)}");
 
