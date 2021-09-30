@@ -466,7 +466,7 @@ namespace RemoteHealthcare
             return routeRespond.data.uuid;
         }
 
-        public void AddRoad(ref Connection connection, string routeID)
+        public static void AddRoad(ref Connection connection, string routeID)
         {
             JObject dataRoad = new JObject();
 
@@ -782,7 +782,7 @@ namespace RemoteHealthcare
             connection.SendViaTunnel(tunnelSetTimeJson, response => skyboxSetTimeResponse = response);
         }
 
-        public void SetCamera(ref Connection connection, string bikeId)
+        public static void SetCamera(ref Connection connection, string bikeId)
         {
             JObject dataCamera = new JObject();
             dataCamera.Add("id", GetIdFromNodeName(ref connection,"Camera"));
