@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FietsSimulatorTest", "Fiets
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualReality", "VirtualReality\VirtualReality.csproj", "{40CBD40E-EC1A-4E86-9283-71570094FD5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerClient", "ServerClient\ServerClient.csproj", "{14405CD2-2FBC-4A60-A755-629AF7277547}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerClient", "ServerClient\ServerClient.csproj", "{14405CD2-2FBC-4A60-A755-629AF7277547}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoctorApplication", "DoctorApplication\DoctorApplication.csproj", "{2352A8FD-DC96-496C-A4C5-4B80DCA21FD1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{14405CD2-2FBC-4A60-A755-629AF7277547}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14405CD2-2FBC-4A60-A755-629AF7277547}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14405CD2-2FBC-4A60-A755-629AF7277547}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2352A8FD-DC96-496C-A4C5-4B80DCA21FD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2352A8FD-DC96-496C-A4C5-4B80DCA21FD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2352A8FD-DC96-496C-A4C5-4B80DCA21FD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2352A8FD-DC96-496C-A4C5-4B80DCA21FD1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

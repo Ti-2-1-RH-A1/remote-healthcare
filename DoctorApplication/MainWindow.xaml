@@ -1,0 +1,68 @@
+﻿<Window x:Class="DoctorApplication.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DoctorApplication"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid Margin="0,0,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="200"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Row="0" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="140"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="140"/>
+                </Grid.ColumnDefinitions>
+
+
+                <!-- Buttons-->
+                <Button Content="Message selected client" Grid.Row="1" Grid.Column="1" Name="btnMessage"/>
+                <Button Content="Message all clients" Grid.Row="1"  Grid.Column="3" Name="btnBroadcast" Click="btnBroadcast_Click"/>
+                <Button Content="Emergency stop client" Grid.Row="3" Grid.Column="1" Name="btnEmergency"/>
+                <Button Content="History" Grid.Row="3" Grid.Column="3" Name="btnHistory"/>
+            </Grid>
+            <ListView Name="UserGrid" Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Clients, Mode=TwoWay}" SelectedItem="{Binding SelectedClient}"  >
+                <ListView.View>
+                    <GridView x:Name="grdClients">
+                        <GridViewColumn Header="Client ID" DisplayMemberBinding="{Binding ClientID}"  Width="Auto"/>
+                        <GridViewColumn Header="Client Name" DisplayMemberBinding="{Binding ClientName}"  Width="Auto" />
+
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+        <Grid Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="No client" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,37,0,117" Height="80" Width="180" FontSize="40" FontWeight="Bold"/>
+            <Label Content="Speed" HorizontalContentAlignment="Center" Margin="10,122,10,32" Height="80" Width="180" FontSize="36"/>
+            <Label Content="No client" HorizontalContentAlignment="Center" Margin="10,37,10,117" Height="80" Width="180" FontSize="40" FontWeight="Bold" Grid.Column="1"/>
+            <Label Content="Resistance" HorizontalContentAlignment="Center" Margin="10,122,10,32" Height="80" Width="180" FontSize="36" Grid.Column="1"/>
+            <Label Content="No client" HorizontalContentAlignment="Center" Margin="10,37,10,117" Height="80" Width="180" FontSize="40" FontWeight="Bold" Grid.Column="2"/>
+            <Label Content="BPM" HorizontalContentAlignment="Center" Margin="10,122,10,32" Height="80" Width="180" FontSize="36" Grid.Column="2"/>
+            <Label Content="No client" HorizontalContentAlignment="Center" Margin="10,37,10,117" Height="80" Width="180" FontSize="40" FontWeight="Bold" Grid.Column="3"/>
+            <Label Content="Travelled" HorizontalContentAlignment="Center" Margin="10,122,10,32" Height="80" Width="180" FontSize="36" Grid.Column="3"/>
+        </Grid>
+    </Grid>
+</Window>
