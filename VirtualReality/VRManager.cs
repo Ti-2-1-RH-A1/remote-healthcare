@@ -150,6 +150,8 @@ namespace VirtualReality
 
             AddRoad(routeUUID);
 
+            SetCamera(bikeUUID);
+
             FollowRoute(routeUUID, bikeUUID);
 
             DeleteNodeViaUserInput();
@@ -337,7 +339,7 @@ namespace VirtualReality
                 Thread.Sleep(10);
             }
 
-            Console.WriteLine("this one: \n" + response);
+            //Console.WriteLine("this one: \n" + response);
 
             JObject responseJObject = JObject.Parse(response);
             JObject responseData = (JObject) (responseJObject.GetValue("data")?[0]);
@@ -953,6 +955,36 @@ namespace VirtualReality
             }
 
             dynamic routeRespond = JsonConvert.DeserializeObject(response);
+        }
+
+        public void SetCamera(string bikeId)
+        {
+            JObject dataCamera = new JObject();
+            dataCamera.Add("id", GetIdFromNodeName("Camera"));
+            dataCamera.Add("parent'", bikeId);
+
+            JObject transformCamera = new JObject();
+            JArray position = new JArray { 0, 0, 0 };
+            transformCamera.Add("position", position);
+            transformCamera.Add("scale", 1.0);
+            JArray rotation = new JArray { 0, 0 ,0};
+            transformCamera.Add("rotation", rotation);
+            
+            dataCamera.Add("transform", transformCamera);
+
+            JObject cameraObject = new JObject { {"id", JsonID.SCENE_NODE_UPDATE } };
+            cameraObject.Add("data", dataCamera);
+
+            string response = "";
+            connection.SendViaTunnel(cameraObject, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            dynamic routeRespond = JsonConvert.DeserializeObject(response);
+
+            Console.WriteLine(routeRespond);
         }
     }
 }
