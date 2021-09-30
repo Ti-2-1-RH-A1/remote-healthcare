@@ -570,7 +570,6 @@ namespace RemoteHealthcare
             int[] position = { -50, 115, 0 };
             int[] rotation = { 315, 90, 0 };
             int[] size = { 50, 25 };
-            //int[] resolution = {256, 128};
             int[] resolution = { 512, 512 };
             int[] background = { 1, 1, 1, 1 };
 
