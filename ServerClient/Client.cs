@@ -100,7 +100,7 @@ namespace ServerClient
             while (totalBufferText.Contains("\r\n\r\n\r\n"))
             {
                 string packet = totalBufferText.Substring(0, totalBufferText.IndexOf("\r\n\r\n\r\n"));
-                totalBufferText = totalBufferText[(totalBufferText.IndexOf("\r\n\r\n\r\n") + 6)..];
+                totalBufferText = totalBufferText[(totalBufferText.IndexOf("\r\n\r\n\r\n") + (totalBufferText.Length - totalBufferText.IndexOf("\r\n\r\n\r\n")))..];
                 HandleData(packet);
             }
 
