@@ -8,5 +8,9 @@ namespace DoctorApplication
 {
     class DoctorActions
     {
+        public void GetClients()
+        {
+
+        }
     }
 }

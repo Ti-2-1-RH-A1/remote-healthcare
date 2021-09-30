@@ -14,6 +14,10 @@ namespace DoctorApplication
 
         public ClientManager()
         {
+            ServerClient.Client client = new ServerClient.Client();
+            
+
+
         }
     }
 }

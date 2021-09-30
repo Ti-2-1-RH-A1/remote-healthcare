@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ServerClient
 {
-    class ClientsManager
+    public class ClientsManager
     {
         private readonly List<ClientHandler> clients;
 
@@ -18,6 +18,11 @@ namespace ServerClient
         {
             clients.Remove(client);
             Console.WriteLine("Client disconnected");
+        }
+
+        public List<ClientHandler> GetClients()
+        {
+            return clients;
         }
     }
 }
