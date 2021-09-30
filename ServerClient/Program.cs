@@ -13,17 +13,15 @@ namespace ServerClient
 
             var client = new Client("localhost", "Fiets", false);
 
-
             await Task.Delay(3000);
 
             client.SendPacket(new Dictionary<string, string>() {
-                { "Method", "Get" }
+                { "Method", "Get" },
             }, new Dictionary<string, string>(), (e1, e2) =>
             {
                 Console.WriteLine(e1);
                 Console.WriteLine(e2);
             });
-
             Console.ReadLine();
         }
     }

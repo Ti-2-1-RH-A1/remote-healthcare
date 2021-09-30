@@ -60,10 +60,10 @@ namespace ServerClient
                 if (!DoesExist)
                 {
                     SendPacket(new Dictionary<string, string>() {
-                        { "Method", "Login" }
+                        { "Method", "Login" },
                     }, new Dictionary<string, string>(){
                         { "Result", "Error" },
-                        {"message","Key doesn't exist"}
+                        {"message","Key doesn't exist"},
                     });
                     Console.WriteLine("Key doesn't exist");
                     return;
@@ -71,10 +71,10 @@ namespace ServerClient
                 if (IsDoctor)
                 {
                     SendPacket(new Dictionary<string, string>() {
-                        { "Method", "Login" }
+                        { "Method", "Login" },
                     }, new Dictionary<string, string>(){
                         { "Result", "ok" },
-                        {"message","Doctor logged in."}
+                        {"message","Doctor logged in."},
                     });
                     Console.WriteLine("Doctor logged in.");
                     this.IsDoctor = true;
@@ -83,10 +83,10 @@ namespace ServerClient
                 {
                     this.IsDoctor = false;
                         SendPacket(new Dictionary<string, string>() {
-                        { "Method", "Login" }
+                        { "Method", "Login" },
                     }, new Dictionary<string, string>(){
                         { "Result", "ok" },
-                        {"message","Patient logged in."}
+                        {"message","Patient logged in."},
                     });
                     Console.WriteLine("Patient logged in.");
                 }
@@ -99,8 +99,6 @@ namespace ServerClient
             {
                 int receivedBytes = stream.EndRead(ar);
                 string receivedText = Encoding.ASCII.GetString(buffer, 0, receivedBytes);
-                
-
                 totalBufferText += receivedText;
             }
             catch (IOException)
@@ -141,9 +139,6 @@ namespace ServerClient
                     { "message", "Method not found" },
                 });
             }
-
-
-
         }
 
         private void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
