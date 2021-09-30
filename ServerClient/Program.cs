@@ -17,7 +17,7 @@ namespace ServerClient
 
             // client.SendPacket(new Dictionary<string, string>() {
             //     { "Method", "Get" }
-            // }, new Dictionary<string, string>(), (e1, e2) =>
+            // }, new Dictionary<string, string>(), (header, data) =>
             // {
             //     Console.WriteLine(e1);
             //     Console.WriteLine(e2);

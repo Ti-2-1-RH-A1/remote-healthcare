@@ -1,13 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Windows.Input;
 
 namespace DoctorApplication
 {
@@ -29,11 +23,11 @@ namespace DoctorApplication
 
             client.SendPacket(new Dictionary<string, string>() {
                 { "Method", "GetClients" }
-            }, new Dictionary<string, string>(), (e1, e2) =>
+            }, new Dictionary<string, string>(), (header, data) =>
             {
-                Console.WriteLine(e1);
-                Console.WriteLine(e2);
-                AddClientsFromString(e1["Data"]);
+                Console.WriteLine(header);
+                Console.WriteLine(data);
+                AddClientsFromString(header["Data"]);
             });
 
         }

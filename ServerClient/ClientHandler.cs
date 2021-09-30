@@ -36,10 +36,10 @@ namespace ServerClient
 
         private Callback GetClients()
         {
-            return delegate(Dictionary<string, string> packetData, Dictionary<string, string> headerData)
+            return delegate(Dictionary<string, string> header, Dictionary<string, string> data)
             {
-                headerData.TryGetValue("Serial", out string serial);
-                SendPacket(headerData, new Dictionary<string, string>(){
+                header.TryGetValue("Serial", out string serial);
+                SendPacket(header, new Dictionary<string, string>(){
                     { "Result", "Ok" },
                     {"Data",Util.StringifyClients(manager.GetClients())}
                 });
