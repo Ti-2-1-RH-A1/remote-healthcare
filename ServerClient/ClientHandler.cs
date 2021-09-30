@@ -118,7 +118,8 @@ namespace ServerClient
                 totalBufferText = totalBufferText.Substring(totalBufferText.IndexOf("\r\n\r\n\r\n") + (totalBufferText.Length-totalBufferText.IndexOf("\r\n\r\n\r\n")));
                 HandleData(packetData, headerData);
             }
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+
+            if (stream.CanRead) stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
         private void HandleData(Dictionary<string, string> packetData, Dictionary<string, string> headerData)
