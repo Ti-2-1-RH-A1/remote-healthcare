@@ -11,6 +11,7 @@ namespace ServerClient
         private readonly TcpClient tcpClient;
         private readonly AuthHandler auth;
         private readonly Stream stream;
+        private readonly ClientsManager manager;
         public delegate void Callback(Dictionary<string, string> packetData, Dictionary<string, string> headerData);
         public Dictionary<string, Callback> actions;
         private readonly byte[] buffer = new byte[1024];
@@ -18,8 +19,9 @@ namespace ServerClient
 
         public bool IsDoctor { get; set; }
 
-        public ClientHandler(TcpClient tcpClient, Stream stream, AuthHandler auth)
+        public ClientHandler(TcpClient tcpClient, Stream stream, AuthHandler auth, ClientsManager manager)
         {
+            this.manager = manager;
             this.tcpClient = tcpClient;
             this.auth = auth;
             this.stream = stream;
@@ -85,7 +87,7 @@ namespace ServerClient
             {
                 stream.Close();
                 tcpClient.Close();
-                Program.Disconnect(this);
+                manager.Disconnect(this);
                 return;
             }
 
