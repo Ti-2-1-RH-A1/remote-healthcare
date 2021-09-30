@@ -121,8 +121,24 @@ namespace ServerClient
 
             if (headers.TryGetValue("Method", out string methodValue))
             {
+
                 if (methodValue == "Login")
                 {
+                    
+                    if (data.TryGetValue("Result", out string resultValue))
+                    {
+                        if(resultValue == "Error")
+                        {
+                            data.TryGetValue("message", out string messageValue);
+                            Console.WriteLine("Received error packet: {0}", messageValue);
+                            client.Close();
+                            return;
+                        }
+                    } else
+                    {
+                        Console.WriteLine("Response from server did not contain result. Skipping packet!");
+                        return;
+                    }
                     Console.WriteLine("Login");
                     loggedIn = true;
                 }
