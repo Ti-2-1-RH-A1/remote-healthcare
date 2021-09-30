@@ -3,7 +3,7 @@ using RemoteHealthcare;
 using System;
 using System.Diagnostics;
 
-namespace FietsSimulatorTest
+namespace RemoteHealthcare.Tests
 {
     [TestClass]
     public class UnitTests

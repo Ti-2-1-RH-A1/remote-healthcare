@@ -1,4 +1,6 @@
-﻿namespace RemoteHealthcare
+﻿using VirtualReality;
+
+namespace RemoteHealthcare
 {
     class Program
     {
@@ -7,6 +9,9 @@
 
         static void Main(string[] args)
         {
+            VrManager vrManager = new VrManager();
+            vrManager.Start();
+
             Program program = new Program();
             ConsoleGUI cGUI = new ConsoleGUI(program);
             cGUI.SelectionHandler();

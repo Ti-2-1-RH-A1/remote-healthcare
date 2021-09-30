@@ -1,24 +1,33 @@
-name: "Nieuwe Feature"
-description: File a bug report
+name: "New Feature"
+description: Create a feature
 title: "[Feature]: "
+labels: "enhancement"
 body:
   - type: markdown
     attributes:
       value: |
-        Hieronder vul je de nieuwe feature in!
+        You will file a new feature!
   - type: input
     id: feature
     attributes:
       label: Feature
-      description: Wat is de feature in enkel woorden?
-      placeholder: ex. De fiets moet 2 geven
+      description: What is the feuture in a few short words?
+      placeholder: ex. It needs to show a menu
     validations:
       required: true
   - type: textarea
     id: feature-detail
     attributes:
-      label: Details van Feature
-      description: In detail vertel wat er moet gebeuren
-      placeholder: Vertel wat er moet gebeuren
+      label: Details of Feature
+      description: Please describe the feature in detail.
+      placeholder: What are the details?
     validations:
       required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Style Guide
+      description: By submitting this issue, you agree to follow our [Style Guide](https://github.com/Ti-2-1-RH-A1/remote-healthcare/blob/development/.github/STYLE_GUIDELINES.md)
+      options:
+        - label: I agree to follow the Style Guide   
+          required: true
