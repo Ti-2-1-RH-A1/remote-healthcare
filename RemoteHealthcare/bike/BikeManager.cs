@@ -6,9 +6,9 @@ namespace RemoteHealthcare.bike
 {
     class BikeManager
     {
-        private IBike realBike;
-        private IBike simulatorBike;
-        private IBike activeBike;
+        private readonly IBike realBike;        // Instance of the real physical bike.
+        private readonly IBike simulatorBike;   // Instance of the simulated bike run by the program.
+        private IBike activeBike;               // Instance of the bike currently being used. I.E. the real- or simulated bike.
 
         public BikeManager(Func<(int,float)> callback)
         {
@@ -26,9 +26,13 @@ namespace RemoteHealthcare.bike
         {
             if (biketype == BikeType.REAL_BIKE)
             {
-                this.activeBike = realBike;
-                realBike.Start();
+                this.activeBike = this.realBike;
+                this.activeBike.Start(bikeId);
+                return;
             }
+
+            this.activeBike = this.simulatorBike;
+            this.activeBike.Start();
         }
     }
 }

@@ -18,7 +18,7 @@ namespace RemoteHealthcare.bike
             throw new NotImplementedException();
         }
 
-        public void Start()
+        public void Start(string bikeId = null)
         {
             throw new NotImplementedException();
         }

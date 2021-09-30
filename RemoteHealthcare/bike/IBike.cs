@@ -6,7 +6,7 @@ namespace RemoteHealthcare.bike
 {
     interface IBike
     {
-        public void Start();
+        public void Start(string bikeId = null);
         public void SetResistance(int resistance);
     }
 }
