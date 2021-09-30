@@ -15,7 +15,5 @@ namespace DoctorApplication
         public ClientManager()
         {
         }
-
-        
     }
 }
