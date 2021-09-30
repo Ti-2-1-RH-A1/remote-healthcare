@@ -8,5 +8,6 @@ namespace DoctorApplication
 {
     class DoctorActions
     {
+       
     }
 }

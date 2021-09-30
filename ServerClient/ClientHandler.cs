@@ -6,9 +6,10 @@ using System.Text;
 
 namespace ServerClient
 {
-    internal class ClientHandler
+    public class ClientHandler
     {
         private readonly TcpClient tcpClient;
+        public string authKey;
         private readonly AuthHandler auth;
         private readonly Stream stream;
         private readonly ClientsManager manager;
@@ -27,9 +28,22 @@ namespace ServerClient
             this.stream = stream;
             actions = new Dictionary<string, Callback>() {
                 { "Login", LoginMethode() },
-                { "Disconnect", disconnectCallback()}
+                { "Disconnect", disconnectCallback()},
+                {"GetClients",GetClients()}
             };
             this.stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+        }
+
+        private Callback GetClients()
+        {
+            return delegate(Dictionary<string, string> packetData, Dictionary<string, string> headerData)
+            {
+                headerData.TryGetValue("Serial", out string serial);
+                SendPacket(headerData, new Dictionary<string, string>(){
+                    { "Result", "Ok" },
+                    {"Data",Util.StringifyClients(manager.GetClients())}
+                });
+            };
         }
 
         private Callback disconnectCallback()
@@ -63,6 +77,8 @@ namespace ServerClient
                     Console.WriteLine("Key doesn't exist");
                     return;
                 }
+
+                authKey = key;
                 if (IsDoctor)
                 {
                     SendPacket(header, new Dictionary<string, string>(){
