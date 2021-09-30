@@ -11,11 +11,13 @@ namespace ServerClient
 
             foreach (ClientHandler client in clients)
             {
-                stringBuilder.Append(client.IsDoctor);
-                stringBuilder.Append("|");
+                // stringBuilder.Append(client.somethingelse);
+                // stringBuilder.Append("|");
                 stringBuilder.Append(client.authKey);
                 stringBuilder.Append(";");
             }
+
+            return stringBuilder.ToString();
         }
     }
 }

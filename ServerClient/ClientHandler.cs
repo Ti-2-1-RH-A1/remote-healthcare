@@ -38,9 +38,8 @@ namespace ServerClient
         {
             return delegate(Dictionary<string, string> packetData, Dictionary<string, string> headerData)
             {
-                SendPacket(new Dictionary<string, string>() {
-                    { "Method", "GetClients" }
-                }, new Dictionary<string, string>(){
+                headerData.TryGetValue("Serial", out string serial);
+                SendPacket(headerData, new Dictionary<string, string>(){
                     { "Result", "Ok" },
                     {"Data",Util.StringifyClients(manager.GetClients())}
                 });
