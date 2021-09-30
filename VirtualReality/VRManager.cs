@@ -961,15 +961,15 @@ namespace VirtualReality
         {
             JObject dataCamera = new JObject();
             dataCamera.Add("id", GetIdFromNodeName("Camera"));
-            dataCamera.Add("parent'", bikeId);
+            dataCamera.Add("parent", bikeId);
 
             JObject transformCamera = new JObject();
-            JArray position = new JArray { 0, 0, 0 };
+            JArray position = new JArray { 0, 0, 0 }; /// This is the position needed to make sure the camera is in the right place.
             transformCamera.Add("position", position);
-            transformCamera.Add("scale", 1.0);
-            JArray rotation = new JArray { 0, 0 ,0};
+            transformCamera.Add("scale", 100.0); /// This is the scale needed to have the VR camera in the right position.
+            JArray rotation = new JArray { 0, 90, 0 }; /// This is the rotation needed to make sure the camera is facing towards the front of the bike.
             transformCamera.Add("rotation", rotation);
-            
+
             dataCamera.Add("transform", transformCamera);
 
             JObject cameraObject = new JObject { {"id", JsonID.SCENE_NODE_UPDATE } };
