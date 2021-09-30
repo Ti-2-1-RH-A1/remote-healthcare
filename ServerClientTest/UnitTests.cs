@@ -45,6 +45,12 @@ namespace ServerClient.Tests
 
             await Task.Delay(3500);
             Assert.IsTrue(client.loggedIn);
+            client.SendPacket(new Dictionary<string, string>() {
+                { "Method", "Get" },
+            }, new Dictionary<string, string>(), (e1, e2) =>
+            {
+                Assert.IsTrue(true);
+            });
         }
 
         [TestMethod()]
