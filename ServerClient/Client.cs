@@ -34,6 +34,9 @@ namespace ServerClient
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
         public event EventHandler DataReceived;
 
+        public delegate void Callback(Dictionary<string, string> packetData, Dictionary<string, string> headerData);
+        public Dictionary<int, Callback> serialActions;
+
         public Client(string host = "localhost", string authkey = "fiets", bool useSSL = true)
         {
             this.useSSL = useSSL;
@@ -107,8 +110,14 @@ namespace ServerClient
             if (stream.CanRead) stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
-        public void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
+        public void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data, Callback callback = null)
+        {
+            if (callback != null)
+            {
+                serialActions.Add(new Random().Next(), callback);
+            }
             Write($"{Protocol.StringifyHeaders(headers)}{Protocol.StringifyData(data)}");
+        }
 
         private void Write(string data)
         {
@@ -153,6 +162,17 @@ namespace ServerClient
                 }
                 else
                 {
+                    if (headers.TryGetValue("Serial", out string serial))
+                    {
+                        if (int.TryParse(serial, out int serialInt))
+                        {
+                            if (serialActions.TryGetValue(serialInt, out Callback action))
+                            {
+                                action(data, headers);
+                                serialActions.Remove(serialInt);
+                            }
+                        }
+                    }
                     DataReceived?.Invoke(this, new DataReceivedArgs(headers, data));
                 }
             }

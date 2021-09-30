@@ -41,9 +41,9 @@ namespace ServerClient.Tests
 
             await Task.Delay(1000);
 
-            var client = new Client("localhost", "fiets", false);
+            var client = new Client("localhost", "Fiets", false);
 
-            await Task.Delay(3000);
+            await Task.Delay(3500);
             Assert.IsTrue(client.loggedIn);
         }
 
