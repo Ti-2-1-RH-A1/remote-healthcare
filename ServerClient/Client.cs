@@ -34,12 +34,12 @@ namespace ServerClient
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
         public event EventHandler DataReceived;
 
-        public Client(string authkey = "fiets", bool useSSL = true)
+        public Client(string host = "localhost", string authkey = "fiets", bool useSSL = true)
         {
             this.useSSL = useSSL;
             authKey = authkey;
             client = new TcpClient();
-            client.BeginConnect("localhost", 7777, new AsyncCallback(OnConnect), null);
+            client.BeginConnect(host, 7777, new AsyncCallback(OnConnect), null);
             buffer = new byte[1024];
             loggedIn = false;
 
