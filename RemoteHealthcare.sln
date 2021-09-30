@@ -7,11 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RemoteHealthcare", "RemoteH
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FietsSimulatorTest", "FietsSimulatorTest\FietsSimulatorTest.csproj", "{548C4995-F317-4989-B8F9-BC0F7483A60F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VirtualReality", "VirtualReality\VirtualReality.csproj", "{40CBD40E-EC1A-4E86-9283-71570094FD5F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerClient", "ServerClient\ServerClient.csproj", "{14405CD2-2FBC-4A60-A755-629AF7277547}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerClientTest", "ServerClientTest\ServerClientTest.csproj", "{C19B120B-0399-49BF-8A8E-244CCCC1C5EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerClientTest", "ServerClientTest\ServerClientTest.csproj", "{C19B120B-0399-49BF-8A8E-244CCCC1C5EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

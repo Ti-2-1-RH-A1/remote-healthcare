@@ -1,4 +1,3 @@
-using ServerClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -35,7 +34,7 @@ namespace ServerClient.Tests
             CollectionAssert.AreEqual(data, dictData);
         }
 
-        [TestMethod]
+        [TestMethod()]
         public async Task TestServerAsync()
         {
             Program.RunServer("", false);
@@ -48,7 +47,7 @@ namespace ServerClient.Tests
             Assert.IsTrue(client.loggedIn);
         }
 
-        [TestMethod]
+        [TestMethod()]
         public void TestNoCertError()
         {
             Assert.ThrowsException<Exception>(() => Program.RunServer(@"Serhdjfjhdver.pfx"));

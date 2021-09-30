@@ -11,6 +11,7 @@ namespace ServerClient
     public class Program
     {
         private static bool useSSL;
+        private static readonly AuthHandler auth = new AuthHandler();
         private static TcpListener listener;
         private static List<ClientHandler> clients = new List<ClientHandler>();
         public static X509Certificate serverCertificate = null;
@@ -25,7 +26,6 @@ namespace ServerClient
                 // Create a TCP/IP (IPv4) socket and listen for incoming connections.
                 listener = new TcpListener(IPAddress.Any, 7777);
                 listener.Start();
-
                 Console.WriteLine("Waiting for a client to connect...");
                 listener.BeginAcceptTcpClient(new AsyncCallback(ProcessClient), null);
             }
@@ -48,14 +48,14 @@ namespace ServerClient
                 sslStream.AuthenticateAsServer(serverCertificate, clientCertificateRequired: false, checkCertificateRevocation: true);
 
                 // Start handling client
-                clients.Add(new ClientHandler(client, sslStream));
+                clients.Add(new ClientHandler(client, sslStream, auth));
                 listener.BeginAcceptTcpClient(new AsyncCallback(ProcessClient), null);
             }
             else
             {
                 // Fallback no ssl
                 NetworkStream stream = client.GetStream();
-                clients.Add(new ClientHandler(client, stream));
+                clients.Add(new ClientHandler(client, stream, auth));
                 listener.BeginAcceptTcpClient(new AsyncCallback(ProcessClient), null);
             }
         }
@@ -71,9 +71,10 @@ namespace ServerClient
             string certificate = @"Server.pfx";
             RunServer(certificate, false);
 
-            new Client("fiets", false);
+            //new Client("Fiets", false);
 
             await Task.Delay(3000);
+            Console.ReadLine();
         }
     }
 }
