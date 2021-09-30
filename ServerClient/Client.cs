@@ -121,18 +121,14 @@ namespace ServerClient
 
             if (headers.TryGetValue("Method", out string methodValue))
             {
-                switch (methodValue)
+                if (methodValue == "Login")
                 {
-                    case "Login":
-                        Console.WriteLine("Login");
-                        loggedIn = true;
-                        break;
-
-                    case "Get":
-                        Console.WriteLine("Get");
-                        DataReceivedArgs PacketInformation = new DataReceivedArgs(headers, data);
-                        DataReceived?.Invoke(this, PacketInformation);
-                        break;
+                    Console.WriteLine("Login");
+                    loggedIn = true;
+                }
+                else
+                {
+                    DataReceived?.Invoke(this, new DataReceivedArgs(headers, data));
                 }
             }
             else
