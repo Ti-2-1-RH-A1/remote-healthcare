@@ -79,6 +79,7 @@ namespace ServerClient
                 Console.WriteLine($"Exception: {e.Message}");
                 if (e.InnerException != null) Console.WriteLine($"Inner exception: {e.InnerException.Message}");
                 Console.WriteLine("Authentication failed - closing the connection.");
+                stream.Close();
                 client.Close();
                 return;
             }
@@ -102,7 +103,8 @@ namespace ServerClient
                 totalBufferText = totalBufferText[(totalBufferText.IndexOf("\r\n\r\n\r\n") + 6)..];
                 HandleData(packet);
             }
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+
+            if (stream.CanRead) stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
         public void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
@@ -121,26 +123,33 @@ namespace ServerClient
 
             if (headers.TryGetValue("Method", out string methodValue))
             {
+                if (!(data.TryGetValue("Result", out string resultValue)))
+                {
+                    Console.WriteLine("Response from server did not contain result. Skipping packet!");
+                    return;
+                }
 
                 if (methodValue == "Login")
                 {
-                    
-                    if (data.TryGetValue("Result", out string resultValue))
+                    if (resultValue == "Error")
                     {
-                        if(resultValue == "Error")
-                        {
-                            data.TryGetValue("message", out string messageValue);
-                            Console.WriteLine("Received error packet: {0}", messageValue);
-                            client.Close();
-                            return;
-                        }
-                    } else
-                    {
-                        Console.WriteLine("Response from server did not contain result. Skipping packet!");
+                        data.TryGetValue("message", out string messageValue);
+                        Console.WriteLine("Received error packet: {0}", messageValue);
+                        SendPacket(new Dictionary<string, string>() {
+                            { "Method", "Disconnect" }
+                        }, new Dictionary<string, string>());
+
+
                         return;
                     }
+
                     Console.WriteLine("Login");
                     loggedIn = true;
+                }
+                else if (methodValue == "Disconnect")
+                {
+                    stream.Close();
+                    client.Close();
                 }
                 else
                 {

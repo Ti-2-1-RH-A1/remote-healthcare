@@ -27,8 +27,28 @@ namespace ServerClient
             this.stream = stream;
             actions = new Dictionary<string, Callback>() {
                 { "Login", LoginMethode() },
+                { "Disconnect", disconnectCallback()}
             };
             this.stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+        }
+
+        private Callback disconnectCallback()
+        {
+            return delegate(Dictionary<string, string> packetData, Dictionary<string, string> headerData)
+            {
+                SendPacket(new Dictionary<string, string>()
+                {
+                    {"Method", "Disconnect"}
+                }, new Dictionary<string, string>()
+                {
+                    {"Result", "ok"},
+                    {"message", "Request for disconnect received"}
+                });
+
+                stream.Close();
+                tcpClient.Close();
+                manager.Disconnect(this);
+            };
         }
 
         private Callback LoginMethode()
@@ -79,7 +99,7 @@ namespace ServerClient
             {
                 int receivedBytes = stream.EndRead(ar);
                 string receivedText = Encoding.ASCII.GetString(buffer, 0, receivedBytes);
-                Console.WriteLine(receivedText);
+                
 
                 totalBufferText += receivedText;
             }
@@ -94,7 +114,8 @@ namespace ServerClient
             while (totalBufferText.Contains("\r\n\r\n\r\n"))
             {
                 (Dictionary<string, string> headerData, Dictionary<string, string> packetData) = Protocol.ParsePacket(totalBufferText);
-                totalBufferText = totalBufferText.Substring(totalBufferText.IndexOf("\r\n\r\n\r\n") + 6);
+                
+                totalBufferText = totalBufferText.Substring(totalBufferText.IndexOf("\r\n\r\n\r\n") + (totalBufferText.Length-totalBufferText.IndexOf("\r\n\r\n\r\n")));
                 HandleData(packetData, headerData);
             }
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
@@ -103,7 +124,6 @@ namespace ServerClient
         private void HandleData(Dictionary<string, string> packetData, Dictionary<string, string> headerData)
         {
             headerData.TryGetValue("Method", out string item);
-            Console.WriteLine($"Got a packet: {item}");
 
             if (actions.TryGetValue(item, out Callback action))
             {

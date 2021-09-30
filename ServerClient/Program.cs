@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace ServerClient
 {
@@ -9,8 +10,10 @@ namespace ServerClient
             string certificate = @"Server.pfx";
             new Server(certificate, false);
 
-            new Client("localhost", "Fiets", false);
+            new Client("localhost", "test", false);
 
+
+            Console.ReadLine();
             await Task.Delay(3000);
         }
     }
