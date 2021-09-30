@@ -549,6 +549,38 @@ namespace RemoteHealthcare
             Console.WriteLine(response);
         }
 
+        public static void CreateMessagePanel(ref Connection connection, string panelName = "messagePanel")
+        {
+            int[] position = { -50, 150, 0 };
+            int[] rotation = { 0, 90, 0 };
+            int[] size = { 50, 25 };
+            int[] resolution = { 512, 512 };
+            int[] background = { 1, 1, 1, 1 };
+
+            CreatePanel(ref connection, panelName, position, rotation, size, resolution, background, true, GetBikeID(ref connection));
+            setTransparentPanel(ref connection, panelName);
+        }
+
+        public static void setTransparentPanel(ref Connection connection, string panelName)
+        {
+            JObject clearColorObject = new JObject { {"id", JsonID.SCENE_PANEL_SETCLEARCOLOR } };
+
+            JObject clearColorData = new JObject();
+            clearColorData.Add("id", GetIdFromNodeName(ref connection, panelName));
+            clearColorData.Add("color", new JArray(1, 1, 1, 0));
+
+            clearColorObject.Add("data", clearColorData);
+
+            string response = "";
+            connection.SendViaTunnel(clearColorObject, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            Console.WriteLine(response);
+        }
+
         /// <summary>
         /// Draws a message from the doctor on a panel
         /// </summary>
@@ -557,7 +589,7 @@ namespace RemoteHealthcare
         /// <param name="panelName"></param>
         public static void DrawChatMessage(ref Connection connection, string message, string panelName)
         {
-            int[] position = { 0, 500 };
+            int[] position = { 100, 150 };
             int[] color = { 100, 0, 0, 1 };
 
             ///ClearPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
