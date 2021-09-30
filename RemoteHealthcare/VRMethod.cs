@@ -466,6 +466,29 @@ namespace RemoteHealthcare
             return routeRespond.data.uuid;
         }
 
+        public void AddRoad(ref Connection connection, string routeID)
+        {
+            JObject dataRoad = new JObject();
+
+            dataRoad.Add("route", routeID);
+            dataRoad.Add("diffuse", @"data/NetworkEngine/textures/terrain/mntn_black_d.jpg");
+            dataRoad.Add("normal", @"data/NetworkEngine/textures/terrain/mntn_black_d.jpg");
+            dataRoad.Add("specular", @"data/NetworkEngine/textures/terrain/mntn_black_d.jpg");
+            dataRoad.Add("heightoffset", 0.05);
+
+            JObject roadObject = new JObject { { "id", JsonID.SCENE_ROAD_ADD } };
+            roadObject.Add("data", dataRoad);
+
+            string response = "";
+            connection.SendViaTunnel(roadObject, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            dynamic routeRespond = JsonConvert.DeserializeObject(response);
+        }
+
         /// <summary>
         /// Make a given node follow a given route
         /// </summary>
@@ -757,6 +780,36 @@ namespace RemoteHealthcare
 
             string skyboxSetTimeResponse = "";
             connection.SendViaTunnel(tunnelSetTimeJson, response => skyboxSetTimeResponse = response);
+        }
+
+        public void SetCamera(ref Connection connection, string bikeId)
+        {
+            JObject dataCamera = new JObject();
+            dataCamera.Add("id", GetIdFromNodeName(ref connection,"Camera"));
+            dataCamera.Add("parent", bikeId);
+
+            JObject transformCamera = new JObject();
+            JArray position = new JArray { 0, 0, 0 }; /// This is the position needed to make sure the camera is in the right place.
+            transformCamera.Add("position", position);
+            transformCamera.Add("scale", 100.0); /// This is the scale needed to have the VR camera in the right position.
+            JArray rotation = new JArray { 0, 90, 0 }; /// This is the rotation needed to make sure the camera is facing towards the front of the bike.
+            transformCamera.Add("rotation", rotation);
+
+            dataCamera.Add("transform", transformCamera);
+
+            JObject cameraObject = new JObject { { "id", JsonID.SCENE_NODE_UPDATE } };
+            cameraObject.Add("data", dataCamera);
+
+            string response = "";
+            connection.SendViaTunnel(cameraObject, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            dynamic routeRespond = JsonConvert.DeserializeObject(response);
+
+            Console.WriteLine(routeRespond);
         }
     }
 }
