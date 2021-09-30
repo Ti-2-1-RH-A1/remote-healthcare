@@ -9,15 +9,16 @@ namespace ServerClient
     class Server
     {
         private readonly bool useSSL;
-        private readonly AuthHandler auth = new();
+        private readonly AuthHandler auth;
         private readonly TcpListener listener;
         private readonly ClientsManager clientsManager;
         private readonly X509Certificate serverCertificate;
         // The certificate parameter specifies the name of the file
         // containing the machine certificate.
-        public Server(string certificate, bool useSSL = true)
+        public Server(string certificate, AuthHandler auth, bool useSSL = true)
         {
             this.useSSL = useSSL;
+            this.auth = auth;
             clientsManager = new ClientsManager();
             try
             {
