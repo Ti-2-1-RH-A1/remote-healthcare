@@ -514,6 +514,16 @@ namespace RemoteHealthcare
             SwapPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
         }
 
+        /// <summary>
+        /// Draws text on a panel
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="panelNodeName"></param>
+        /// <param name="text"></param>
+        /// <param name="position"></param>
+        /// <param name="size"></param>
+        /// <param name="color"></param>
+        /// <param name="font"></param>
         public static void Drawtext(ref Connection connection, string panelNodeName, string text, int[] position, int size, int[] color, string font)
         {
             JObject message = new JObject();
@@ -540,6 +550,22 @@ namespace RemoteHealthcare
         }
 
         /// <summary>
+        /// Draws a message from the doctor on a panel
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="message"></param>
+        /// <param name="panelName"></param>
+        public static void DrawChatMessage(ref Connection connection, string message, string panelName)
+        {
+            int[] position = { 0, 500 };
+            int[] color = { 100, 0, 0, 1 };
+
+            ///ClearPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
+            Drawtext(ref connection, panelName, message, position, 32, color, "segoeui");
+            SwapPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
+        }
+
+        /// <summary>
         /// creates a bike panel using some default values
         /// </summary>
         public static void CreateBikePanel(ref Connection connection, string panelName = "bikePanel")
@@ -547,7 +573,6 @@ namespace RemoteHealthcare
             int[] position = { -50, 115, 0 };
             int[] rotation = { 315, 90, 0 };
             int[] size = { 50, 25 };
-            //int[] resolution = {256, 128};
             int[] resolution = { 512, 512 };
             int[] background = { 1, 1, 1, 1 };
 

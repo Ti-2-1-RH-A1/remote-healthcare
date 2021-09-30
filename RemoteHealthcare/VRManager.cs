@@ -71,6 +71,7 @@ namespace VirtualReality
 
             VRMethod.CreateBikePanel(ref connection);
             VRMethod.DrawOnBikePanel(ref connection, "hoegaboega");
+            VRMethod.DrawChatMessage(ref connection, "Dit is een chat message", "bikePanel");
 
             UpdateSceneList();
 
@@ -109,7 +110,7 @@ namespace VirtualReality
 
             string routeUUID = VRMethod.GenerateRoute(ref connection, routeNodes);
 
-            VRMethod.FollowRoute(ref connection, routeUUID, bikeUUID);
+            //VRMethod.FollowRoute(ref connection, routeUUID, bikeUUID);
         }
 
         /// <summary>
