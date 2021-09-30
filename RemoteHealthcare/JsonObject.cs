@@ -8,11 +8,14 @@ using System.Threading.Tasks;
 
 namespace VirtualReality
 {
+    /// <summary>
+    /// Possible class to use in case Json usage has to be refactored again
+    /// </summary>
     class JsonObject
     {
         private delegate void dataCallback(dynamic data);
 
-        private static readonly Dictionary<string, dataCallback> callbacks = new();
+        private static readonly Dictionary<string, dataCallback> callbacks = new Dictionary<string, dataCallback>();
 
         private Connection connection;
 
@@ -34,7 +37,7 @@ namespace VirtualReality
         ///
         public void Send(string id, dynamic data)
         {
-            connection.SendViaTunnel(new()
+            connection.SendViaTunnel(new JObject()
             {
                 {"id", id},
                 {"data", new JObject(data)}

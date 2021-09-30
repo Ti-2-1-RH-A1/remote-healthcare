@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Authentication;
@@ -8,17 +9,34 @@ using System.Text;
 
 namespace ServerClient
 {
-    class Client
+    public class DataReceivedArgs : EventArgs
     {
-        private readonly string authKey;
+        public Dictionary<string, string> headers { get; }
+        public Dictionary<string, string> data { get; }
+
+        public DataReceivedArgs(Dictionary<string, string> headers, Dictionary<string, string> data)
+        {
+            this.headers = headers;
+            this.data = data;
+        }
+    }
+
+    public class Client
+    {
+        public readonly string authKey;
         private readonly TcpClient client;
-        private SslStream stream;
+        private Stream stream;
         private readonly byte[] buffer;
         private string totalBufferText;
-        private bool loggedIn;
+        public bool loggedIn;
+        private bool useSSL;
 
-        public Client(string authkey = "fiets")
+        public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
+        public event EventHandler DataReceived;
+
+        public Client(string authkey = "fiets", bool useSSL = true)
         {
+            this.useSSL = useSSL;
             authKey = authkey;
             client = new TcpClient();
             client.BeginConnect("localhost", 7777, new AsyncCallback(OnConnect), null);
@@ -39,12 +57,22 @@ namespace ServerClient
         {
             client.EndConnect(ar);
             Console.WriteLine("Verbonden!");
-            stream = new SslStream(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
-            
-            // Try to authenticate as Client
+
             try
             {
-                stream.AuthenticateAsClient("localhost");
+                if (useSSL)
+                {
+                    SslStream sslStream = new(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
+
+                    // Try to authenticate as Client
+                    sslStream.AuthenticateAsClient("localhost");
+
+                    stream = sslStream;
+                }
+                else
+                {
+                    stream = client.GetStream();
+                }
             }
             catch (AuthenticationException e)
             {
@@ -77,7 +105,7 @@ namespace ServerClient
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
-        private void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
+        public void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
             Write($"{Protocol.StringifyHeaders(headers)}{Protocol.StringifyData(data)}");
 
         private void Write(string data)
@@ -102,6 +130,8 @@ namespace ServerClient
 
                     case "Get":
                         Console.WriteLine("Get");
+                        DataReceivedArgs PacketInformation = new DataReceivedArgs(headers, data);
+                        DataReceived?.Invoke(this, PacketInformation);
                         break;
                 }
             }

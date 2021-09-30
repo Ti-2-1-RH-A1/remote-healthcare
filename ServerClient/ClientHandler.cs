@@ -14,18 +14,18 @@ namespace ServerClient
     internal class ClientHandler
     {
         private readonly TcpClient tcpClient;
-        private readonly SslStream stream;
+        private readonly Stream stream;
         private readonly byte[] buffer = new byte[1024];
         private string totalBufferText = "";
 
         public bool IsDoctor { get; set; }
 
 
-        public ClientHandler(TcpClient tcpClient, SslStream sslStream)
+        public ClientHandler(TcpClient tcpClient, Stream stream)
         {
             this.tcpClient = tcpClient;
-            stream = sslStream;
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            this.stream = stream;
+            this.stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
         private void OnRead(IAsyncResult ar)
@@ -95,16 +95,6 @@ namespace ServerClient
                     break;
 
             }
-        }
-
-        private bool AssertPacketData(string[] packetData, int requiredLength)
-        {
-            if (packetData.Length < requiredLength)
-            {
-                Write("error");
-                return false;
-            }
-            return true;
         }
 
         private void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
