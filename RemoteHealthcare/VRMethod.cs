@@ -467,6 +467,34 @@ namespace RemoteHealthcare
         }
 
         /// <summary>
+        /// Adds a road on top of a existing route
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="routeID"></param>
+        public static void AddRoad(ref Connection connection, string routeID)
+        {
+            JObject dataRoad = new JObject();
+
+            dataRoad.Add("route", routeID);
+            dataRoad.Add("diffuse", @"data/NetworkEngine/textures/terrain/mntn_black_d.jpg");
+            dataRoad.Add("normal", @"data/NetworkEngine/textures/terrain/mntn_black_d.jpg");
+            dataRoad.Add("specular", @"data/NetworkEngine/textures/terrain/mntn_black_d.jpg");
+            dataRoad.Add("heightoffset", 0.05);
+
+            JObject roadObject = new JObject { { "id", JsonID.SCENE_ROAD_ADD } };
+            roadObject.Add("data", dataRoad);
+
+            string response = "";
+            connection.SendViaTunnel(roadObject, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            dynamic routeRespond = JsonConvert.DeserializeObject(response);
+        }
+
+        /// <summary>
         /// Make a given node follow a given route
         /// </summary>
         /// <param name="routeID"></param>
@@ -514,6 +542,16 @@ namespace RemoteHealthcare
             SwapPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
         }
 
+        /// <summary>
+        /// Draw text on a panel with the given parameters
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="panelNodeName"></param>
+        /// <param name="text"></param>
+        /// <param name="position"></param>
+        /// <param name="size"></param>
+        /// <param name="color"></param>
+        /// <param name="font"></param>
         public static void Drawtext(ref Connection connection, string panelNodeName, string text, int[] position, int size, int[] color, string font)
         {
             JObject message = new JObject();
@@ -540,21 +578,26 @@ namespace RemoteHealthcare
         }
 
         /// <summary>
-        /// creates a bike panel using some default values
+        /// Creates a panel for the bike
         /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="panelName"></param>
         public static void CreateBikePanel(ref Connection connection, string panelName = "bikePanel")
         {
             int[] position = { -50, 115, 0 };
             int[] rotation = { 315, 90, 0 };
             int[] size = { 50, 25 };
-            //int[] resolution = {256, 128};
             int[] resolution = { 512, 512 };
             int[] background = { 1, 1, 1, 1 };
 
             CreatePanel(ref connection, panelName, position, rotation, size, resolution, background, true, GetBikeID(ref connection));
         }
 
-
+        /// <summary>
+        /// Clears a panel.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="nodeID"></param>
         public static void ClearPanel(ref Connection connection, string nodeID)
         {
             JObject message = new JObject();
@@ -569,6 +612,11 @@ namespace RemoteHealthcare
             connection.SendViaTunnel(message);
         }
 
+        /// <summary>
+        /// Swaps a panel. This is needed to make sure you can see the panel.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="nodeID"></param>
         public static void SwapPanel(ref Connection connection, string nodeID)
         {
             JObject message = new JObject();
@@ -695,6 +743,10 @@ namespace RemoteHealthcare
             return string.Empty;
         }
 
+        /// <summary>
+        /// Sets the SkyBox in a Static behavior
+        /// </summary>
+        /// <param name="connection"></param>
         public static void SetSkyBoxStatic(ref Connection connection)
         {
             JObject sendJson = new JObject();
@@ -721,6 +773,11 @@ namespace RemoteHealthcare
             Console.WriteLine(skyboxUpdateResponse);
         }
 
+        /// <summary>
+        /// Sets the SkyBox Time
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="time"></param>
         public static void SetSkyBoxTime(ref Connection connection, float time)
         {
             // set the skybox type to dynamic
@@ -757,6 +814,41 @@ namespace RemoteHealthcare
 
             string skyboxSetTimeResponse = "";
             connection.SendViaTunnel(tunnelSetTimeJson, response => skyboxSetTimeResponse = response);
+        }
+
+        /// <summary>
+        /// Sets the camera on the bike.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="bikeId"></param>
+        public static void SetCamera(ref Connection connection, string bikeId)
+        {
+            JObject dataCamera = new JObject();
+            dataCamera.Add("id", GetIdFromNodeName(ref connection,"Camera"));
+            dataCamera.Add("parent", bikeId);
+
+            JObject transformCamera = new JObject();
+            JArray position = new JArray { 0, 0, 0 }; /// This is the position needed to make sure the camera is in the right place.
+            transformCamera.Add("position", position);
+            transformCamera.Add("scale", 100.0); /// This is the scale needed to have the VR camera in the right position.
+            JArray rotation = new JArray { 0, 90, 0 }; /// This is the rotation needed to make sure the camera is facing towards the front of the bike.
+            transformCamera.Add("rotation", rotation);
+
+            dataCamera.Add("transform", transformCamera);
+
+            JObject cameraObject = new JObject { { "id", JsonID.SCENE_NODE_UPDATE } };
+            cameraObject.Add("data", dataCamera);
+
+            string response = "";
+            connection.SendViaTunnel(cameraObject, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            dynamic routeRespond = JsonConvert.DeserializeObject(response);
+
+            Console.WriteLine(routeRespond);
         }
     }
 }
