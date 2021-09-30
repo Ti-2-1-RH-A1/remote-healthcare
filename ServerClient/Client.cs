@@ -40,6 +40,7 @@ namespace ServerClient
         public Client(string host = "localhost", string authkey = "fiets", bool useSSL = true)
         {
             this.useSSL = useSSL;
+            serialActions = new Dictionary<int, Callback>();
             authKey = authkey;
             client = new TcpClient();
             client.BeginConnect(host, 7777, new AsyncCallback(OnConnect), null);
@@ -114,7 +115,9 @@ namespace ServerClient
         {
             if (callback != null)
             {
-                serialActions.Add(new Random().Next(), callback);
+                int randInt = new Random().Next();
+                serialActions.Add(randInt, callback);
+                headers.Add("Serial", randInt.ToString());
             }
             Write($"{Protocol.StringifyHeaders(headers)}{Protocol.StringifyData(data)}");
         }

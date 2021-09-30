@@ -132,11 +132,13 @@ namespace ServerClient
             }
             else
             {
+                headerData.TryGetValue("Serial", out string serial);
                 SendPacket(new Dictionary<string, string>() {
-                    { "Method", item }
+                    { "Method", item },
+                    { "Serial", serial },
                 }, new Dictionary<string, string>(){
                     { "Result", "Error" },
-                    { "message", "Method not found" }
+                    { "message", "Method not found" },
                 });
             }
 

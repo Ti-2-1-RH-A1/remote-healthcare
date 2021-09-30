@@ -14,22 +14,15 @@ namespace ServerClient
             var client = new Client("localhost", "Fiets", false);
 
 
-
-            Console.ReadLine();
             await Task.Delay(3000);
-
-            client.DataReceived += (e1, e2) =>
-            {
-                System.Console.WriteLine(e1);
-                System.Console.WriteLine(e2);
-            };
 
             client.SendPacket(new Dictionary<string, string>() {
                 { "Method", "Get" }
-            }, new Dictionary<string, string>());
-
-
-
+            }, new Dictionary<string, string>(), (e1, e2) =>
+            {
+                Console.WriteLine(e1);
+                Console.WriteLine(e2);
+            });
 
             Console.ReadLine();
         }
