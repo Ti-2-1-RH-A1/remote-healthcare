@@ -466,6 +466,11 @@ namespace RemoteHealthcare
             return routeRespond.data.uuid;
         }
 
+        /// <summary>
+        /// Adds a road on top of a existing route
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="routeID"></param>
         public static void AddRoad(ref Connection connection, string routeID)
         {
             JObject dataRoad = new JObject();
@@ -537,6 +542,16 @@ namespace RemoteHealthcare
             SwapPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
         }
 
+        /// <summary>
+        /// Draw text on a panel with the given parameters
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="panelNodeName"></param>
+        /// <param name="text"></param>
+        /// <param name="position"></param>
+        /// <param name="size"></param>
+        /// <param name="color"></param>
+        /// <param name="font"></param>
         public static void Drawtext(ref Connection connection, string panelNodeName, string text, int[] position, int size, int[] color, string font)
         {
             JObject message = new JObject();
@@ -563,8 +578,10 @@ namespace RemoteHealthcare
         }
 
         /// <summary>
-        /// creates a bike panel using some default values
+        /// Creates a panel for the bike
         /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="panelName"></param>
         public static void CreateBikePanel(ref Connection connection, string panelName = "bikePanel")
         {
             int[] position = { -50, 115, 0 };
@@ -576,7 +593,11 @@ namespace RemoteHealthcare
             CreatePanel(ref connection, panelName, position, rotation, size, resolution, background, true, GetBikeID(ref connection));
         }
 
-
+        /// <summary>
+        /// Clears a panel.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="nodeID"></param>
         public static void ClearPanel(ref Connection connection, string nodeID)
         {
             JObject message = new JObject();
@@ -591,6 +612,11 @@ namespace RemoteHealthcare
             connection.SendViaTunnel(message);
         }
 
+        /// <summary>
+        /// Swaps a panel. This is needed to make sure you can see the panel.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="nodeID"></param>
         public static void SwapPanel(ref Connection connection, string nodeID)
         {
             JObject message = new JObject();
@@ -717,6 +743,10 @@ namespace RemoteHealthcare
             return string.Empty;
         }
 
+        /// <summary>
+        /// Sets the SkyBox in a Static behavior
+        /// </summary>
+        /// <param name="connection"></param>
         public static void SetSkyBoxStatic(ref Connection connection)
         {
             JObject sendJson = new JObject();
@@ -743,6 +773,11 @@ namespace RemoteHealthcare
             Console.WriteLine(skyboxUpdateResponse);
         }
 
+        /// <summary>
+        /// Sets the SkyBox Time
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="time"></param>
         public static void SetSkyBoxTime(ref Connection connection, float time)
         {
             // set the skybox type to dynamic
@@ -781,6 +816,11 @@ namespace RemoteHealthcare
             connection.SendViaTunnel(tunnelSetTimeJson, response => skyboxSetTimeResponse = response);
         }
 
+        /// <summary>
+        /// Sets the camera on the bike.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="bikeId"></param>
         public static void SetCamera(ref Connection connection, string bikeId)
         {
             JObject dataCamera = new JObject();
