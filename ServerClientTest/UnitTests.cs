@@ -37,11 +37,11 @@ namespace ServerClient.Tests
         [TestMethod()]
         public async Task TestServerAsync()
         {
-            Program.RunServer("", false);
+            new Server("", new AuthHandler(), false);
 
             await Task.Delay(1000);
 
-            var client = new Client("fiets", false);
+            var client = new Client("localhost", "fiets", false);
 
             await Task.Delay(3000);
             Assert.IsTrue(client.loggedIn);
@@ -50,7 +50,7 @@ namespace ServerClient.Tests
         [TestMethod()]
         public void TestNoCertError()
         {
-            Assert.ThrowsException<Exception>(() => Program.RunServer(@"Serhdjfjhdver.pfx"));
+            Assert.ThrowsException<Exception>(() => new Server(@"Serhdjfjhdver.pfx", new AuthHandler()));
         }
 
         [TestMethod()]

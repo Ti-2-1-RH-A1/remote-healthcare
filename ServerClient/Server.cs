@@ -6,7 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace ServerClient
 {
-    class Server
+    public class Server
     {
         private readonly bool useSSL;
         private readonly AuthHandler auth;

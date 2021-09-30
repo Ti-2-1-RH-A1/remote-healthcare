@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 namespace ServerClient
 {
-    class AuthHandler
+    public class AuthHandler
     {
         private Dictionary<string, bool> keys;
 
