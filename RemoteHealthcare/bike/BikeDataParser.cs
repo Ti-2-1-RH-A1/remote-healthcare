@@ -7,7 +7,7 @@ namespace RemoteHealthcare.bike
 {
     public class BikeDataParser
     {
-        public static (int, float) ParseBikeData(byte[] data)
+        public static (DataTypes, float) ParseBikeData(byte[] data)
         {
             return ParseBikeMessageData(ParseByteArrayData(data));
         }
@@ -27,7 +27,7 @@ namespace RemoteHealthcare.bike
             return msg;
         }
 
-        public static (int,float) ParseBikeMessageData(byte[] data)
+        public static (DataTypes, float) ParseBikeMessageData(byte[] data)
         {
             // TODO [Martijn] Implementation
             return (0, 0);

@@ -27,7 +27,7 @@ namespace RemoteHealthcare.bike
             DataReceived(BikeDataParser.ParseBikeData(e.Data));
         }
 
-        public void SetResistance(int resistance)
+        public void SetResistance(byte resistance)
         {
             // TODO [Martijn] Implementation
             throw new NotImplementedException();
@@ -40,7 +40,7 @@ namespace RemoteHealthcare.bike
             bluetooth.Start(this);
         }
 
-        public void DataReceived((int, float) data)
+        public void DataReceived((DataTypes, float) data)
         {
             services.GetService<DeviceManager>().HandleData(data);
         }

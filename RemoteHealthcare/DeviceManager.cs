@@ -25,7 +25,7 @@ namespace RemoteHealthcare
             
         }
 
-        public void HandleData((int,float) data)
+        public void HandleData((DataTypes, float) data)
         {
             // TODO [Martijn] Implementation
         }
