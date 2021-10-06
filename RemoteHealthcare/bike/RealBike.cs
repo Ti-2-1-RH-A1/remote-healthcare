@@ -28,12 +28,14 @@ namespace RemoteHealthcare.bike
 
         public void SetResistance(int resistance)
         {
+            // TODO [Martijn] Implementation
             throw new NotImplementedException();
         }
 
         public void Start(string bikeId = null)
         {
-            bikeId = bikeId;
+            this.bikeId = bikeId;
+            // TODO [Martijn] Implementation
             throw new NotImplementedException();
         }
     }

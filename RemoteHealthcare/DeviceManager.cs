@@ -20,16 +20,6 @@ namespace RemoteHealthcare
 
         public async Task Start()
         {
-            var ble = services.GetServices<Bluetooth>();
-            
-            Bluetooth heartrateBluetooth = ble.Where(b => b.BLEInstance == BLEInstance.HeartRate).FirstOrDefault();
-            // Start BLE
-            /*int x = await ble.Start(new bike.RealBike()
-            {
-                bikeId = "TACX00144"
-            });*/
-
-            heartrateBluetooth.DataReceived += Ble_DataReceived;
         }
 
         private void Ble_DataReceived(object sender, Avans.TI.BLE.BLESubscriptionValueChangedEventArgs e)
@@ -47,7 +37,7 @@ namespace RemoteHealthcare
         {
             return new ServiceCollection()
                 .AddSingleton<Bluetooth>()
-                .AddSingleton<RealBike>()
+                .AddSingleton<BikeManager>()
                 .AddSingleton(this)
                 .BuildServiceProvider();
         }
