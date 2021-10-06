@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Avans.TI.BLE;
+﻿using Avans.TI.BLE;
+using System;
 
 namespace RemoteHealthcare
 {

@@ -1,14 +1,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RemoteHealthcare;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using System.Runtime.InteropServices.ComTypes;
-using System.Threading;
-using Newtonsoft.Json.Schema;
-using System.IO;
-using System.Drawing;
-using RemoteHealthcare;
 
 namespace VirtualReality
 {
@@ -193,10 +188,10 @@ namespace VirtualReality
         {
             Console.WriteLine("Creating a tunnel");
             // create a tunnel
-            JObject tunnelCreateJson = new JObject {{"id", "tunnel/create"}};
+            JObject tunnelCreateJson = new JObject { { "id", "tunnel/create" } };
 
 
-            JObject dataJson = new JObject {{"session", userSessions[sessionId]}};
+            JObject dataJson = new JObject { { "session", userSessions[sessionId] } };
             // place to set the key 
             string sessionKey = "";
             dataJson.Add("key", sessionKey);

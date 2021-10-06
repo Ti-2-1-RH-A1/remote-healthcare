@@ -29,7 +29,7 @@ namespace ServerClient
         private readonly byte[] buffer;
         private string totalBufferText;
         public bool loggedIn;
-        private bool useSSL;
+        private readonly bool useSSL;
 
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
         public event EventHandler DataReceived;

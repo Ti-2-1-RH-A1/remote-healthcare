@@ -5,16 +5,16 @@ using System.Threading;
 
 namespace DoctorApplication
 {
-    class ClientManager
+    internal class ClientManager
     {
-        private List<Client> clients = new List<Client>();
+        private readonly List<Client> clients = new List<Client>();
 
         public ClientManager()
         {
 
             ServerClient.Client client = new ServerClient.Client("localhost", "EchteDokter", true);
 
-            
+
 
             while (!client.loggedIn)
             {
@@ -38,7 +38,7 @@ namespace DoctorApplication
         {
             clientsString = clientsString.Substring(0, clientsString.Length - 1);
             string[] strings = clientsString.Split(";");
-            
+
             foreach (string clientString in strings)
             {
                 string[] split = clientString.Split("|");

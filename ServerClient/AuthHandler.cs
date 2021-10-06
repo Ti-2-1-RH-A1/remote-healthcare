@@ -7,7 +7,7 @@ namespace ServerClient
 {
     public class AuthHandler
     {
-        private Dictionary<string, bool> keys;
+        private readonly Dictionary<string, bool> keys;
 
         public AuthHandler()
         {
@@ -29,7 +29,7 @@ namespace ServerClient
         /// </summary>
         /// <param name="keyToCheck"></param>
         /// <returns>(Key exists, Key is docter)</returns>
-        public (bool, bool) Check(string keyToCheck) => 
+        public (bool, bool) Check(string keyToCheck) =>
             keys.TryGetValue(keyToCheck, out bool value) ? (true, value) : (false, false);
 
         public void SaveKeysToFile(string filename)
