@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace DoctorApplication.Data
 {
-    class DataHandler
+    public class DataHandler
     {
         public Dictionary<string, ClientData> clientData { get; }
         string storageLocation = Directory.GetCurrentDirectory() + "/clients/storage";
