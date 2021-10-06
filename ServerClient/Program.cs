@@ -13,6 +13,7 @@ namespace ServerClient
 
             var client = new Client("localhost", "Fiets", false);
 
+            //var client = new Client("localhost", "Fiets", true, "name");
 
             await Task.Delay(3000);
 
@@ -22,7 +23,7 @@ namespace ServerClient
             // {
             //     Console.WriteLine(e1);
             //     Console.WriteLine(e2);
-            // });
+            // }); 
 
             Console.ReadLine();
         }
