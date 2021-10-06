@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<root>
-  <EchteDokter>true</EchteDokter>
-  <Fiets>false</Fiets>
-  <Tinus>true</Tinus>
-  <Henk>false</Henk>
-</root>
