@@ -6,7 +6,6 @@ namespace RemoteHealthcare.bike
 {
     public class SimulatorBike : IBike
     {
-
         public SimulatorBike(IServiceProvider serviceProvider)
         {
             

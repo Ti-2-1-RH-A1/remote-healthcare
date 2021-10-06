@@ -12,12 +12,13 @@ namespace RemoteHealthcare.bike
         public string bikeId { get; set; }
 
         private readonly IServiceProvider services;
+        private readonly Bluetooth bluetooth;
 
         public RealBike(IServiceProvider serviceProvider)
         {
             this.services = serviceProvider;
 
-            Bluetooth bluetooth = services.GetServices<Bluetooth>().Where(b => b.BLEInstance == BLEInstance.Bike).FirstOrDefault();
+            this.bluetooth = services.GetServices<Bluetooth>().Where(b => b.BLEInstance == BLEInstance.BIKE).FirstOrDefault();
             bluetooth.DataReceived += Ble_DataReceived;
         }
 
@@ -34,9 +35,9 @@ namespace RemoteHealthcare.bike
 
         public void Start(string bikeId = null)
         {
+            // bikeId shouldn't be null, as handled before Start is called upon
             this.bikeId = bikeId;
-            // TODO [Martijn] Implementation
-            throw new NotImplementedException();
+            bluetooth.Start(this);
         }
     }
 }

@@ -10,8 +10,8 @@ namespace RemoteHealthcare
 {
     public enum BLEInstance
     {
-        HeartRate,
-        Bike,
+        HEARTRATE,
+        BIKE,
     };
 
     public class Bluetooth : IDisposable
@@ -25,8 +25,9 @@ namespace RemoteHealthcare
 
         public BLEInstance BLEInstance { get; set; }
 
-        public Bluetooth()
+        public Bluetooth(BLEInstance type)
         {
+            this.BLEInstance = type;
             this.ble = new BLE();
         }
 

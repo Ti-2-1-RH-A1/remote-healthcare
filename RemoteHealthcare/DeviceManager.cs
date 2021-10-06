@@ -20,23 +20,20 @@ namespace RemoteHealthcare
 
         public async Task Start()
         {
-        }
-
-        private void Ble_DataReceived(object sender, Avans.TI.BLE.BLESubscriptionValueChangedEventArgs e)
-        {
-            Console.WriteLine($"Received: {e.Data}");
+            // TODO [Martijn] Implementation
         }
 
         public void HandleData((int,float) data)
         {
-
+            // TODO [Martijn] Implementation
         }
 
 
         private IServiceProvider buildServiceProvider()
         {
             return new ServiceCollection()
-                .AddSingleton<Bluetooth>()
+                .AddSingleton(new Bluetooth(BLEInstance.BIKE))
+                .AddSingleton(new Bluetooth(BLEInstance.HEARTRATE))
                 .AddSingleton<BikeManager>()
                 .AddSingleton(this)
                 .BuildServiceProvider();
