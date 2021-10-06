@@ -24,13 +24,16 @@ namespace RemoteHealthcare.bike
 
         private void Ble_DataReceived(object sender, BLESubscriptionValueChangedEventArgs e)
         {
-            DataReceived(BikeDataParser.ParseBikeData(e.Data));
+            List<(DataTypes, float)> dataReceived = BikeDataParser.ParseBikeData(e.Data);
+            foreach ((DataTypes, float) dataItem in dataReceived)
+            {
+                DataReceived(dataItem);
+            }
         }
 
         public void SetResistance(byte resistance)
         {
-            // TODO [Martijn] Implementation
-            throw new NotImplementedException();
+            bluetooth.SetBikeResistance(resistance);
         }
 
         public void Start(string bikeId = null)

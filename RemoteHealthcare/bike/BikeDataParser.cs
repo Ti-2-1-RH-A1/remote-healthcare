@@ -7,12 +7,12 @@ namespace RemoteHealthcare.bike
 {
     public class BikeDataParser
     {
-        public static (DataTypes, float) ParseBikeData(byte[] data)
+        public static List<(DataTypes, float)> ParseBikeData(byte[] data)
         {
-            return ParseBikeMessageData(ParseByteArrayData(data));
+            return ParseBikeMessageData(ParseBikeByteArrayData(data));
         }
 
-        public static byte[] ParseByteArrayData(byte[] data)
+        private static byte[] ParseBikeByteArrayData(byte[] data)
         {
             var sync = data[0];
             int msgLength = data[1];
@@ -27,10 +27,56 @@ namespace RemoteHealthcare.bike
             return msg;
         }
 
-        public static (DataTypes, float) ParseBikeMessageData(byte[] data)
+        private static List<(DataTypes, float)> ParseBikeMessageData(byte[] data)
         {
-            // TODO [Martijn] Implementation
-            return (0, 0);
+            switch (data[0])
+            {
+                case 0x10:
+                    return ParseBikeDataPage16(data);
+                case 0x19:
+                    return ParseBikeDataPage25(data);
+                default:
+                    return null;
+            }
+        }
+
+        private static List<(DataTypes, float)> ParseBikeDataPage16(byte[] data)
+        {
+            List<(DataTypes, float)> convertedData = new List<(DataTypes, float)>();
+            convertedData.Add(((DataTypes.BIKE_ELAPSED_TIME, ParseElapsedTime(data))));
+            convertedData.Add(((DataTypes.BIKE_DISTANCE, ParseDistance(data))));
+            // For the speed convert it from km/h to m/s
+            convertedData.Add(((DataTypes.BIKE_SPEED, (ParseSpeed(data) * 0.0036f))));
+            return convertedData;
+        }
+
+        private static List<(DataTypes, float)> ParseBikeDataPage25(byte[] data)
+        {
+            List<(DataTypes, float)> convertedData = new List<(DataTypes, float)>();
+            convertedData.Add(((DataTypes.BIKE_ELAPSED_TIME, ParseRPM(data))));
+            convertedData.Add(((DataTypes.BIKE_DISTANCE, ParseAccPower(data))));
+            convertedData.Add(((DataTypes.BIKE_SPEED, ParseInsPower(data))));
+            return convertedData;
+        }
+
+        private static int ParseAccPower(byte[] data) => TwoByteToInt(data[3], data[4]);
+
+        private static int ParseInsPower(byte[] data) => TwoByteToInt(data[5], (byte)(data[6] >> 4));
+
+        private static int ParseRPM(byte[] data) => TwoByteToInt(data[2]);
+
+        private static int ParseDistance(byte[] data) => TwoByteToInt(data[3]);
+
+        private static float ParseElapsedTime(byte[] data) => TwoByteToInt(data[2]) * 0.25f;
+
+        private static int ParseSpeed(byte[] data) => TwoByteToInt(data[4], data[5]);
+
+        private static int TwoByteToInt(byte byte1, byte byte2 = 0)
+        {
+            byte[] bytes = new byte[2];
+            bytes[0] = byte1;
+            bytes[1] = byte2;
+            return BitConverter.ToUInt16(bytes, 0);
         }
     }
 }
