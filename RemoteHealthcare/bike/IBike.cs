@@ -8,5 +8,6 @@ namespace RemoteHealthcare.bike
     {
         public void Start(string bikeId = null);
         public void SetResistance(int resistance);
+        public void DataReceived((int,float) data);
     }
 }

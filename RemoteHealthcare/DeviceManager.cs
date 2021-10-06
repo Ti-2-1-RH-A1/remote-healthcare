@@ -9,8 +9,7 @@ using RemoteHealthcare.bike;
 namespace RemoteHealthcare
 {
 
-    public 
-    class DeviceManager
+    public class DeviceManager
     {
         private IServiceProvider services;
 

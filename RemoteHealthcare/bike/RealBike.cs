@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace RemoteHealthcare.bike
 {
-    public class RealBike : Avans.TI.BLE.BLE, IBike
+    public class RealBike : BLE, IBike
     {
         public string bikeId { get; set; }
 
@@ -24,7 +24,7 @@ namespace RemoteHealthcare.bike
 
         private void Ble_DataReceived(object sender, BLESubscriptionValueChangedEventArgs e)
         {
-            services.GetService<DeviceManager>().HandleData(BikeDataParser.ParseBikeData(e.Data));
+            DataReceived(BikeDataParser.ParseBikeData(e.Data));
         }
 
         public void SetResistance(int resistance)
@@ -38,6 +38,11 @@ namespace RemoteHealthcare.bike
             // bikeId shouldn't be null, as handled before Start is called upon
             this.bikeId = bikeId;
             bluetooth.Start(this);
+        }
+
+        public void DataReceived((int, float) data)
+        {
+            services.GetService<DeviceManager>().HandleData(data);
         }
     }
 }
