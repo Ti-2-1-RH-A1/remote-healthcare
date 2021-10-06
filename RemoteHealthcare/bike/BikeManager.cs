@@ -38,7 +38,7 @@ namespace RemoteHealthcare.bike
         {
             if (bikeType == BikeType.REAL_BIKE && bikeId == null)
             {
-                throw new ArgumentNullException(bikeId, "[BikeManager.StartBike()] bikeId should not be null when bikeType is BikeType.REAL_BIKE");
+                throw new ArgumentNullException(bikeId, "[BikeManager.StartBike()] Param bikeId should not be null when bikeType is BikeType.REAL_BIKE.");
             }
 
             if (bikeType == BikeType.REAL_BIKE)
