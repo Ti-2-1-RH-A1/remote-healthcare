@@ -14,7 +14,6 @@ namespace ServerClient
 
             await Task.Delay(3000);
 
-            
             // client.SendPacket(new Dictionary<string, string>() {
             //     { "Method", "Get" }
             // }, new Dictionary<string, string>(), (header, data) =>
