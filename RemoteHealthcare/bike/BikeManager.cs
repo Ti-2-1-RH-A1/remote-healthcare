@@ -2,7 +2,7 @@
 
 namespace RemoteHealthcare.bike
 {
-    class BikeManager
+    public class BikeManager
     {
         private readonly IBike realBike;        // Instance of the real physical bike.
         private readonly IBike simulatorBike;   // Instance of the simulated bike run by the program.

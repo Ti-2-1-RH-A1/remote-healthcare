@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using RemoteHealthcare.bike;
 
 namespace RemoteHealthcare
 {
@@ -18,9 +19,11 @@ namespace RemoteHealthcare
             this.services = buildServiceProvider();
         }
 
-        public async Task Start()
+        public void Start(BikeManager.BikeType bikeType, string bikeId)
         {
-            // TODO [Martijn] Implementation
+            var bikeManager = services.GetService<BikeManager>();
+            bikeManager.StartBike(bikeType);
+            
         }
 
         public void HandleData((int,float) data)

@@ -11,7 +11,7 @@ namespace FietsSimulatorTest
         [TestMethod]
         public void TestSimulator()
         {
-            SimulatorBike simulator = new SimulatorBike();
+            DeprecatedSimulatorBike simulator = new DeprecatedSimulatorBike();
             Stopwatch stopwatch = Stopwatch.StartNew();
             int i = 0;
             try
