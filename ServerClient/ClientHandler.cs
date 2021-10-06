@@ -36,7 +36,7 @@ namespace ServerClient
 
         private Callback GetClients()
         {
-            return delegate(Dictionary<string, string> header, Dictionary<string, string> data)
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
                 header.TryGetValue("Serial", out string serial);
                 SendPacket(header, new Dictionary<string, string>(){
@@ -48,7 +48,7 @@ namespace ServerClient
 
         private Callback disconnectCallback()
         {
-            return delegate(Dictionary<string, string> header, Dictionary<string, string> data)
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
                 SendPacket(header, new Dictionary<string, string>()
                 {
@@ -91,7 +91,7 @@ namespace ServerClient
                 else
                 {
                     this.IsDoctor = false;
-                        SendPacket(header, new Dictionary<string, string>(){
+                    SendPacket(header, new Dictionary<string, string>(){
                         { "Result", "ok" },
                         {"message","Patient logged in."},
                     });
@@ -119,8 +119,8 @@ namespace ServerClient
             while (totalBufferText.Contains("\r\n\r\n\r\n"))
             {
                 (Dictionary<string, string> header, Dictionary<string, string> data) = Protocol.ParsePacket(totalBufferText);
-                
-                totalBufferText = totalBufferText.Substring(totalBufferText.IndexOf("\r\n\r\n\r\n") + (totalBufferText.Length-totalBufferText.IndexOf("\r\n\r\n\r\n")));
+
+                totalBufferText = totalBufferText.Substring(totalBufferText.IndexOf("\r\n\r\n\r\n") + (totalBufferText.Length - totalBufferText.IndexOf("\r\n\r\n\r\n")));
                 HandleData(header, data);
             }
 

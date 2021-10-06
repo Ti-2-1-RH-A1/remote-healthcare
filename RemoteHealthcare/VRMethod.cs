@@ -4,13 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Threading;
 using VirtualReality;
 
 namespace RemoteHealthcare
 {
-    class VRMethod
+    internal class VRMethod
     {
         /// <summary>
         /// isStatusOk does <c>checks if a string contains an ok message</c>
@@ -824,7 +823,7 @@ namespace RemoteHealthcare
         public static void SetCamera(ref Connection connection, string bikeId)
         {
             JObject dataCamera = new JObject();
-            dataCamera.Add("id", GetIdFromNodeName(ref connection,"Camera"));
+            dataCamera.Add("id", GetIdFromNodeName(ref connection, "Camera"));
             dataCamera.Add("parent", bikeId);
 
             JObject transformCamera = new JObject();

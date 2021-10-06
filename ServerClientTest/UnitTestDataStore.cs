@@ -2,7 +2,7 @@
 using ServerClient.Data;
 using System.IO;
 
-namespace ServerClientTest
+namespace ServerClient.Tests
 {
     [TestClass()]
     public class UnitTestDataStore

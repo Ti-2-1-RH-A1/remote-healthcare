@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Avans.TI.BLE;
+using System;
 using System.Threading;
-using Avans.TI.BLE;
 
 namespace RemoteHealthcare
 {
-    class HRManager
+    internal class HRManager
     {
         private static int amountDataSend = 0;
         private static int ThresholdDataAmount = 0;

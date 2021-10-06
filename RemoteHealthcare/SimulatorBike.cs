@@ -113,7 +113,7 @@ namespace RemoteHealthcare
     }
 
     internal class FakeBikeData : avansBikeData
-    { 
+    {
         public FakeBikeData(byte[] data, string serviceName)
         {
             this.Data = data;
