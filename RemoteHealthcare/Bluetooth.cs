@@ -2,45 +2,70 @@
 using System.Text;
 using System.Threading.Tasks;
 using Avans.TI.BLE;
+using RemoteHealthcare.bike;
 
 using avansBikeData = Avans.TI.BLE.BLESubscriptionValueChangedEventArgs;
 
 namespace RemoteHealthcare
 {
-    public class Bluetooth
+    public enum BLEInstance
     {
-        public static async Task<int> SetConnectionAsync(BLE ble, string device, string service, BLESubscriptionValueChangedEventHandler sub, string characteristic)
+        HeartRate,
+        Bike,
+    };
+
+    public class Bluetooth : IDisposable
+    {
+
+        private BLE ble;
+        private const string ServiceName = "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e";
+        private const string Characteristic = "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e";
+
+        public event BLESubscriptionValueChangedEventHandler DataReceived;
+
+        public BLEInstance BLEInstance { get; set; }
+
+        public Bluetooth()
+        {
+            this.ble = new BLE();
+        }
+
+        public void Dispose()
+        {
+            // TODO [Martijn] Disconnect the bluetooth connection
+        }
+
+        public async Task<int> Start(bike.RealBike realBike)
+        {
+            return await Start("Tacx flux" + realBike.bikeId);
+        }
+
+        /*public async Task<int> Start(HRM hrm)
+        {
+            return await Start("Tacx flux" + realBike.bikeId);
+        }*/
+
+        public async Task<int> Start(string deviceId)
         {
             int errorCode = 0; // set default to 0;
-            errorCode += await ble.OpenDevice(device);
-            errorCode += await ble.SetService(service);
-            ble.SubscriptionValueChanged += sub;
-            errorCode += await ble.SubscribeToCharacteristic(characteristic);
+            errorCode += await ble.OpenDevice(deviceId);
+            errorCode += await ble.SetService(ServiceName);
+            ble.SubscriptionValueChanged += DataReceived;
+            errorCode += await ble.SubscribeToCharacteristic(Characteristic);
             return errorCode;
         }
 
-        private static void BleHeart_SubscriptionValueChanged(object sender, avansBikeData e)
+
+
+        private void BleHeart_SubscriptionValueChanged(object sender, avansBikeData e)
         {
             if (e.Data[0] != 0x16) { return; }
             Console.WriteLine($"Heartrate: {e.Data[1]} BPM");
         }
 
-        public static void BleBike_SubscriptionValueChanged(avansBikeData bikeData)
-        {
-            var sync = bikeData.Data[0];                   
-            int msgLength = bikeData.Data[1];
-            var msgID = bikeData.Data[2];
-            int channelNumber = bikeData.Data[3];
-            var cs = bikeData.Data[msgLength + 3];
-            var msg = new byte[msgLength];
-            Array.Copy(bikeData.Data, 4, msg, 0, msgLength);
-            int dataPageNumber = msg[0];
-
-            // Parse msg data
-            ParseData(msg);
-        }
-
-        public static bool ParseData(byte[] data)
+        
+        /*
+        public bool ParseData(byte[] data)
         {
             switch (data[0])
             {
@@ -55,7 +80,7 @@ namespace RemoteHealthcare
             }
         }
 
-        public static void Page16(byte[] data)
+        public void Page16(byte[] data)
         {
             // Calculate Elapsed Time.
             float time = ParseElapsedTime(data);
@@ -69,7 +94,7 @@ namespace RemoteHealthcare
             Console.WriteLine("\nSpeed: " + speed * 0.001 * 3.6 + "\n");
         }
 
-        public static void Page25(byte[] data)
+        public void Page25(byte[] data)
         {
             // Calculate RPM
             int rpm = ParseRPM(data);
@@ -84,24 +109,26 @@ namespace RemoteHealthcare
             Console.WriteLine("InsPower: " + InsPower);
         }
 
-        public static int ParseAccPower(byte[] data) => TwoByteToInt(data[3], data[4]);
+        public int ParseAccPower(byte[] data) => TwoByteToInt(data[3], data[4]);
 
-        public static int ParseInsPower(byte[] data) => TwoByteToInt(data[5], (byte)(data[6] >> 4));
+        public int ParseInsPower(byte[] data) => TwoByteToInt(data[5], (byte)(data[6] >> 4));
 
-        public static int ParseRPM(byte[] data) => TwoByteToInt(data[2]);
+        public int ParseRPM(byte[] data) => TwoByteToInt(data[2]);
 
-        public static int ParseDistance(byte[] data) => TwoByteToInt(data[3]);
+        public int ParseDistance(byte[] data) => TwoByteToInt(data[3]);
 
-        public static float ParseElapsedTime(byte[] data) => TwoByteToInt(data[2]) * 0.25f;
+        public float ParseElapsedTime(byte[] data) => TwoByteToInt(data[2]) * 0.25f;
 
-        public static int ParseSpeed(byte[] data) => TwoByteToInt(data[4], data[5]);
+        public int ParseSpeed(byte[] data) => TwoByteToInt(data[4], data[5]);
 
-        public static int TwoByteToInt(byte byte1, byte byte2 = 0)
+        public int TwoByteToInt(byte byte1, byte byte2 = 0)
         {
             byte[] bytes = new byte[2];
             bytes[0] = byte1;
             bytes[1] = byte2;
             return BitConverter.ToUInt16(bytes, 0);
-        }
+        }*/
+
+
     }
 }
