@@ -13,6 +13,6 @@ namespace DoctorApplication
     /// </summary>
     public partial class App : Application
     {
-        private ClientManager clientManager = new ClientManager();
+        
     }
 }

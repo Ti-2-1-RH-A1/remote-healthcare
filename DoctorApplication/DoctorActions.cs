@@ -15,5 +15,12 @@ namespace DoctorApplication
             clientManager = new ClientManager();
         }
 
+        public async Task start()
+        { 
+            await clientManager.start();
+        } 
+
+
+
     }
 }
