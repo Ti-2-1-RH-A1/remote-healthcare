@@ -71,7 +71,7 @@ namespace VirtualReality
 
             VRMethod.CreateBikePanel(ref connection);
             VRMethod.CreateMessagePanel(ref connection);
-            VRMethod.DrawOnBikePanel(ref connection, "hoegaboega");
+            VRMethod.DrawOnBikePanel(ref connection, "Loading...");
             VRMethod.DrawChatMessage(ref connection, "PLACEHOLDER[Ontvangen messages van doktor applicatie]");
 
             /// Note: This will eventually probably be replaced with an update method that calls on to DrawBikeData to update with the received data.

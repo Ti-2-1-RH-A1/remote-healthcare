@@ -666,17 +666,17 @@ namespace RemoteHealthcare
         public static void DrawBikeData(ref Connection connection, double speedData, double resistanceData, double heartrateData, string panelName = "bikePanel")
         {
             ClearPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
-            int[] headerPosition = { 30, 20 };
+            int[] headerPosition = { 30, 40 };
             int[] headerColor = { 100, 0, 0, 1 };
-            int[] dataPosition = { 160, 20 };
+            int[] dataPosition = { 160, 40 };
             int[] dataColor = { 0, 0, 0, 1 };
 
             Drawtext(ref connection, panelName, "Snelheid: " , headerPosition, 32, headerColor, "segoeui");
             Drawtext(ref connection, panelName, speedData.ToString(), dataPosition, 32, dataColor, "segoeui");
-            headerPosition[1] = dataPosition[1] = 80;
+            headerPosition[1] = dataPosition[1] = 100;
             Drawtext(ref connection, panelName, "Weerstand: ", headerPosition, 32, headerColor, "segoeui");
             Drawtext(ref connection, panelName, resistanceData.ToString(), dataPosition, 32, dataColor, "segoeui");
-            headerPosition[1] = dataPosition[1] = 140;
+            headerPosition[1] = dataPosition[1] = 160;
             Drawtext(ref connection, panelName, "Hartslag: ", headerPosition, 32, headerColor, "segoeui");
             Drawtext(ref connection, panelName, heartrateData.ToString(), dataPosition, 32, dataColor, "segoeui");
 
