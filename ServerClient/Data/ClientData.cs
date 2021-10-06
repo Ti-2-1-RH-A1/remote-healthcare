@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace DoctorApplication.Data
+namespace ServerClient.Data
 {
     class ClientData
     {

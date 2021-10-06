@@ -1,28 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace DoctorApplication.Data
+namespace ServerClient.Data
 {
     public class DataHandler
     {
-        public Dictionary<string, ClientData> clientData { get; }
-        string storageLocation = Directory.GetCurrentDirectory() + "/clients/storage";
+        public Dictionary<string, ClientData> ClientData;
+        private readonly string storageLocation = Directory.GetCurrentDirectory() + "/clients/storage";
 
         public DataHandler()
         {
-            this.clientData = new Dictionary<string, ClientData>();
+            ClientData = new Dictionary<string, ClientData>();
             if (!Directory.Exists(storageLocation))
             {
                 Directory.CreateDirectory(storageLocation);
             }
         }
 
-        public string filePath(string id) => storageLocation + "/" + id + ".json";
+        private string FilePath(string id) => storageLocation + "/" + id + ".json";
 
         public void LoadAllData()
         {
@@ -34,54 +30,60 @@ namespace DoctorApplication.Data
                     string fileName = file.Substring(0, file.IndexOf(".json"));
                     JObject jo = JObject.Parse(File.ReadAllText(file));
                     
-                    clientData.Add(fileName, new ClientData(){ client_id=fileName,client_name=jo["name"].ToString()});
+                    ClientData.Add(fileName, new ClientData(){ client_id=fileName,client_name=jo["name"].ToString()});
                 }
             }
         }
 
-        public void addFile(string id, string name)
+        public void AddFile(string id, string name)
         {
             
-            if (File.Exists(filePath(id)))
+            if (File.Exists(FilePath(id)))
             {
                 
-                JObject jo = JObject.Parse(File.ReadAllText(filePath(id)));
-                if (!clientData.ContainsKey(id)) clientData.Add(id, new ClientData() { client_id = id, client_name = jo["name"].ToString()});
+                JObject jo = JObject.Parse(File.ReadAllText(FilePath(id)));
+                if (!ClientData.ContainsKey(id)) ClientData.Add(id, new ClientData() { client_id = id, client_name = jo["name"].ToString()});
             }
             else
             {
-                File.Create(filePath(id));
+                File.Create(FilePath(id));
 
-                JObject idJson = new JObject();
-                idJson.Add("id", id);
+                JObject idJson = new()
+                {
+                    { "id", id }
+                };
 
-                JObject nameJson = new JObject();
-                nameJson.Add("name", name);
+                JObject nameJson = new()
+                {
+                    { "name", name }
+                };
 
-                JObject dataJson = new JObject();
+                JObject dataJson = new();
 
-                JObject mainJson = new JObject();
-                mainJson.Add(idJson);
-                mainJson.Add(nameJson);
-                mainJson.Add(dataJson);
-                File.WriteAllText(filePath(id), mainJson.ToString());
-                clientData.Add(id, new ClientData() { client_id = id, client_name =name });
+                JObject mainJson = new()
+                {
+                    idJson,
+                    nameJson,
+                    dataJson
+                };
+                File.WriteAllText(FilePath(id), mainJson.ToString());
+                ClientData.Add(id, new ClientData() { client_id = id, client_name =name });
             }
         }
 
-        public async Task<bool> storeData(string id, Dictionary<string, string> healthData)
+        public bool StoreData(string id, Dictionary<string, string> healthData)
         {
-            if (!clientData.ContainsKey(id)) return false;
-            JObject jo = JObject.Parse(File.ReadAllText(filePath(id)));
+            if (!ClientData.ContainsKey(id)) return false;
+            JObject jo = JObject.Parse(File.ReadAllText(FilePath(id)));
             JArray data = jo["data"] as JArray;
-            JObject main = new JObject();
+            JObject main = new();
             foreach (var (key, value) in healthData)
             {
                 main.Add(key, value);
             }
             data.Add(main);
             jo["data"] = data;
-            File.WriteAllText(filePath(id),jo.ToString());
+            File.WriteAllText(FilePath(id),jo.ToString());
             return true;
         }
     }
