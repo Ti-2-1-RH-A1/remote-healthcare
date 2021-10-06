@@ -34,6 +34,7 @@ namespace DoctorApplication
             });
         }
 
+        public void AddClientsFromString(string clientsString)
         private void AddClientsFromString(string clientsString)
         {
             clientsString = clientsString.Substring(0, clientsString.Length - 1);

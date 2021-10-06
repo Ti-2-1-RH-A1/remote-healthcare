@@ -48,14 +48,14 @@ namespace ServerClient
                 sslStream.AuthenticateAsServer(serverCertificate, clientCertificateRequired: false, checkCertificateRevocation: true);
 
                 // Start handling client
-                clientsManager.Add(new ClientHandler(client, sslStream, auth, clientsManager));
+                new ClientHandler(client, sslStream, auth, clientsManager);
                 listener.BeginAcceptTcpClient(new AsyncCallback(ProcessClient), null);
             }
             else
             {
                 // Fallback no ssl
                 NetworkStream stream = client.GetStream();
-                clientsManager.Add(new ClientHandler(client, stream, auth, clientsManager));
+                new ClientHandler(client, stream, auth, clientsManager);
                 listener.BeginAcceptTcpClient(new AsyncCallback(ProcessClient), null);
             }
         }

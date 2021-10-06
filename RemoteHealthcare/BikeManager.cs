@@ -7,9 +7,9 @@ using avansBikeData = Avans.TI.BLE.BLESubscriptionValueChangedEventArgs;
 
 namespace RemoteHealthcare
 {
-    class BikeManager
+    internal class BikeManager
     {
-        private int amountDataSend = 0;
+        private readonly int amountDataSend = 0;
         private int ThresholdDataAmount = 0;
         private int OriginalrequestedDataAmount = 0;
         private bool exit = false;
@@ -80,7 +80,7 @@ namespace RemoteHealthcare
         {
             if (realBike != null)
             {
-                realBike.CloseDevice();  
+                realBike.CloseDevice();
                 return true;
             }
 

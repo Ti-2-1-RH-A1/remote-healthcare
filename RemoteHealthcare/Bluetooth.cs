@@ -1,8 +1,6 @@
-﻿using System;
-using System.Text;
+﻿using Avans.TI.BLE;
+using System;
 using System.Threading.Tasks;
-using Avans.TI.BLE;
-
 using avansBikeData = Avans.TI.BLE.BLESubscriptionValueChangedEventArgs;
 
 namespace RemoteHealthcare
@@ -27,7 +25,7 @@ namespace RemoteHealthcare
 
         public static void BleBike_SubscriptionValueChanged(avansBikeData bikeData)
         {
-            var sync = bikeData.Data[0];                   
+            var sync = bikeData.Data[0];
             int msgLength = bikeData.Data[1];
             var msgID = bikeData.Data[2];
             int channelNumber = bikeData.Data[3];

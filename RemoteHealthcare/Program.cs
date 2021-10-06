@@ -2,12 +2,12 @@
 
 namespace RemoteHealthcare
 {
-    class Program
+    internal class Program
     {
         public BikeManager bikeManager = new BikeManager();
         public HRManager hrManager = new HRManager();
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             VrManager vrManager = new VrManager();
             vrManager.Start();
