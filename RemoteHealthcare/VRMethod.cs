@@ -618,7 +618,7 @@ namespace RemoteHealthcare
         /// <param name="connection"></param>
         /// <param name="message"></param>
         /// <param name="panelName"></param>
-        public static void DrawChatMessage(ref Connection connection, string message, string panelName)
+        public static void DrawChatMessage(ref Connection connection, string message, string panelName = "messagePanel")
         {
             ClearPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
             int[] headerPosition = { 90, 30 };
@@ -651,6 +651,34 @@ namespace RemoteHealthcare
                 Drawtext(ref connection, panelName, line, position, 32, color, "segoeui");
                 position[1] = position[1] + 30;
             }
+
+            SwapPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
+        }
+
+        /// <summary>
+        /// Draws the data coming from the bike onto the bike panel.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="speedData"></param>
+        /// <param name="resistanceData"></param>
+        /// <param name="heartrateData"></param>
+        /// <param name="panelName"></param>
+        public static void DrawBikeData(ref Connection connection, double speedData, double resistanceData, double heartrateData, string panelName = "bikePanel")
+        {
+            ClearPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
+            int[] headerPosition = { 30, 40 };
+            int[] headerColor = { 100, 0, 0, 1 };
+            int[] dataPosition = { 160, 40 };
+            int[] dataColor = { 0, 0, 0, 1 };
+
+            Drawtext(ref connection, panelName, "Snelheid: ", headerPosition, 32, headerColor, "segoeui");
+            Drawtext(ref connection, panelName, speedData.ToString(), dataPosition, 32, dataColor, "segoeui");
+            headerPosition[1] = dataPosition[1] = 100;
+            Drawtext(ref connection, panelName, "Weerstand: ", headerPosition, 32, headerColor, "segoeui");
+            Drawtext(ref connection, panelName, resistanceData.ToString(), dataPosition, 32, dataColor, "segoeui");
+            headerPosition[1] = dataPosition[1] = 160;
+            Drawtext(ref connection, panelName, "Hartslag: ", headerPosition, 32, headerColor, "segoeui");
+            Drawtext(ref connection, panelName, heartrateData.ToString(), dataPosition, 32, dataColor, "segoeui");
 
             SwapPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
         }
