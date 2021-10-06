@@ -8,11 +8,26 @@ namespace RemoteHealthcare.bike
     public class SimulatorBike : IBike
     {
         private readonly IServiceProvider services;
+        private bool isRunning = false;
+
         public SimulatorBike(IServiceProvider serviceProvider)
         {
             this.services = serviceProvider;
         }
 
+        public void Start(string bikeId = null)
+        {
+            // TODO Implementation
+        }
+
+        private void RunSimulation()
+        {
+            while(this.isRunning)
+            {
+
+            }
+        }
+        
         public void DataReceived((int, float) data)
         {
             services.GetService<DeviceManager>().HandleData(data);
@@ -21,11 +36,6 @@ namespace RemoteHealthcare.bike
         public void SetResistance(int resistance)
         {
             throw new NotImplementedException();
-        }
-
-        public void Start(string bikeId = null)
-        {
-            // TODO Implementation
         }
     }
 }
