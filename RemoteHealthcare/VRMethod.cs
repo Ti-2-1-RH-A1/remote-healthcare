@@ -551,16 +551,20 @@ namespace RemoteHealthcare
 
         public static void CreateMessagePanel(ref Connection connection, string panelName = "messagePanel")
         {
-            int[] position = { -50, 150, 0 };
-            int[] rotation = { 0, 90, 0 };
+            int[] position = { -40, 135, 55 };
+            int[] rotation = { 330, 120, 0 };
             int[] size = { 50, 25 };
             int[] resolution = { 512, 512 };
             int[] background = { 1, 1, 1, 1 };
 
             CreatePanel(ref connection, panelName, position, rotation, size, resolution, background, true, GetBikeID(ref connection));
-            setTransparentPanel(ref connection, panelName);
         }
 
+        /// <summary>
+        /// This method can make a panel transparent.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="panelName"></param>
         public static void setTransparentPanel(ref Connection connection, string panelName)
         {
             JObject clearColorObject = new JObject { {"id", JsonID.SCENE_PANEL_SETCLEARCOLOR } };
@@ -589,11 +593,38 @@ namespace RemoteHealthcare
         /// <param name="panelName"></param>
         public static void DrawChatMessage(ref Connection connection, string message, string panelName)
         {
-            int[] position = { 100, 150 };
+            ClearPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
+            int[] headerPosition = { 90, 30 };
+            int[] position = { 5, 70 };
             int[] color = { 100, 0, 0, 1 };
 
-            ///ClearPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
-            Drawtext(ref connection, panelName, message, position, 32, color, "segoeui");
+            Drawtext(ref connection, panelName, "Bericht van de dokter", headerPosition, 42, color, "segoeui");
+            
+            color[0] = 0;
+            int maximum = 45;
+            var tempStr = "";
+            List<string> list = new List<string>();
+            string[] subs = message.Split(' ');
+            foreach(var sub in subs)
+            {
+                if (tempStr.Length + sub.Length > maximum)
+                {
+                    list.Add(tempStr);
+                    tempStr = sub + " ";
+                }
+                else
+                {
+                    tempStr += sub + " ";
+                }
+            }
+            list.Add(tempStr);
+
+            foreach(String line in list)
+            {
+                Drawtext(ref connection, panelName, line, position, 32, color, "segoeui");
+                position[1] = position[1] + 30;
+            }
+
             SwapPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
         }
 

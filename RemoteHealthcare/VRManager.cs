@@ -72,7 +72,7 @@ namespace VirtualReality
             VRMethod.CreateBikePanel(ref connection);
             VRMethod.CreateMessagePanel(ref connection);
             VRMethod.DrawOnBikePanel(ref connection, "hoegaboega");
-            VRMethod.DrawChatMessage(ref connection, "Dit is een chat message", "messagePanel");
+            VRMethod.DrawChatMessage(ref connection, "PLACEHOLDER[Ontvangen messages van doktor applicatie]", "messagePanel");
 
             UpdateSceneList();
 
