@@ -5,7 +5,7 @@ namespace RemoteHealthcare
     class Program
     {
         public DeprecatedBikeManager bikeManager = new DeprecatedBikeManager();
-        public HRManager hrManager = new HRManager();
+        public DeprecatedHRManager hrManager = new DeprecatedHRManager();
 
         static void Main(string[] args)
         {

@@ -4,7 +4,7 @@ using Avans.TI.BLE;
 
 namespace RemoteHealthcare
 {
-    class HRManager
+    class DeprecatedHRManager
     {
         private static int amountDataSend = 0;
         private static int ThresholdDataAmount = 0;
