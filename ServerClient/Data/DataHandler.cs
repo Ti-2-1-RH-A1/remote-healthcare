@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System;
 using Newtonsoft.Json.Linq;
 
 namespace ServerClient.Data
@@ -27,47 +28,33 @@ namespace ServerClient.Data
             {
                 if (file.IndexOf(".json") != -1)
                 {
-                    string fileName = file.Substring(0, file.IndexOf(".json"));
                     JObject jo = JObject.Parse(File.ReadAllText(file));
-                    
-                    ClientData.Add(fileName, new ClientData(){ client_id=fileName,client_name=jo["name"].ToString()});
+                    var client = new ClientData() { client_id = jo["id"].ToString(), client_name = jo["name"].ToString() };
+                    ClientData.Add(jo["id"].ToString(), client);
                 }
             }
         }
 
         public void AddFile(string id, string name)
         {
-            
+
             if (File.Exists(FilePath(id)))
             {
-                
                 JObject jo = JObject.Parse(File.ReadAllText(FilePath(id)));
-                if (!ClientData.ContainsKey(id)) ClientData.Add(id, new ClientData() { client_id = id, client_name = jo["name"].ToString()});
+                if (!ClientData.ContainsKey(id)) ClientData.Add(id, new ClientData() { client_id = id, client_name = jo["name"].ToString() });
             }
             else
             {
-                File.Create(FilePath(id));
-
-                JObject idJson = new()
-                {
-                    { "id", id }
-                };
-
-                JObject nameJson = new()
-                {
-                    { "name", name }
-                };
-
-                JObject dataJson = new();
-
                 JObject mainJson = new()
                 {
-                    idJson,
-                    nameJson,
-                    dataJson
+                    { "id", id },
+                    { "name", name },
+                    { "data", new JArray() }
                 };
+
+                Console.WriteLine(mainJson);
                 File.WriteAllText(FilePath(id), mainJson.ToString());
-                ClientData.Add(id, new ClientData() { client_id = id, client_name =name });
+                ClientData.Add(id, new ClientData() { client_id = id, client_name = name });
             }
         }
 
@@ -83,7 +70,7 @@ namespace ServerClient.Data
             }
             data.Add(main);
             jo["data"] = data;
-            File.WriteAllText(FilePath(id),jo.ToString());
+            File.WriteAllText(FilePath(id), jo.ToString());
             return true;
         }
     }
