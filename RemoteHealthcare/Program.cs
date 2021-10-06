@@ -8,7 +8,7 @@ namespace RemoteHealthcare
         public HRManager hrManager = new HRManager();
 
         static void Main(string[] args)
-        {
+        { 
             VrManager vrManager = new VrManager();
             vrManager.Start();
 

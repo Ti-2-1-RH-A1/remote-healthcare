@@ -6,7 +6,6 @@ namespace RemoteHealthcare
 {
     class DeviceManager
     {
-        
         public void HandleData((int,float) data)
         {
 

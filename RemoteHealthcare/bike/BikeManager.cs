@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace RemoteHealthcare.bike
 {
@@ -10,7 +8,7 @@ namespace RemoteHealthcare.bike
         private readonly IBike simulatorBike;   // Instance of the simulated bike run by the program.
         private IBike activeBike;               // Instance of the bike currently being used. I.E. the real- or simulated bike.
 
-        public BikeManager(Func<(int,float)> callback)
+        public BikeManager(Func<(int, float)> callback)
         {
             this.realBike = new RealBike(callback);
             this.simulatorBike = new SimulatorBike(callback);
@@ -22,17 +20,34 @@ namespace RemoteHealthcare.bike
             SIMULATOR_BIKE
         }
 
-        public void StartBike(BikeType biketype, string bikeId = null)
+        /// <summary>
+        /// This method starts the selected bike type. 
+        /// <see cref="RealBike.Start(string)">For more information on the Realbike start method.</see> and 
+        /// <see cref="SimulatorBike.Start(string)">for more information on the SimulatorBike start method.</see>
+        /// </summary>
+        /// <param name="bikeType">Specifies the type of bike that wil be started. Can be any BikeType.</param>
+        /// <param name="bikeId">Is the id corresponding to the physical bike. This parameter should always
+        ///                      be given if BikeType.REAL_BIKE is selected.</param>
+        /// <exception cref="ArgumentNullException">Is thrown when the bikeType is set to REAL_BIKE but the 
+        ///                                         bikeId is null or not given.</exception>
+        public void StartBike(BikeType bikeType, string bikeId = null)
         {
-            if (biketype == BikeType.REAL_BIKE)
+            if (bikeType == BikeType.REAL_BIKE && bikeId == null)
+            {
+                throw new ArgumentNullException(bikeId, "[BikeManager.StartBike()] bikeId should not be null when bikeType is BikeType.REAL_BIKE");
+            }
+
+            if (bikeType == BikeType.REAL_BIKE)
             {
                 this.activeBike = this.realBike;
                 this.activeBike.Start(bikeId);
-                return;
+            }
+            else // Simulator bike.
+            {
+                this.activeBike = this.simulatorBike;
+                this.activeBike.Start();
             }
 
-            this.activeBike = this.simulatorBike;
-            this.activeBike.Start();
         }
     }
 }
