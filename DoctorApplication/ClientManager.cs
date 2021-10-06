@@ -14,8 +14,6 @@ namespace DoctorApplication
 
             ServerClient.Client client = new ServerClient.Client("localhost", "EchteDokter", true);
 
-
-
             while (!client.loggedIn)
             {
                 Thread.Sleep(10);
@@ -31,8 +29,6 @@ namespace DoctorApplication
             });
 
         }
-
-
 
         public void AddClientsFromString(string clientsString)
         {

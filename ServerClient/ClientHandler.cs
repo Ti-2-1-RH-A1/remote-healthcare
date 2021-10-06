@@ -28,8 +28,8 @@ namespace ServerClient
             this.stream = stream;
             actions = new Dictionary<string, Callback>() {
                 { "Login", LoginMethode() },
-                { "Disconnect", disconnectCallback()},
-                {"GetClients",GetClients()}
+                { "Disconnect", disconnectCallback() },
+                { "GetClients", GetClients() },
             };
             this.stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
@@ -41,7 +41,7 @@ namespace ServerClient
                 header.TryGetValue("Serial", out string serial);
                 SendPacket(header, new Dictionary<string, string>(){
                     { "Result", "Ok" },
-                    {"Data",Util.StringifyClients(manager.GetClients())}
+                    {"Data",Util.StringifyClients(manager.GetClients())},
                 });
             };
         }
@@ -53,7 +53,7 @@ namespace ServerClient
                 SendPacket(header, new Dictionary<string, string>()
                 {
                     {"Result", "ok"},
-                    {"message", "Request for disconnect received"}
+                    {"message", "Request for disconnect received"},
                 });
 
                 stream.Close();

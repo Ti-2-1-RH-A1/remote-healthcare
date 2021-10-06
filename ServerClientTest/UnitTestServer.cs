@@ -37,7 +37,7 @@ namespace ServerClient.Tests
         [TestMethod()]
         public async Task TestServerAsync()
         {
-            new Server("", new AuthHandler(), false);
+            new Server("", AuthHandler.Init(), false);
 
             await Task.Delay(1000);
 
@@ -56,7 +56,7 @@ namespace ServerClient.Tests
         [TestMethod()]
         public void TestNoCertError()
         {
-            Assert.ThrowsException<Exception>(() => new Server(@"Serhdjfjhdver.pfx", new AuthHandler()));
+            Assert.ThrowsException<Exception>(() => new Server(@"Serhdjfjhdver.pfx", AuthHandler.Init()));
         }
 
         [TestMethod()]
