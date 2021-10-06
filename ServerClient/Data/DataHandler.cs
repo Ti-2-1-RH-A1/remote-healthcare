@@ -23,6 +23,7 @@ namespace ServerClient.Data
 
         public void LoadAllData()
         {
+            ClientData.Clear();
             string[] storageFiles = Directory.GetFiles(storageLocation);
             foreach (string file in storageFiles)
             {

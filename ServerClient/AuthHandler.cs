@@ -28,7 +28,7 @@ namespace ServerClient
         /// Checks if key is valid
         /// </summary>
         /// <param name="keyToCheck"></param>
-        /// <returns>(Key exists, Key is docter)</returns>
+        /// <returns>(Key exists, Key is doctor)</returns>
         public (bool, bool) Check(string keyToCheck) =>
             keys.TryGetValue(keyToCheck, out bool value) ? (true, value) : (false, false);
 

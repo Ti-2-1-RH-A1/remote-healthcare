@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
+using ServerClient.Data;
 
 namespace ServerClient
 {
@@ -13,6 +14,7 @@ namespace ServerClient
         private readonly AuthHandler auth;
         private readonly Stream stream;
         private readonly ClientsManager manager;
+        private readonly DataHandler dataHandler;
         public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
         public Dictionary<string, Callback> actions;
         private readonly byte[] buffer = new byte[1024];
@@ -22,6 +24,8 @@ namespace ServerClient
 
         public ClientHandler(TcpClient tcpClient, Stream stream, AuthHandler auth, ClientsManager manager)
         {
+            this.dataHandler = new DataHandler();
+            dataHandler.LoadAllData();
             this.manager = manager;
             this.tcpClient = tcpClient;
             this.auth = auth;
@@ -55,7 +59,7 @@ namespace ServerClient
                     {"Result", "ok"},
                     {"message", "Request for disconnect received"}
                 });
-
+                
                 stream.Close();
                 tcpClient.Close();
                 manager.Disconnect(this);
@@ -81,21 +85,42 @@ namespace ServerClient
                 authKey = key;
                 if (IsDoctor)
                 {
-                    SendPacket(header, new Dictionary<string, string>(){
-                        { "Result", "ok" },
-                        {"message","Doctor logged in."},
-                    });
+
+                    
+                        SendPacket(header, new Dictionary<string, string>(){
+                            { "Result", "ok" },
+                            {"message","Doctor logged in."},
+                        });
+                    
                     Console.WriteLine("Doctor logged in.");
                     this.IsDoctor = true;
                 }
                 else
                 {
-                    this.IsDoctor = false;
-                    SendPacket(header, new Dictionary<string, string>(){
-                        { "Result", "ok" },
-                        {"message","Patient logged in."},
-                    });
+                    if (data.TryGetValue("id", out string id))
+                    {
+                        SendPacket(header, new Dictionary<string, string>()
+                        {
+                            {"Result", "ok"},
+                            {"message", "Patient logged in."},
+                        });
+                    }
+                    else
+                    {
+                        Guid myuuid = Guid.NewGuid();
+                        SendPacket(header, new Dictionary<string, string>()
+                        {
+                            {"Result", "ok"},
+                            {"message", "Patient logged in."},
+                            {"id", myuuid.ToString()},
+                        });
+                        id = myuuid.ToString();
+                    }
+
+                    data.TryGetValue("name", out string name);
+                    dataHandler.AddFile(id, name);
                     Console.WriteLine("Patient logged in.");
+                    this.IsDoctor = false;
                 }
             };
         }
