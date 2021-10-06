@@ -65,7 +65,9 @@ namespace VirtualReality
             string bikeUUID = VRMethod.AddModelBike(ref connection, bikename1, position, rotation);
 
             VRMethod.CreateBikePanel(ref connection);
-            VRMethod.DrawOnBikePanel(ref connection, "This is our panel");
+            VRMethod.CreateMessagePanel(ref connection);
+            VRMethod.DrawOnBikePanel(ref connection, "hoegaboega");
+            VRMethod.DrawChatMessage(ref connection, "PLACEHOLDER[Ontvangen messages van doktor applicatie]", "messagePanel");
 
             UpdateSceneList();
 
