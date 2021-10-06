@@ -4,7 +4,7 @@ using System.Text;
 
 namespace RemoteHealthcare.bike
 {
-    enum DataTypes
+    public enum DataTypes
     {
         BIKE_SPEED,
         BIKE_ELAPSED_TIME,

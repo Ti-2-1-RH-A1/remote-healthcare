@@ -28,7 +28,7 @@ namespace RemoteHealthcare.bike
             }
         }
         
-        public void DataReceived((int, float) data)
+        public void DataReceived((DataTypes, float) data)
         {
             services.GetService<DeviceManager>().HandleData(data);
         }
