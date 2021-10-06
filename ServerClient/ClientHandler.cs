@@ -41,7 +41,7 @@ namespace ServerClient
             this.stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
-        private Callback GetClients()
+        private Callback Post()
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {

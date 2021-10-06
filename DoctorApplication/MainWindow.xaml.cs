@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 
 namespace DoctorApplication
 {
@@ -10,14 +11,14 @@ namespace DoctorApplication
     /// </summary>
     public partial class MainWindow : Window
     {
-        private ClientManager clientManager;
+        private DoctorActions doctorActions;
         public MainWindow()
         {
-            clientManager = new ClientManager();
-            Task start = clientManager.start();
-            InitializeComponent();
+            doctorActions = new DoctorActions();
+            Task start = doctorActions.Start();
             start.Wait();
-
+            InitializeComponent();
+            
         }
 
         private void btnBroadcast_Click(object sender, RoutedEventArgs e)
@@ -27,7 +28,7 @@ namespace DoctorApplication
 
         private void btnMessage_Click(object sender, RoutedEventArgs e)
         {
-            clientManager.sendMessageToAll("test");
+            doctorActions.SendToAll("test");
 
         }
     }

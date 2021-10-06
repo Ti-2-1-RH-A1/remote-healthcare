@@ -15,12 +15,12 @@ namespace DoctorApplication
         {
         }
 
-        public async Task start()
+        public async Task Start()
         {
             client = new ServerClient.Client("localhost", "EchteDokter", true);
             while (!client.loggedIn)
             {
-                await Task.Delay(1);
+                Thread.Sleep(10);
             }
 
             client.SendPacket(new Dictionary<string, string>()
@@ -34,7 +34,10 @@ namespace DoctorApplication
             });
         }
 
-        public void AddClientsFromString(string clientsString)
+        /// <summary>
+        /// generate a list of active clients based on a string
+        /// </summary>
+        /// <param name="clientsString"></param>
         private void AddClientsFromString(string clientsString)
         {
             clientsString = clientsString.Substring(0, clientsString.Length - 1);
@@ -50,7 +53,11 @@ namespace DoctorApplication
             }
         }
 
-        public void sendMessageToAll(string message)
+        /// <summary>
+        /// sends a message to the server with all clients and message
+        /// </summary>
+        /// <param name="message"></param>
+        public void SendMessageToAll(string message)
         {
             List<string> clientsId = new List<string>();
             clients.ForEach((s1)=>clientsId.Add(s1.clientAuthKey));
@@ -61,7 +68,13 @@ namespace DoctorApplication
             });
         }
 
-        private void SendToClients(List<string> clientList, string action, Dictionary<string, string> data = null)
+        /// <summary>
+        /// sends to a list of clients to the server with a action and a dictionary
+        /// </summary>
+        /// <param name="clientList"></param>
+        /// <param name="action"></param>
+        /// <param name="data"></param>
+        public void SendToClients(List<string> clientList, string action, Dictionary<string, string> data = null)
         {
             string clientsString = JsonConvert.SerializeObject(clientList);
 

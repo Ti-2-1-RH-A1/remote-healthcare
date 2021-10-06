@@ -20,7 +20,15 @@ namespace ServerClient
 
         public void Disconnect(ClientHandler client)
         {
-            clients.Remove(client.authKey);
+            if (client.authKey != null && clients.ContainsKey(client.authKey))
+            {
+                clients.Remove(client.authKey);
+            }
+            else
+            {
+                Console.WriteLine(client.ToString() + " not found");
+            }
+
             Console.WriteLine("Client disconnected");
         }
 
@@ -28,7 +36,11 @@ namespace ServerClient
         {
             return new List<ClientHandler>(clients.Values);
         }
-
+        /// <summary>
+        /// send a header and data to a list of clients
+        /// </summary>
+        /// <param name="header"></param>
+        /// <param name="data"></param>
         public void SendToClients(Dictionary<string, string> header, Dictionary<string, string> data)
         {
             string json = data["Clients"];
@@ -37,6 +49,12 @@ namespace ServerClient
             SendToClients(clientAuths, header["Action"],data);
         }
 
+        /// <summary>
+        /// send a 
+        /// </summary>
+        /// <param name="authKeys"></param>
+        /// <param name="action"></param>
+        /// <param name="dict"></param>
         private void SendToClients(List<string> authKeys, string action, Dictionary<string, string> dict)
         {
             foreach (string authKey in authKeys)
