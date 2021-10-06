@@ -6,11 +6,10 @@ namespace RemoteHealthcare.bike
 {
     public class SimulatorBike : IBike
     {
-        private readonly Func<(int, float)> callback;
 
-        public SimulatorBike(Func<(int, float)> callback)
+        public SimulatorBike(IServiceProvider serviceProvider)
         {
-            this.callback = callback;
+            
         }
 
         public void SetResistance(int resistance)

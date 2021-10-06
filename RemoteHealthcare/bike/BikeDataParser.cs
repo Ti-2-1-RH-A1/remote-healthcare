@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Avans.TI.BLE;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,25 +7,30 @@ namespace RemoteHealthcare.bike
 {
     public class BikeDataParser
     {
-        public static (int,float) Parse(byte[] data)
+        public static (int, float) ParseBikeData(byte[] data)
         {
-            //TODO [Martijn] Implementation
-            return (0, 0);
+            return ParseBikeMessageData(ParseByteArrayData(data));
         }
 
-        public static void BleBike_SubscriptionValueChanged(avansBikeData bikeData)
+        public static byte[] ParseByteArrayData(byte[] data)
         {
-            var sync = bikeData.Data[0];
-            int msgLength = bikeData.Data[1];
-            var msgID = bikeData.Data[2];
-            int channelNumber = bikeData.Data[3];
-            var cs = bikeData.Data[msgLength + 3];
-            var msg = new byte[msgLength];
-            Array.Copy(bikeData.Data, 4, msg, 0, msgLength);
+            var sync = data[0];
+            int msgLength = data[1];
+            var msgID = data[2];
+            int channelNumber = data[3];
+            var cs = data[msgLength + 3];
+            byte[] msg = new byte[msgLength];
+            Array.Copy(data, 4, msg, 0, msgLength);
             int dataPageNumber = msg[0];
 
-            // Parse msg data
-            ParseData(msg);
+            // return the msg part of the data
+            return msg;
+        }
+
+        public static (int,float) ParseBikeMessageData(byte[] data)
+        {
+            // TODO [Martijn] Implementation
+            return (0, 0);
         }
     }
 }

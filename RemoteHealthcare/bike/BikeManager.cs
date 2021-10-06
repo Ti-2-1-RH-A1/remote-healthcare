@@ -8,10 +8,14 @@ namespace RemoteHealthcare.bike
         private readonly IBike simulatorBike;   // Instance of the simulated bike run by the program.
         private IBike activeBike;               // Instance of the bike currently being used. I.E. the real- or simulated bike.
 
-        public BikeManager(Func<(int, float)> callback)
+        private readonly IServiceProvider services;
+
+        public BikeManager(IServiceProvider serviceProvider)
         {
-            this.realBike = new RealBike(callback);
-            this.simulatorBike = new SimulatorBike(callback);
+            this.services = serviceProvider;
+
+            this.realBike = new RealBike(serviceProvider);
+            this.simulatorBike = new SimulatorBike(serviceProvider);
         }
 
         public enum BikeType
