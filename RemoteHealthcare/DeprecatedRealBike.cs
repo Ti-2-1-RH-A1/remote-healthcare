@@ -5,7 +5,7 @@ using Avans.TI.BLE;
 
 namespace RemoteHealthcare
 {
-    public class RealBike : BLE, IBike
+    public class DeprecatedRealBike : BLE, IBike
     {
         // byte airResistanceCoefficient = Coefficient of the air resistance input in % of total (0x00 = 0% and 0xFF = 100%), where actual coefficient goes from 0.00 to 1.86 kg/m
         // byte windspeed = windspeed input in % of total (0x00 = 0% and 0xFF = 100%), where actual windspeed goes from -127 to 127 km/h

@@ -7,7 +7,7 @@ using avansBikeData = Avans.TI.BLE.BLESubscriptionValueChangedEventArgs;
 
 namespace RemoteHealthcare
 {
-    class BikeManager
+    class DeprecatedBikeManager
     {
         private int amountDataSend = 0;
         private int ThresholdDataAmount = 0;
@@ -15,12 +15,12 @@ namespace RemoteHealthcare
         private bool exit = false;
         private bool reachedThreshold = false;
 
-        private RealBike realBike = null;
-        private SimulatorBike simBike = null;
+        private DeprecatedRealBike realBike = null;
+        private DeprecatedSimulatorBike simBike = null;
 
         public void StartSim()
         {
-            this.simBike = new SimulatorBike();
+            this.simBike = new DeprecatedSimulatorBike();
             this.simBike.StartSim();
         }
 
@@ -37,7 +37,7 @@ namespace RemoteHealthcare
             ThresholdDataAmount = dataBlocks;
             int errorCode = 0;
 
-            realBike = new RealBike();
+            realBike = new DeprecatedRealBike();
             Console.WriteLine($"Connectie met fiets {deviceName} wordt gemaakt");
             Thread.Sleep(1000); // We need some time to list available devices
 

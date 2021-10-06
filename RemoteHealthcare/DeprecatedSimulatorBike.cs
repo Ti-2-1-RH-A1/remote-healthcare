@@ -5,7 +5,7 @@ using avansBikeData = Avans.TI.BLE.BLESubscriptionValueChangedEventArgs;
 
 namespace RemoteHealthcare
 {
-    public class SimulatorBike : IBike
+    public class DeprecatedSimulatorBike : IBike
     {
         public double metersTraveled;
         private byte resistance;

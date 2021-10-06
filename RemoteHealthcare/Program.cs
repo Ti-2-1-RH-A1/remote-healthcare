@@ -4,7 +4,7 @@ namespace RemoteHealthcare
 {
     class Program
     {
-        public BikeManager bikeManager = new BikeManager();
+        public DeprecatedBikeManager bikeManager = new DeprecatedBikeManager();
         public HRManager hrManager = new HRManager();
 
         static void Main(string[] args)
