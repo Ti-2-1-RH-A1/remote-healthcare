@@ -60,9 +60,9 @@ namespace VirtualReality
 
             nodes = VRMethod.GetScene(ref connection);
 
-            /*Ground_Add groundAdd = new Ground_Add(connection);
+            Ground_Add groundAdd = new Ground_Add(connection);
 
-            groundAdd.SetTerrain();*/
+            groundAdd.SetTerrain();
 
             JArray position = new JArray { 1, 0, 1 };
             JArray rotation = new JArray { 0, 0, 0 };
