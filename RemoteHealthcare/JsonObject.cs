@@ -1,23 +1,18 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VirtualReality
 {
     /// <summary>
     /// Possible class to use in case Json usage has to be refactored again
     /// </summary>
-    class JsonObject
+    internal class JsonObject
     {
         private delegate void dataCallback(dynamic data);
 
         private static readonly Dictionary<string, dataCallback> callbacks = new Dictionary<string, dataCallback>();
 
-        private Connection connection;
+        private readonly Connection connection;
 
         public JsonObject(Connection connection)
         {

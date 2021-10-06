@@ -1,14 +1,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RemoteHealthcare;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using System.Runtime.InteropServices.ComTypes;
-using System.Threading;
-using Newtonsoft.Json.Schema;
-using System.IO;
-using System.Drawing;
-using RemoteHealthcare;
 
 namespace VirtualReality
 {
@@ -60,11 +55,11 @@ namespace VirtualReality
 
             nodes = VRMethod.GetScene(ref connection);
 
-            /*Ground_Add groundAdd = new Ground_Add(connection);
+            string terrainUuid = VRMethod.CreateTerrain(ref connection);
 
-            groundAdd.SetTerrain();*/
+            VRMethod.SetTexture(ref connection, terrainUuid);
 
-            JArray position = new JArray { 1, 0, 1 };
+            JArray position = new JArray { 20, 0, 20 };
             JArray rotation = new JArray { 0, 0, 0 };
             string bikename1 = "Bike";
             string bikeUUID = VRMethod.AddModelBike(ref connection, bikename1, position, rotation);
@@ -76,40 +71,78 @@ namespace VirtualReality
 
             UpdateSceneList();
 
-
             Random rnd = new Random();
-            for (int i = 0; i < 20; i++) /// Note: Dont try to add 200 trees. Thank you.
+            for (int i = 0; i < 200; i++)
             {
-                JArray positionTree = new JArray {rnd.Next(-30, 30), 0, rnd.Next(-30, 30)};
-                JArray rotationTree = new JArray {0, rnd.Next(1, 360), 0};
-                VRMethod.AddStaticModel(ref connection, "Tree" + i, positionTree, rotationTree, 1.25,
-                    @"data/NetworkEngine/models/trees/fantasy/tree6.obj");
+                JArray positionTree = new JArray { rnd.Next(75, 130), 1, rnd.Next(90, 140) };
+                JArray rotationTree = new JArray { 0, rnd.Next(1, 360), 0 };
+                if (i < 30)
+                {
+                    VRMethod.AddStaticModel(ref connection, "Tree" + i, positionTree, rotationTree, 1.9, @"data/NetworkEngine/models/trees/fantasy/tree6.obj");
+                }
+                else if (i < 60)
+                {
+                    VRMethod.AddStaticModel(ref connection, "Tree" + i, positionTree, rotationTree, 1.8, @"data/NetworkEngine/models/trees/fantasy/tree5.obj");
+                }
+                else if (i < 90)
+                {
+                    VRMethod.AddStaticModel(ref connection, "Tree" + i, positionTree, rotationTree, 1.75, @"data/NetworkEngine/models/trees/fantasy/tree4.obj");
+                }
+                else
+                {
+                    VRMethod.AddStaticModel(ref connection, "Tree" + i, positionTree, rotationTree, 1.8, @"data/NetworkEngine/models/trees/fantasy/tree3.obj");
+                }
+
             }
 
             /// routeNodes tupple: Item 1 = positions, Item 2 = Directions(dir). Every tupple is 1 point in the route.
             List<(JArray, JArray)> routeNodes = new List<(JArray, JArray)>();
 
             (JArray, JArray) routeNode1;
-            routeNode1.Item1 = new JArray { 0, 0, 0 };
+            routeNode1.Item1 = new JArray { 70, 0, 80 };
             routeNode1.Item2 = new JArray { 5, 0, -5 };
             routeNodes.Add(routeNode1);
 
             (JArray, JArray) routeNode2;
-            routeNode2.Item1 = new JArray { 50, 0, 0 };
-            routeNode2.Item2 = new JArray { 5, 0, 5 };
+            routeNode2.Item1 = new JArray { 90, 0, 84 };
+            routeNode2.Item2 = new JArray { 5, 0, -5 };
             routeNodes.Add(routeNode2);
 
             (JArray, JArray) routeNode3;
-            routeNode3.Item1 = new JArray { 50, 0, 50 };
-            routeNode3.Item2 = new JArray { -5, 0, 5 };
+            routeNode3.Item1 = new JArray { 110, 0, 75 };
+            routeNode3.Item2 = new JArray { 5, 0, 5 };
             routeNodes.Add(routeNode3);
 
             (JArray, JArray) routeNode4;
-            routeNode4.Item1 = new JArray { 0, 0, 50 };
-            routeNode4.Item2 = new JArray { -5, 0, -5 };
+            routeNode4.Item1 = new JArray { 133, 0, 85 };
+            routeNode4.Item2 = new JArray { 5, 0, 5 };
             routeNodes.Add(routeNode4);
 
+            (JArray, JArray) routeNode5;
+            routeNode5.Item1 = new JArray { 132, 0, 110 };
+            routeNode5.Item2 = new JArray { -5, 0, 5 };
+            routeNodes.Add(routeNode5);
+
+            (JArray, JArray) routeNode6;
+            routeNode6.Item1 = new JArray { 138, 0, 145 };
+            routeNode6.Item2 = new JArray { -5, 0, 5 };
+            routeNodes.Add(routeNode6);
+
+            (JArray, JArray) routeNode7;
+            routeNode7.Item1 = new JArray { 60, 0, 140 };
+            routeNode7.Item2 = new JArray { -5, 0, -5 };
+            routeNodes.Add(routeNode7);
+
+            (JArray, JArray) routeNode8;
+            routeNode8.Item1 = new JArray { 70, 0, 105 };
+            routeNode8.Item2 = new JArray { -5, 0, -5 };
+            routeNodes.Add(routeNode8);
+
             string routeUUID = VRMethod.GenerateRoute(ref connection, routeNodes);
+
+            VRMethod.AddRoad(ref connection, routeUUID);
+
+            VRMethod.SetCamera(ref connection, bikeUUID);
 
             VRMethod.FollowRoute(ref connection, routeUUID, bikeUUID);
         }
@@ -157,10 +190,10 @@ namespace VirtualReality
         {
             Console.WriteLine("Creating a tunnel");
             // create a tunnel
-            JObject tunnelCreateJson = new JObject {{"id", "tunnel/create"}};
+            JObject tunnelCreateJson = new JObject { { "id", "tunnel/create" } };
 
 
-            JObject dataJson = new JObject {{"session", userSessions[sessionId]}};
+            JObject dataJson = new JObject { { "session", userSessions[sessionId] } };
             // place to set the key 
             string sessionKey = "";
             dataJson.Add("key", sessionKey);

@@ -2,7 +2,7 @@
 
 namespace ServerClient
 {
-    class Protocol
+    public class Protocol
     {
         private static string DictToString(Dictionary<string, string> data, string separator)
         {
