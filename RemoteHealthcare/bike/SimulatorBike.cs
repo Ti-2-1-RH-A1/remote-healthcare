@@ -33,7 +33,7 @@ namespace RemoteHealthcare.bike
             services.GetService<DeviceManager>().HandleData(data);
         }
 
-        public void SetResistance(int resistance)
+        public void SetResistance(byte resistance)
         {
             throw new NotImplementedException();
         }

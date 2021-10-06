@@ -31,10 +31,9 @@ namespace RemoteHealthcare.bike
             }
         }
 
-        public void SetResistance(int resistance)
+        public void SetResistance(byte resistance)
         {
-            // TODO [Martijn] Implementation
-            throw new NotImplementedException();
+            bluetooth.SetBikeResistance(resistance);
         }
 
         public void Start(string bikeId = null)
