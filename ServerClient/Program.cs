@@ -9,7 +9,7 @@ namespace ServerClient
         public static async Task Main(string[] args)
         {
             string certificate = @"Server.pfx";
-            new Server(certificate, new AuthHandler(), false);
+            new Server(certificate, AuthHandler.Init(), false);
 
             var client = new Client("localhost", "Fiets", false);
 
