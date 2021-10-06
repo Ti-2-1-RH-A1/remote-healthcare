@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using ServerClient.Data;
 
@@ -34,8 +35,30 @@ namespace ServerClient
                 { "Login", LoginMethode() },
                 { "Disconnect", disconnectCallback() },
                 { "GetClients", GetClients() },
+                { "Post", Post() },
             };
             this.stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+        }
+
+        private Callback Post()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                if (header.TryGetValue("Id", out string id))
+                {
+                    if (dataHandler.ClientData.TryGetValue(id, out ClientData clientData))
+                    {
+                        PropertyInfo[] properties = typeof(ClientData).GetProperties();
+                        foreach (PropertyInfo property in properties)
+                        {
+                            if (data.TryGetValue(property.Name, out string value))
+                            {
+                                property.SetValue(clientData, value);
+                            }
+                        }
+                    }
+                }
+            };
         }
 
         private Callback GetClients()
@@ -59,7 +82,7 @@ namespace ServerClient
                     {"Result", "ok"},
                     {"message", "Request for disconnect received"},
                 });
-                
+
                 stream.Close();
                 tcpClient.Close();
                 manager.Disconnect(this);
@@ -86,12 +109,12 @@ namespace ServerClient
                 if (IsDoctor)
                 {
 
-                    
-                        SendPacket(header, new Dictionary<string, string>(){
+
+                    SendPacket(header, new Dictionary<string, string>(){
                             { "Result", "ok" },
                             {"message","Doctor logged in."},
                         });
-                    
+
                     Console.WriteLine("Doctor logged in.");
                     this.IsDoctor = true;
                 }
@@ -122,6 +145,7 @@ namespace ServerClient
                     Console.WriteLine("Patient logged in.");
                     this.IsDoctor = false;
                 }
+                manager.Add(this);
             };
         }
 
