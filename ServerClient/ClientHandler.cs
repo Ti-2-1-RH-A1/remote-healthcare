@@ -6,13 +6,14 @@ using System.Text;
 
 namespace ServerClient
 {
-    internal class ClientHandler
+    public class ClientHandler
     {
         private readonly TcpClient tcpClient;
+        public string authKey;
         private readonly AuthHandler auth;
         private readonly Stream stream;
         private readonly ClientsManager manager;
-        public delegate void Callback(Dictionary<string, string> packetData, Dictionary<string, string> headerData);
+        public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
         public Dictionary<string, Callback> actions;
         private readonly byte[] buffer = new byte[1024];
         private string totalBufferText = "";
@@ -27,19 +28,29 @@ namespace ServerClient
             this.stream = stream;
             actions = new Dictionary<string, Callback>() {
                 { "Login", LoginMethode() },
-                { "Disconnect", disconnectCallback()}
+                { "Disconnect", disconnectCallback()},
+                {"GetClients",GetClients()}
             };
             this.stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
+        private Callback GetClients()
+        {
+            return delegate(Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                header.TryGetValue("Serial", out string serial);
+                SendPacket(header, new Dictionary<string, string>(){
+                    { "Result", "Ok" },
+                    {"Data",Util.StringifyClients(manager.GetClients())}
+                });
+            };
+        }
+
         private Callback disconnectCallback()
         {
-            return delegate(Dictionary<string, string> packetData, Dictionary<string, string> headerData)
+            return delegate(Dictionary<string, string> header, Dictionary<string, string> data)
             {
-                SendPacket(new Dictionary<string, string>()
-                {
-                    {"Method", "Disconnect"}
-                }, new Dictionary<string, string>()
+                SendPacket(header, new Dictionary<string, string>()
                 {
                     {"Result", "ok"},
                     {"message", "Request for disconnect received"}
@@ -53,28 +64,26 @@ namespace ServerClient
 
         private Callback LoginMethode()
         {
-            return delegate (Dictionary<string, string> packetData, Dictionary<string, string> headerData)
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
-                headerData.TryGetValue("Auth", out string key);
+                header.TryGetValue("Auth", out string key);
                 var (DoesExist, IsDoctor) = auth.Check(key);
                 if (!DoesExist)
                 {
-                    SendPacket(new Dictionary<string, string>() {
-                        { "Method", "Login" }
-                    }, new Dictionary<string, string>(){
+                    SendPacket(header, new Dictionary<string, string>(){
                         { "Result", "Error" },
-                        {"message","Key doesn't exist"}
+                        {"message","Key doesn't exist"},
                     });
                     Console.WriteLine("Key doesn't exist");
                     return;
                 }
+
+                authKey = key;
                 if (IsDoctor)
                 {
-                    SendPacket(new Dictionary<string, string>() {
-                        { "Method", "Login" }
-                    }, new Dictionary<string, string>(){
+                    SendPacket(header, new Dictionary<string, string>(){
                         { "Result", "ok" },
-                        {"message","Doctor logged in."}
+                        {"message","Doctor logged in."},
                     });
                     Console.WriteLine("Doctor logged in.");
                     this.IsDoctor = true;
@@ -82,11 +91,9 @@ namespace ServerClient
                 else
                 {
                     this.IsDoctor = false;
-                        SendPacket(new Dictionary<string, string>() {
-                        { "Method", "Login" }
-                    }, new Dictionary<string, string>(){
+                        SendPacket(header, new Dictionary<string, string>(){
                         { "Result", "ok" },
-                        {"message","Patient logged in."}
+                        {"message","Patient logged in."},
                     });
                     Console.WriteLine("Patient logged in.");
                 }
@@ -99,8 +106,6 @@ namespace ServerClient
             {
                 int receivedBytes = stream.EndRead(ar);
                 string receivedText = Encoding.ASCII.GetString(buffer, 0, receivedBytes);
-                
-
                 totalBufferText += receivedText;
             }
             catch (IOException)
@@ -113,37 +118,30 @@ namespace ServerClient
 
             while (totalBufferText.Contains("\r\n\r\n\r\n"))
             {
-                (Dictionary<string, string> headerData, Dictionary<string, string> packetData) = Protocol.ParsePacket(totalBufferText);
+                (Dictionary<string, string> header, Dictionary<string, string> data) = Protocol.ParsePacket(totalBufferText);
                 
                 totalBufferText = totalBufferText.Substring(totalBufferText.IndexOf("\r\n\r\n\r\n") + (totalBufferText.Length-totalBufferText.IndexOf("\r\n\r\n\r\n")));
-                HandleData(packetData, headerData);
+                HandleData(header, data);
             }
 
             if (stream.CanRead) stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
-        private void HandleData(Dictionary<string, string> packetData, Dictionary<string, string> headerData)
+        private void HandleData(Dictionary<string, string> header, Dictionary<string, string> data)
         {
-            headerData.TryGetValue("Method", out string item);
+            header.TryGetValue("Method", out string item);
 
             if (actions.TryGetValue(item, out Callback action))
             {
-                action(packetData, headerData);
+                action(header, data);
             }
             else
             {
-                headerData.TryGetValue("Serial", out string serial);
-                SendPacket(new Dictionary<string, string>() {
-                    { "Method", item },
-                    { "Serial", serial },
-                }, new Dictionary<string, string>(){
+                SendPacket(header, new Dictionary<string, string>(){
                     { "Result", "Error" },
                     { "message", "Method not found" },
                 });
             }
-
-
-
         }
 
         private void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
