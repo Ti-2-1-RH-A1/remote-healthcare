@@ -8,6 +8,12 @@ namespace DoctorApplication
 {
     class DoctorActions
     {
-       
+        private ClientManager clientManager;
+
+        public DoctorActions()
+        {
+            clientManager = new ClientManager();
+        }
+
     }
 }

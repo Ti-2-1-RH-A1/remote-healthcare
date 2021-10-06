@@ -29,5 +29,10 @@ namespace DoctorApplication
         {
 
         }
+
+        private void btnMessage_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

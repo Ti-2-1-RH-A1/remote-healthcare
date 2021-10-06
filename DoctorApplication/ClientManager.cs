@@ -8,14 +8,15 @@ namespace DoctorApplication
     class ClientManager
     {
         private List<Client> clients = new List<Client>();
+        private ServerClient.Client client;
 
         public ClientManager()
         {
+            client = new ServerClient.Client("localhost", "EchteDokter", true);
+        }
 
-            ServerClient.Client client = new ServerClient.Client("localhost", "EchteDokter", true);
-
-            
-
+        public void start()
+        {
             while (!client.loggedIn)
             {
                 Thread.Sleep(10);
@@ -29,12 +30,9 @@ namespace DoctorApplication
                 Console.WriteLine(data);
                 AddClientsFromString(header["Data"]);
             });
-
         }
 
-
-
-        public void AddClientsFromString(string clientsString)
+        private void AddClientsFromString(string clientsString)
         {
             clientsString = clientsString.Substring(0, clientsString.Length - 1);
             string[] strings = clientsString.Split(";");
@@ -46,9 +44,10 @@ namespace DoctorApplication
                 Client client = new Client();
                 client.clientAuthKey = split[0];
                 clients.Add(client);
-
             }
         }
+
+
 
     }
 }
