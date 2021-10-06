@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace ServerClient.Tests
 {
     [TestClass()]
-    public class UnitTests
+    public class UnitTestServer
     {
         [TestMethod()]
         public void StringifyParseHeadersTest()
