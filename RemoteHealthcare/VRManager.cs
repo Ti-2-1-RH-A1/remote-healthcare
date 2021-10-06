@@ -111,9 +111,7 @@ namespace VirtualReality
 
             string routeUUID = VRMethod.GenerateRoute(ref connection, routeNodes);
 
-            
-
-            //VRMethod.FollowRoute(ref connection, routeUUID, bikeUUID);
+            VRMethod.FollowRoute(ref connection, routeUUID, bikeUUID);
         }
 
         /// <summary>
