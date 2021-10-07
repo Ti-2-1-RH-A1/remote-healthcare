@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using System.Threading;
 
 namespace DoctorApplication
 {
@@ -19,7 +20,7 @@ namespace DoctorApplication
             client = new ServerClient.Client("localhost", "EchteDokter", true);
             while (!client.loggedIn)
             {
-                await Task.Delay(10);
+                Thread.Sleep(10);
             }
 
             client.SendPacket(new Dictionary<string, string>()
@@ -60,7 +61,7 @@ namespace DoctorApplication
         public void SendMessageToAll(string message)
         {
             List<string> clientsId = new List<string>();
-            clients.ForEach((s1)=>clientsId.Add(s1.clientAuthKey));
+            clients.ForEach((s1) => clientsId.Add(s1.clientAuthKey));
 
             SendToClients(clientsId, "Message", new Dictionary<string, string>()
             {
@@ -95,7 +96,7 @@ namespace DoctorApplication
                     { "Method", "SendToClients" },
                     { "Action", action }
                 }, data);
-            
+
         }
     }
 }

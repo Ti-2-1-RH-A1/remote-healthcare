@@ -1,9 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text.Json;
-using Newtonsoft.Json;
 
 namespace ServerClient
 {
@@ -46,7 +43,7 @@ namespace ServerClient
             string json = data["Clients"];
             List<string> clientAuths;
             clientAuths = JsonConvert.DeserializeObject<List<string>>(json);
-            SendToClients(clientAuths, header["Action"],data);
+            SendToClients(clientAuths, header["Action"], data);
         }
 
         /// <summary>
@@ -63,7 +60,7 @@ namespace ServerClient
                 clientHandler.SendPacket(new Dictionary<string, string>()
                 {
                     {"Method", action}
-                },dict);
+                }, dict);
 
             }
         }

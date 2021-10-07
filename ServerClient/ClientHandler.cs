@@ -1,10 +1,10 @@
-﻿using System;
+﻿using ServerClient.Data;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
-using ServerClient.Data;
 
 namespace ServerClient
 {
@@ -149,26 +149,21 @@ namespace ServerClient
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
                 header.TryGetValue("Auth", out string key);
-                var (DoesExist, IsDoctor) = auth.Check(key);
+                (bool DoesExist, bool IsDoctor) = auth.Check(key);
                 if (!DoesExist)
                 {
-                    SendPacket(header, new Dictionary<string, string>(){
-                        { "Result", "Error" },
-                        { "message", "Key doesn't exist" },
-                    });
                     Console.WriteLine("Key doesn't exist");
+                    SendError(header, "Key doesn't exist");
                     return;
                 }
 
                 authKey = key;
                 if (IsDoctor)
                 {
-
-
                     SendPacket(header, new Dictionary<string, string>(){
-                            { "Result", "ok" },
-                            { "message", "Doctor logged in." },
-                        });
+                        { "Result", "ok" },
+                        { "message", "Doctor logged in." },
+                    });
 
                     Console.WriteLine("Doctor logged in.");
                     this.IsDoctor = true;
@@ -239,13 +234,7 @@ namespace ServerClient
             {
                 action(header, data);
             }
-            else
-            {
-                SendPacket(header, new Dictionary<string, string>(){
-                    { "Result", "Error" },
-                    { "message", "Method not found" },
-                });
-            }
+            SendError(header, "Method not found");
         }
 
         public void SendError(Dictionary<string, string> header, string message) =>
