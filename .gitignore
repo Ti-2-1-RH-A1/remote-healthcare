@@ -349,4 +349,4 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 ServerClient/Properties/launchSettings.json
-/ServerClient/clients/storage/99c5939c-04b6-44be-8f71-fb7c73b2ebdd.json
+/ServerClient/clients/storage/*.json
