@@ -69,9 +69,15 @@ namespace ServerClient
                             // Send result to client
                             result.Add("Result", "Ok");
                             SendPacket(header, result);
+                            return;
                         }
+                        SendError(header, "Keys not found!");
+                        return;
                     }
+                    SendError(header, "Client not found!");
+                    return;
                 }
+                SendError(header, "ID not found!");
             };
         }
 
@@ -94,8 +100,12 @@ namespace ServerClient
                         SendPacket(header, new Dictionary<string, string>(){
                             { "Result", "Ok" },
                         });
+                        return;
                     }
+                    SendError(header, "Client not found!");
+                    return;
                 }
+                SendError(header, "ID not found!");
             };
         }
 
@@ -237,6 +247,12 @@ namespace ServerClient
                 });
             }
         }
+
+        public void SendError(Dictionary<string, string> header, string message) =>
+            SendPacket(header, new Dictionary<string, string>(){
+                { "Result", "Error" },
+                { "Message", message },
+            });
 
         public void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
             Write($"{Protocol.StringifyHeaders(headers)}{Protocol.StringifyData(data)}");
