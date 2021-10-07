@@ -22,6 +22,7 @@ namespace RemoteHealthcare
             /*services.GetService<VRManager>().Start();*/
         }
 
+
         public void HandleData((DataTypes, float)? data)
         {
             // TODO [Martijn] Implementation
