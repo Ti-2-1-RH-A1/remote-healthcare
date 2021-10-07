@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Text;
 using System.Threading.Tasks;
 using Avans.TI.BLE;
 using RemoteHealthcare.bike;
-
-using avansBikeData = Avans.TI.BLE.BLESubscriptionValueChangedEventArgs;
+using RemoteHealthcare.hrm;
 
 namespace RemoteHealthcare
 {
@@ -16,11 +14,7 @@ namespace RemoteHealthcare
 
     public class Bluetooth : IDisposable
     {
-
         private BLE ble;
-        private const string ServiceName = "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e";
-        private const string SubscribtionCharacteristic = "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e";
-        private const string SendingCharacteristic = "6e40fec3-b5a3-f393-e0a9-e50e24dcca9e";
 
         public event BLESubscriptionValueChangedEventHandler DataReceived;
 
@@ -34,33 +28,27 @@ namespace RemoteHealthcare
 
         public void Dispose()
         {
-            // TODO [Martijn] Disconnect the bluetooth connection
+            ble.CloseDevice();
         }
 
-        public async Task<int> Start(bike.RealBike realBike)
+        public async Task<int> Start(RealBike realBike)
         {
-            return await Start("Tacx flux" + realBike.bikeId);
+            return await Start(RealBike.bikeTypeName + " " + realBike.bikeId, RealBike.bikeServiceName, RealBike.bikeSubscribtionCharacteristic);
         }
 
-        /*public async Task<int> Start(HRM hrm)
+        public async Task<int> Start(HRM hrm)
         {
-            return await Start("Tacx flux" + realBike.bikeId);
-        }*/
+            return await Start(HRM.hrmTypeName, HRM.heartRateServiceName, HRM.heartSubscribtionCharacteristic);
+        }
 
-        public async Task<int> Start(string deviceId)
+        public async Task<int> Start(string deviceId, string serviceName, string subscribtionCharacteristic)
         {
             int errorCode = 0; // set default to 0;
             errorCode += await ble.OpenDevice(deviceId);
-            errorCode += await ble.SetService(ServiceName);
+            errorCode += await ble.SetService(serviceName);
             ble.SubscriptionValueChanged += DataReceived;
-            errorCode += await ble.SubscribeToCharacteristic(SubscribtionCharacteristic);
+            errorCode += await ble.SubscribeToCharacteristic(subscribtionCharacteristic);
             return errorCode;
-        }
-
-        private void BleHeart_SubscriptionValueChanged(object sender, avansBikeData e)
-        {
-            if (e.Data[0] != 0x16) { return; }
-            Console.WriteLine($"Heartrate: {e.Data[1]} BPM");
         }
 
         public void SetBikeResistance(byte resistance)
@@ -102,7 +90,7 @@ namespace RemoteHealthcare
             payload.CopyTo(data, 4);
             data[data.Length - 1] = checksum;
 
-            ble.WriteCharacteristic(SendingCharacteristic, data);
+            ble.WriteCharacteristic(RealBike.bikeSendingCharacteristic, data);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Avans.TI.BLE;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 
@@ -9,6 +8,11 @@ namespace RemoteHealthcare.bike
 {
     public class RealBike : BLE, IBike
     {
+        public const string bikeTypeName = "Tacx flux";
+        public const string bikeServiceName = "6e40fec1-b5a3-f393-e0a9-e50e24dcca9e";
+        public const string bikeSubscribtionCharacteristic = "6e40fec2-b5a3-f393-e0a9-e50e24dcca9e";
+        public const string bikeSendingCharacteristic = "6e40fec3-b5a3-f393-e0a9-e50e24dcca9e";
+
         public string bikeId { get; set; }
 
         private readonly IServiceProvider services;

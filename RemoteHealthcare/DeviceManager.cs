@@ -1,9 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using System.Linq;
 using RemoteHealthcare.bike;
 
 namespace RemoteHealthcare
@@ -25,9 +21,13 @@ namespace RemoteHealthcare
             
         }
 
-        public void HandleData((DataTypes, float) data)
+        public void HandleData((DataTypes, float)? data)
         {
             // TODO [Martijn] Implementation
+            if (data != null)
+            {
+
+            }
         }
 
 

@@ -1,14 +1,16 @@
 ﻿using Avans.TI.BLE;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 
 namespace RemoteHealthcare.hrm
 {
-    class HRM
+    public class HRM
     {
+        public const string hrmTypeName = "Decathlon Dual HR";
+        public const string heartRateServiceName = "HeartRate";
+        public const string heartSubscribtionCharacteristic = "HeartRateMeasurement";
+
         private readonly IServiceProvider services;
         private readonly Bluetooth bluetooth;
 
@@ -22,12 +24,17 @@ namespace RemoteHealthcare.hrm
 
         private void Ble_DataReceived(object sender, BLESubscriptionValueChangedEventArgs e)
         {
-            
+            DataReceived(HRMDataParser.ParseHRMData(e.Data));
+        }
+
+        public void DataReceived((DataTypes, float)? data)
+        {
+            services.GetService<DeviceManager>().HandleData(data);
         }
 
         public void Start()
         {
-
+            bluetooth.Start(this);
         }
     }
 }
