@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Avans.TI.BLE;
 using RemoteHealthcare.bike;
@@ -43,11 +44,16 @@ namespace RemoteHealthcare
 
         public async Task<int> Start(string deviceId, string serviceName, string subscribtionCharacteristic)
         {
+            // Wait for half a second in case time is needed to recognise bluetooth devices
+            Thread.Sleep(500);
+
             int errorCode = 0; // set default to 0;
             errorCode += await ble.OpenDevice(deviceId);
             errorCode += await ble.SetService(serviceName);
             ble.SubscriptionValueChanged += DataReceived;
             errorCode += await ble.SubscribeToCharacteristic(subscribtionCharacteristic);
+            // if errorcode > 0 then connection wasn't made properly
+            // TODO [Martijn] Implement using errorcode to detect if connection was made
             return errorCode;
         }
 

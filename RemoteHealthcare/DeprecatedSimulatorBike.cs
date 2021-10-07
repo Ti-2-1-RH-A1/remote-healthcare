@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Diagnostics;
 using System.Threading;
 using avansBikeData = Avans.TI.BLE.BLESubscriptionValueChangedEventArgs;
@@ -121,3 +121,4 @@ namespace RemoteHealthcare
         }
     }
 }
+*/
