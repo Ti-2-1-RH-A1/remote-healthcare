@@ -30,7 +30,7 @@ namespace DoctorApplication
             {
                 Console.WriteLine(header);
                 Console.WriteLine(data);
-                AddClientsFromString(header["Data"]);
+                AddClientsFromString(data["Data"]);
             });
         }
 
