@@ -152,8 +152,11 @@ namespace ServerClient
                 (bool DoesExist, bool IsDoctor) = auth.Check(key);
                 if (!DoesExist)
                 {
+                    SendPacket(header, new Dictionary<string, string>(){
+                        { "Result", "Error" },
+                        { "message", "Key doesn't exist" },
+                    });
                     Console.WriteLine("Key doesn't exist");
-                    SendError(header, "Key doesn't exist");
                     return;
                 }
 
@@ -234,7 +237,10 @@ namespace ServerClient
             {
                 action(header, data);
             }
-            SendError(header, "Method not found");
+            SendPacket(header, new Dictionary<string, string>(){
+                { "Result", "Error" },
+                { "message", "Method not found" },
+            });
         }
 
         public void SendError(Dictionary<string, string> header, string message) =>
