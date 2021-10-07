@@ -1,6 +1,7 @@
 ﻿using RemoteHealthcare.bike;
 using System;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace RemoteHealthcare
 {
@@ -11,6 +12,8 @@ namespace RemoteHealthcare
         {
             var deviceManager = new DeviceManager();
             deviceManager.Start(init());
+            // wait until an input to close the application
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -21,7 +24,7 @@ namespace RemoteHealthcare
             // TODO [Martijn] Implement fileIO so the program automatically takes the latest bike id
 
             // Use simulator bike or realBike?
-            Console.WriteLine("Use a real bike or simulator bike? type [y] or [n]");
+            Console.WriteLine("Use a real bike or simulator bike? type [y] for real bike or [n] for simulator bike");
             string bikeTypeChoice = Console.ReadLine().ToLower();
             if (bikeTypeChoice.Contains("n"))
             {
@@ -35,7 +38,7 @@ namespace RemoteHealthcare
             while (running)
             {
                 bikeIdInput = Console.ReadLine();
-                if (Regex.IsMatch(bikeIdInput, "[/d{5}"))
+                if (Regex.IsMatch(bikeIdInput, "[/d{5}]"))
                 {
                     // if the input consists of 5 digits stop the loop, else ask for input again
                     running = false;

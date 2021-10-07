@@ -34,7 +34,8 @@ namespace RemoteHealthcare.bike
                 case 0x19:
                     return ParseBikeDataPage25(data);
                 default:
-                    return null;
+                    // return an empty list if there's no data
+                    return new List<(DataTypes, float)>();
             }
         }
 
@@ -51,9 +52,9 @@ namespace RemoteHealthcare.bike
         private static List<(DataTypes, float)> ParseBikeDataPage25(byte[] data)
         {
             List<(DataTypes, float)> convertedData = new List<(DataTypes, float)>();
-            convertedData.Add(((DataTypes.BIKE_ELAPSED_TIME, ParseRPM(data))));
-            convertedData.Add(((DataTypes.BIKE_DISTANCE, ParseAccPower(data))));
-            convertedData.Add(((DataTypes.BIKE_SPEED, ParseInsPower(data))));
+            convertedData.Add(((DataTypes.BIKE_RPM, ParseRPM(data))));
+            convertedData.Add(((DataTypes.BIKE_ACCPOWER, ParseAccPower(data))));
+            convertedData.Add(((DataTypes.BIKE_INSPOWER, ParseInsPower(data))));
             return convertedData;
         }
 

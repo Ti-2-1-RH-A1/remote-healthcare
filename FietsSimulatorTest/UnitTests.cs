@@ -1,4 +1,4 @@
-/*using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RemoteHealthcare;
 using System;
 using System.Diagnostics;
@@ -8,25 +8,9 @@ namespace FietsSimulatorTest
     [TestClass]
     public class UnitTests
     {
-        [TestMethod]
-        public void TestSimulator()
-        {
-            DeprecatedSimulatorBike simulator = new DeprecatedSimulatorBike();
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            int i = 0;
-            try
-            {
-                simulator.RunStep(ref i, ref stopwatch);
-            }
-            catch (Exception e)
-            {
-                Assert.Fail(e.Message);
-                throw;
-            }
-            Assert.IsTrue(true);
-        }
+        
 
-        [TestMethod]
+        /*[TestMethod]
         public void TestBluetoothSpeed()
         {
             byte[] SpeedBytes = new byte[8];
@@ -59,7 +43,6 @@ namespace FietsSimulatorTest
         {
             int test = Bluetooth.TwoByteToInt(0b11001011, 0b00010001);
             Assert.AreEqual(test, 4555);
-        }
+        }*/
     }
 }
-*/

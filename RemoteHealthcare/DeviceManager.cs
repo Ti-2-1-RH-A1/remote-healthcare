@@ -8,21 +8,18 @@ namespace RemoteHealthcare
 {
     public class DeviceManager
     {
-        private IServiceProvider services;
+        private readonly IServiceProvider services;
 
         public DeviceManager()
         {
-            this.services = buildServiceProvider();
+            this.services = BuildServiceProvider();
         }
 
         public void Start((BikeManager.BikeType, string) bikeTypeAndId)
         {
-            var bikeManager = services.GetService<BikeManager>();
-            bikeManager.StartBike(bikeTypeAndId.Item1, bikeTypeAndId.Item2);
-            var hrmManager = services.GetService<HRMManager>();
-            hrmManager.StartHRM();
-            var vrManager = services.GetService<VRManager>();
-            vrManager.Start();
+            services.GetService<BikeManager>().StartBike(bikeTypeAndId.Item1, bikeTypeAndId.Item2);
+            services.GetService<HRMManager>().StartHRM();
+            /*services.GetService<VRManager>().Start();*/
         }
 
         public void HandleData((DataTypes, float)? data)
@@ -30,12 +27,13 @@ namespace RemoteHealthcare
             // TODO [Martijn] Implementation
             if (data != null)
             {
-
+                // Send data to vr and to the doctor client here
+                Console.WriteLine(data);
+                // TODO [Martijn] Test if HRM data also works
             }
         }
 
-
-        private IServiceProvider buildServiceProvider()
+        private IServiceProvider BuildServiceProvider()
         {
             return new ServiceCollection()
                 .AddSingleton(new Bluetooth(BLEInstance.BIKE))
