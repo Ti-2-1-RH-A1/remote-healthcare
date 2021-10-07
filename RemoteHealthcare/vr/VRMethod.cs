@@ -6,9 +6,8 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Threading;
-using VirtualReality;
 
-namespace RemoteHealthcare
+namespace RemoteHealthcare.vr
 {
     class VRMethod
     {

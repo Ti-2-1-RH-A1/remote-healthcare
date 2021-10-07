@@ -1,4 +1,4 @@
-﻿namespace VirtualReality
+﻿namespace RemoteHealthcare.vr
 {
     class JsonID
     {
