@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -8,7 +7,7 @@ namespace DoctorApplication
 {
     public class ClientManager
     {
-        private List<Client> clients = new List<Client>();
+        private readonly List<Client> clients = new();
         private ServerClient.Client client;
 
         public ClientManager()
@@ -20,17 +19,17 @@ namespace DoctorApplication
             client = new ServerClient.Client("localhost", "EchteDokter", true);
             while (!client.loggedIn)
             {
-                Thread.Sleep(10);
+                await Task.Delay(10);
             }
 
             client.SendPacket(new Dictionary<string, string>()
             {
-                {"Method", "GetClients"}
+                { "Method", "GetClients" }
             }, new Dictionary<string, string>(), (header, data) =>
             {
                 Console.WriteLine(header);
                 Console.WriteLine(data);
-                AddClientsFromString(header["Data"]);
+                AddClientsFromString(data["Data"]);
             });
         }
 
@@ -40,15 +39,16 @@ namespace DoctorApplication
         /// <param name="clientsString"></param>
         private void AddClientsFromString(string clientsString)
         {
-            clientsString = clientsString.Substring(0, clientsString.Length - 1);
-            string[] strings = clientsString.Split(";");
+            string[] strings = clientsString[0..^1].Split(";");
 
             foreach (string clientString in strings)
             {
                 string[] split = clientString.Split("|");
 
-                Client client = new Client();
-                client.clientAuthKey = split[0];
+                Client client = new()
+                {
+                    clientAuthKey = split[0]
+                };
                 clients.Add(client);
             }
         }
@@ -62,9 +62,9 @@ namespace DoctorApplication
             List<string> clientsId = new List<string>();
             clients.ForEach((s1)=>clientsId.Add(s1.clientAuthKey));
 
-            SendToClients(clientsId,"Message",new Dictionary<string, string>()
+            SendToClients(clientsId, "Message", new Dictionary<string, string>()
             {
-                {"Message",message}
+                { "Message", message }
             });
         }
 
@@ -86,14 +86,14 @@ namespace DoctorApplication
             {
                 data = new Dictionary<string, string>()
                 {
-                    {"Clients", clientsString}
+                    { "Clients", clientsString }
                 };
             }
 
             client.SendPacket(new Dictionary<string, string>()
                 {
-                    {"Method", "SendToClients"},
-                    {"Action", action}
+                    { "Method", "SendToClients" },
+                    { "Action", action }
                 }, data);
             
         }
