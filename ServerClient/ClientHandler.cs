@@ -33,8 +33,9 @@ namespace ServerClient
             this.stream = stream;
             actions = new Dictionary<string, Callback>() {
                 { "Login", LoginMethode() },
-                { "Disconnect", disconnectCallback() },
-                { "GetClients", GetClients() },
+                { "Disconnect", disconnectCallback()},
+                {"GetClients",GetClients()},
+                {"SendToClients",SendToClients()},
                 { "Post", Post() },
             };
             this.stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
@@ -61,11 +62,18 @@ namespace ServerClient
             };
         }
 
+        private Callback SendToClients()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                manager.SendToClients(header,data);
+            };
+        }
+
         private Callback GetClients()
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
-                header.TryGetValue("Serial", out string serial);
                 SendPacket(header, new Dictionary<string, string>(){
                     { "Result", "Ok" },
                     {"Data",Util.StringifyClients(manager.GetClients())},
@@ -193,7 +201,7 @@ namespace ServerClient
             }
         }
 
-        private void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
+        public void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
             Write($"{Protocol.StringifyHeaders(headers)}{Protocol.StringifyData(data)}");
 
         public void Write(string data)
