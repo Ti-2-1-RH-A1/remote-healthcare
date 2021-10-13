@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using System.Threading;
 
 namespace DoctorApplication
 {
@@ -19,7 +20,7 @@ namespace DoctorApplication
             client = new ServerClient.Client("localhost", "EchteDokter", true);
             while (!client.loggedIn)
             {
-                await Task.Delay(10);
+                Thread.Sleep(10);
             }
 
             client.SendPacket(new Dictionary<string, string>()

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using ServerClient.Data;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
-using ServerClient.Data;
 
 namespace ServerClient
 {
@@ -69,9 +69,15 @@ namespace ServerClient
                             // Send result to client
                             result.Add("Result", "Ok");
                             SendPacket(header, result);
+                            return;
                         }
+                        SendError(header, "Keys not found!");
+                        return;
                     }
+                    SendError(header, "Client not found!");
+                    return;
                 }
+                SendError(header, "ID not found!");
             };
         }
 
@@ -94,8 +100,12 @@ namespace ServerClient
                         SendPacket(header, new Dictionary<string, string>(){
                             { "Result", "Ok" },
                         });
+                        return;
                     }
+                    SendError(header, "Client not found!");
+                    return;
                 }
+                SendError(header, "ID not found!");
             };
         }
 
@@ -139,13 +149,10 @@ namespace ServerClient
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
                 header.TryGetValue("Auth", out string key);
-                var (DoesExist, IsDoctor) = auth.Check(key);
+                (bool DoesExist, bool IsDoctor) = auth.Check(key);
                 if (!DoesExist)
                 {
-                    SendPacket(header, new Dictionary<string, string>(){
-                        { "Result", "Error" },
-                        { "message", "Key doesn't exist" },
-                    });
+                    SendError(header, "Key doesn't exist");
                     Console.WriteLine("Key doesn't exist");
                     return;
                 }
@@ -153,12 +160,10 @@ namespace ServerClient
                 authKey = key;
                 if (IsDoctor)
                 {
-
-
                     SendPacket(header, new Dictionary<string, string>(){
-                            { "Result", "ok" },
-                            { "message", "Doctor logged in." },
-                        });
+                        { "Result", "ok" },
+                        { "message", "Doctor logged in." },
+                    });
 
                     Console.WriteLine("Doctor logged in.");
                     this.IsDoctor = true;
@@ -228,15 +233,16 @@ namespace ServerClient
             if (actions.TryGetValue(item, out Callback action))
             {
                 action(header, data);
+                return;
             }
-            else
-            {
-                SendPacket(header, new Dictionary<string, string>(){
-                    { "Result", "Error" },
-                    { "message", "Method not found" },
-                });
-            }
+            SendError(header, "Method not found");
         }
+
+        public void SendError(Dictionary<string, string> header, string message) =>
+            SendPacket(header, new Dictionary<string, string>(){
+                { "Result", "Error" },
+                { "Message", message },
+            });
 
         public void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
             Write($"{Protocol.StringifyHeaders(headers)}{Protocol.StringifyData(data)}");
