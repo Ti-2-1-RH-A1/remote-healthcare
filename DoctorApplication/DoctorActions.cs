@@ -2,7 +2,7 @@
 
 namespace DoctorApplication
 {
-    internal class DoctorActions
+    public class DoctorActions
     {
         private ClientManager clientManager;
         private MainWindow mainWindow;
@@ -29,5 +29,21 @@ namespace DoctorApplication
         }
 
 
+        public static void HistoryWindow()
+        {
+            ClientHistoryWindow clientHistoryWindow = new ClientHistoryWindow();
+            clientHistoryWindow.ShowDialog();
+        }
+        //public void HistoryWindow(object client)
+        //{
+        //    ClientHistoryWindow clientHistoryWindow = new ClientHistoryWindow();
+        //    clientHistoryWindow.ShowDialog();
+        //}
+
+        //public void HistoryWindow(Client client)
+        //{
+        //    ClientHistoryWindow clientHistoryWindow = new ClientHistoryWindow(client.clientSerial);
+        //    clientHistoryWindow.ShowDialog();
+        //}
     }
 }
