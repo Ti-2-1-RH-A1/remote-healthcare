@@ -1,9 +1,5 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RemoteHealthcare;
 using RemoteHealthcare.bike;
-using System;
-using System.Threading;
 
 namespace RemoteHealthcare.Tests
 {

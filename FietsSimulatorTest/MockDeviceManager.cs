@@ -1,13 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RemoteHealthcare;
 using RemoteHealthcare.bike;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
-namespace FietsSimulatorTest
+namespace RemoteHealthcare.Tests
 {
     class MockDeviceManager : IDeviceManager
     {
@@ -16,8 +13,8 @@ namespace FietsSimulatorTest
 
         public MockDeviceManager()
         {
-            this.services = this.BuildServiceProvider();
-            this.CheckedTypes = CheckedDataTypes.NONE;
+            services = this.BuildServiceProvider();
+            CheckedTypes = CheckedDataTypes.NONE;
         }
 
         public void Start((IBikeManager.BikeType, string) bikeTypeAndId)
