@@ -8,7 +8,7 @@ namespace RemoteHealthcare
 {
     public class DeviceManager : IDeviceManager
     {
-        private IServiceProvider services;
+        private readonly IServiceProvider services;
 
         public DeviceManager()
         {
