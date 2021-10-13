@@ -1,7 +1,8 @@
-/*using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RemoteHealthcare;
+using RemoteHealthcare.bike;
 using System;
-using System.Diagnostics;
 
 namespace FietsSimulatorTest
 {
@@ -11,55 +12,31 @@ namespace FietsSimulatorTest
         [TestMethod]
         public void TestSimulator()
         {
-            DeprecatedSimulatorBike simulator = new DeprecatedSimulatorBike();
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            int i = 0;
-            try
-            {
-                simulator.RunStep(ref i, ref stopwatch);
-            }
-            catch (Exception e)
-            {
-                Assert.Fail(e.Message);
-                throw;
-            }
-            Assert.IsTrue(true);
-        }
+            //DeviceManager deviceManager = new DeviceManager();
+            //deviceManager.Start((BikeManager.BikeType.SIMULATOR_BIKE, ""));
 
-        [TestMethod]
-        public void TestBluetoothSpeed()
-        {
-            byte[] SpeedBytes = new byte[8];
-            SpeedBytes[4] = 0b11001011;
-            SpeedBytes[5] = 0b00010001;
-            float test = Bluetooth.ParseSpeed(SpeedBytes);
-            Assert.AreEqual(test, 4555f);
-        }
 
-        [TestMethod]
-        public void TestBluetoothTime()
-        {
-            byte[] TimeBytes = new byte[8];
-            TimeBytes[2] = 0b11001011;
-            float test2 = Bluetooth.ParseElapsedTime(TimeBytes);
-            Assert.AreEqual(test2, 50.75f);
-        }
+            //IServiceProvider services;
 
-        [TestMethod]
-        public void TestBluetoothDistance()
-        {
-            byte[] DistanceBytes = new byte[8];
-            DistanceBytes[3] = 0b11001011;
-            float test3 = Bluetooth.ParseDistance(DistanceBytes);
-            Assert.AreEqual(test3, 203f);
-        }
+            //var bikeManager = services.GetService<BikeManager>();
+            //bikeManager.StartBike(bikeTypeAndId.Item1, bikeTypeAndId.Item2);
 
-        [TestMethod]
-        public void TestTwoByteToInt()
-        {
-            int test = Bluetooth.TwoByteToInt(0b11001011, 0b00010001);
-            Assert.AreEqual(test, 4555);
+            //IServiceProvider serviceProvider = new ServiceCollection()
+            //    .AddSingleton<IManager, MockDeviceManager>();
+            //BikeManager bikeManager = new BikeManager()
+
+            //Stopwatch stopwatch = Stopwatch.StartNew();
+            //int i = 0;
+            //try
+            //{
+            //    simulator.RunStep(ref i, ref stopwatch);
+            //}
+            //catch (Exception e)
+            //{
+            //    Assert.Fail(e.Message);
+            //    throw;
+            //}
+            //Assert.IsTrue(true);
         }
     }
 }
-*/

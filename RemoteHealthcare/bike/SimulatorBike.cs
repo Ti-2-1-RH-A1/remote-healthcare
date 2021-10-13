@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Diagnostics;
 using System.Threading;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace RemoteHealthcare.bike
 {
@@ -9,12 +9,13 @@ namespace RemoteHealthcare.bike
     {
         private readonly IServiceProvider services;
 
-        private bool isRunning = false;
         private float resistance = 40;
-
+        private bool isRunning;
+        private Thread simThread;
 
         public SimulatorBike(IServiceProvider serviceProvider)
         {
+            this.isRunning = false;
             this.services = serviceProvider;
         }
 
@@ -27,8 +28,8 @@ namespace RemoteHealthcare.bike
         public void Start(string bikeId = null)
         {
             this.isRunning = true;
-            Thread simThread = new Thread(new ThreadStart(this.RunSimulation));
-            simThread.Start();
+            this.simThread = new Thread(new ThreadStart(this.RunSimulation));
+            this.simThread.Start();
         }
 
         public void Stop()
@@ -43,7 +44,7 @@ namespace RemoteHealthcare.bike
             long prevMilis = stopwatch.ElapsedMilliseconds;
             float totalDistanceTravled = 0;
 
-            while(this.isRunning)
+            while (this.isRunning)
             {
                 float speed = this.GenerateSpeed(stopwatch.ElapsedMilliseconds);
                 GenerateDistanceTravled(stopwatch.ElapsedMilliseconds, prevMilis, ref totalDistanceTravled, speed);
@@ -58,10 +59,10 @@ namespace RemoteHealthcare.bike
                 Thread.Sleep(50); // Let the simulator wait until simulating the next dataset.
             }
         }
-        
+
         public void DataReceived((DataTypes, float) data)
         {
-            services.GetService<DeviceManager>().HandleData(data);
+            services.GetService<IDeviceManager>().HandleData(data);
         }
 
         public void SetResistance(byte resistance)
@@ -84,5 +85,9 @@ namespace RemoteHealthcare.bike
         {
             return speed * 10;
         }
+
+        public bool IsRunning() => this.isRunning;
+
+        public Thread GetSimThread() => this.simThread;
     }
 }

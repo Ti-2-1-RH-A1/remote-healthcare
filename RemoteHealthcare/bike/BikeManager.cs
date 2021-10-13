@@ -2,7 +2,7 @@
 
 namespace RemoteHealthcare.bike
 {
-    public class BikeManager
+    public class BikeManager : IBikeManager
     {
         private readonly IBike realBike;        // Instance of the real physical bike.
         private readonly IBike simulatorBike;   // Instance of the simulated bike run by the program.
@@ -34,14 +34,14 @@ namespace RemoteHealthcare.bike
         ///                      be given if BikeType.REAL_BIKE is selected.</param>
         /// <exception cref="ArgumentNullException">Is thrown when the bikeType is set to REAL_BIKE but the 
         ///                                         bikeId is null or not given.</exception>
-        public void StartBike(BikeType bikeType, string bikeId = null)
+        public void StartBike(IBikeManager.BikeType bikeType, string bikeId = null)
         {
-            if (bikeType == BikeType.REAL_BIKE && bikeId == null)
+            if (bikeType == IBikeManager.BikeType.REAL_BIKE && bikeId == null)
             {
                 throw new ArgumentNullException(bikeId, "[BikeManager.StartBike()] Param bikeId should not be null when bikeType is BikeType.REAL_BIKE.");
             }
 
-            if (bikeType == BikeType.REAL_BIKE)
+            if (bikeType == IBikeManager.BikeType.REAL_BIKE)
             {
                 this.activeBike = this.realBike;
                 this.activeBike.Start(bikeId);
@@ -51,7 +51,6 @@ namespace RemoteHealthcare.bike
                 this.activeBike = this.simulatorBike;
                 this.activeBike.Start();
             }
-
         }
     }
 }

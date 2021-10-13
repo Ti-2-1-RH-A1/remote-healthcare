@@ -1,21 +1,21 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
 using RemoteHealthcare.bike;
-using RemoteHealthcare.vr;
 using RemoteHealthcare.hrm;
+using RemoteHealthcare.vr;
+using System;
 
 namespace RemoteHealthcare
 {
-    public class DeviceManager
+    public class DeviceManager : IDeviceManager
     {
         private IServiceProvider services;
 
         public DeviceManager()
         {
-            this.services = buildServiceProvider();
+            this.services = BuildServiceProvider();
         }
 
-        public void Start((BikeManager.BikeType, string) bikeTypeAndId)
+        public void Start((IBikeManager.BikeType, string) bikeTypeAndId)
         {
             var bikeManager = services.GetService<BikeManager>();
             bikeManager.StartBike(bikeTypeAndId.Item1, bikeTypeAndId.Item2);
@@ -25,18 +25,15 @@ namespace RemoteHealthcare
             vrManager.Start();
         }
 
-
         public void HandleData((DataTypes, float)? data)
         {
             // TODO [Martijn] Implementation
-            if (data != null)
-            {
+            if (data == null) { return; }
 
-            }
+            // Rest of the handel code.
         }
 
-
-        private IServiceProvider buildServiceProvider()
+        private IServiceProvider BuildServiceProvider()
         {
             return new ServiceCollection()
                 .AddSingleton(new Bluetooth(BLEInstance.BIKE))
@@ -44,7 +41,7 @@ namespace RemoteHealthcare
                 .AddSingleton<BikeManager>()
                 .AddSingleton<HRMManager>()
                 .AddSingleton<VRManager>()
-                .AddSingleton(this)
+                .AddSingleton<IDeviceManager>(this)
                 .BuildServiceProvider();
         }
     }
