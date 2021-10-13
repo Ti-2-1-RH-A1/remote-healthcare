@@ -46,6 +46,7 @@ namespace RemoteHealthcare.bike
 
             while (this.isRunning)
             {
+                Console.WriteLine("test");
                 float speed = this.GenerateSpeed(stopwatch.ElapsedMilliseconds);
                 GenerateDistanceTravled(stopwatch.ElapsedMilliseconds, prevMilis, ref totalDistanceTravled, speed);
                 float rpm = GenerateRPM(speed);

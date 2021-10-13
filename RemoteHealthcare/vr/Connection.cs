@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
 namespace RemoteHealthcare.vr
@@ -30,7 +31,7 @@ namespace RemoteHealthcare.vr
 
 
         /// <summary>ReceiveFromTcp does <c>recieving data from a tcp stream</c> using a network stream decodes using ASCII to a string</summary>
-        public void ReceiveFromTcp(out string receivedData,bool useTimeOut)
+        public void ReceiveFromTcp(out string receivedData, bool useTimeOut)
         {
             if (useTimeOut)
             {
@@ -40,7 +41,6 @@ namespace RemoteHealthcare.vr
             {
                 networkStream.ReadTimeout = -1;
             }
-
 
 
             // read a small part of the packet and receive the packet length
@@ -89,38 +89,46 @@ namespace RemoteHealthcare.vr
             networkStream.Flush();
         }
 
+        private async Task waitForConnection()
+        {
+            while (currentSessionID.Length == 0)
+            {
+                await Task.Delay(10);
+            }
+        }
 
         /// <summary>SendViaTunnel does <c> a tcp data send via a tunnel</c> as long as you have made a connection first </summary>
         /// Returns a string with the response
-        public void SendViaTunnel(JObject jObject, Callback callback = null)
+        public async Task SendViaTunnel(JObject jObject, Callback callback = null)
         {
             if (currentSessionID.Length == 0)
             {
                 Console.WriteLine("not connected");
+                await waitForConnection();
             }
-            else
+
+
+            string randomIntAsString = random.Next(111111, 999999).ToString();
+            JObject tunnelJSon = new JObject();
+            tunnelJSon.Add("id", "tunnel/send");
+            JObject tunnelJObject = new JObject();
+            tunnelJObject.Add("dest", currentSessionID);
+
+            jObject.Add("serial", randomIntAsString);
+
+            if (callback != null)
             {
-                string randomIntAsString = random.Next(111111, 999999).ToString();
-                JObject tunnelJSon = new JObject();
-                tunnelJSon.Add("id", "tunnel/send");
-                JObject tunnelJObject = new JObject();
-                tunnelJObject.Add("dest", currentSessionID);
-
-                jObject.Add("serial", randomIntAsString);
-
-                if (callback != null)
-                {
-                    callbacks.Add(randomIntAsString, callback);
-                }
-
-                tunnelJObject.Add("data", jObject);
-                tunnelJSon.Add("data", tunnelJObject);
-                //Console.WriteLine(tunnelJSon.ToString());
-                SendToTcp(tunnelJSon.ToString());
+                callbacks.Add(randomIntAsString, callback);
             }
+
+            tunnelJObject.Add("data", jObject);
+            tunnelJSon.Add("data", tunnelJObject);
+            //Console.WriteLine(tunnelJSon.ToString());
+            SendToTcp(tunnelJSon.ToString());
         }
 
         public delegate void Callback(string response);
+
         private Dictionary<string, Callback> callbacks = new Dictionary<string, Callback>();
 
         /// <summary>
@@ -133,7 +141,7 @@ namespace RemoteHealthcare.vr
             {
                 if (currentSessionID.Length > 1)
                 {
-                    ReceiveFromTcp(out var receivedData,false);
+                    ReceiveFromTcp(out var receivedData, false);
                     Console.WriteLine(receivedData);
 
                     JObject tunnel = JObject.Parse(receivedData);
@@ -151,7 +159,6 @@ namespace RemoteHealthcare.vr
                             callbacks.Remove(serial);
                         }
                     }
-                    
                 }
             }
         }
