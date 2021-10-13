@@ -26,19 +26,24 @@ namespace DoctorApplication
             clientManager.SendMessageToAll(message);
         }
 
+        public static void OpenSelectClientWindow()
+        {
+            SelectClientHistory selectClientHistory = new SelectClientHistory();
+            selectClientHistory.ShowDialog();
+        }
 
-        public static void HistoryWindow()
+        public static void OpenHistoryWindow()
         {
             ClientHistoryWindow clientHistoryWindow = new ClientHistoryWindow();
             clientHistoryWindow.ShowDialog();
         }
-        //public void HistoryWindow(object client)
-        //{
-        //    ClientHistoryWindow clientHistoryWindow = new ClientHistoryWindow();
-        //    clientHistoryWindow.ShowDialog();
-        //}
+        public static void OpenHistoryWindow(string clientID)
+        {
+            ClientHistoryWindow clientHistoryWindow = new ClientHistoryWindow(clientID);
+            clientHistoryWindow.ShowDialog();
+        }
 
-        //public void HistoryWindow(Client client)
+        //public static void HistoryWindow(Client client)
         //{
         //    ClientHistoryWindow clientHistoryWindow = new ClientHistoryWindow(client.clientSerial);
         //    clientHistoryWindow.ShowDialog();

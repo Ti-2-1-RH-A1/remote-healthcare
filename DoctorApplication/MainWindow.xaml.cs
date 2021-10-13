@@ -18,14 +18,14 @@ namespace DoctorApplication
             
         }
 
-        private void btnBroadcast_Click(object sender, RoutedEventArgs e)
+        private void BtnBroadcast_Click(object sender, RoutedEventArgs e)
         {
 
         }
 
-        private void btnHistory_Click(object sender, RoutedEventArgs e)
+        private void BtnHistory_Click(object sender, RoutedEventArgs e)
         {
-            DoctorActions.HistoryWindow();
+            DoctorActions.OpenSelectClientWindow();
         }
 
         private void btnMessage_Click(object sender, RoutedEventArgs e)

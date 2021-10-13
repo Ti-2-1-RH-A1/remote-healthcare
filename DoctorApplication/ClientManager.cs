@@ -17,7 +17,7 @@ namespace DoctorApplication
 
         public async Task Start()
         {
-            client = new ServerClient.Client("localhost", "EchteDokter", true);
+            client = new ServerClient.Client("localhost", "EchteDokter", false);
             while (!client.loggedIn)
             {
                 Thread.Sleep(10);

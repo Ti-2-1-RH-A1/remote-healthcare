@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +23,20 @@ namespace DoctorApplication
         public SelectClientHistory()
         {
             InitializeComponent();
+            Client client = new Client();
+            client.clientAuthKey = "aweq1312";
+            client.clientName = "Naam van client";
+            client.clientSerial = "12are";
+            UserGrid.Items.Add(client);
+
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Trace.WriteLine("Select pressed");
+            Client client = (Client)UserGrid.SelectedItem;
+            DoctorActions.OpenHistoryWindow(client.clientSerial);
+            Close();
         }
     }
 }
