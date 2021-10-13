@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ServerClient
@@ -15,6 +16,12 @@ namespace ServerClient
             //var client = new Client("localhost", "Fiets", true, "name");
 
             await Task.Delay(3000);
+
+            //var a = await client.SendPacketAsync(new Dictionary<string, string>() {
+            //        { "Method", "GetClients" }
+            //    }, new Dictionary<string, string>());
+
+            //Console.WriteLine(a);
 
             // client.SendPacket(new Dictionary<string, string>() {
             //     { "Method", "Get" }
