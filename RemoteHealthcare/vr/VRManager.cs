@@ -1,20 +1,19 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RemoteHealthcare;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 
-namespace VirtualReality
+namespace RemoteHealthcare.VR
 {
-    public class VrManager
+    public class VRManager
     {
         //private NetworkStream networkStream;
         private Dictionary<string, string> userSessions;
         private Connection connection;
         private Dictionary<string, string> nodes;
 
-        public VrManager()
+        public VRManager()
         {
             // Initialise and connect to the TcpClient
             // On server: 145.48.6.10 and port: 6666

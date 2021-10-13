@@ -5,9 +5,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Threading;
-using VirtualReality;
 
-namespace RemoteHealthcare
+namespace RemoteHealthcare.VR
 {
     internal class VRMethod
     {

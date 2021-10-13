@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace VirtualReality
+namespace RemoteHealthcare.VR
 {
     public class Connection
     {
@@ -17,7 +17,7 @@ namespace VirtualReality
 
         private static readonly Random random = new Random();
 
-        public Connection(NetworkStream networkStream, VrManager vrManager)
+        public Connection(NetworkStream networkStream, VRManager vrManager)
         {
             this.networkStream = networkStream;
             currentSessionID = "";
