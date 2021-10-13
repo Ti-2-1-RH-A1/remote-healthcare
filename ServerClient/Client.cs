@@ -33,7 +33,7 @@ namespace ServerClient
         private string name;
 
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
-        public event EventHandler DataReceived;
+        public event DataReceivedHandler DataReceived;
 
         public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
         public Dictionary<int, Callback> serialActions;
@@ -170,12 +170,10 @@ namespace ServerClient
                 {
                     if (resultValue == "Error")
                     {
-                        
                         Console.WriteLine("Received error packet: {0}", messageValue);
                         SendPacket(new Dictionary<string, string>() {
-                            { "Method", "Disconnect" }
+                            { "Method", "Disconnect" },
                         }, new Dictionary<string, string>());
-
                         return;
                     }
 
