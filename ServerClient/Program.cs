@@ -10,7 +10,9 @@ namespace ServerClient
             string certificate = @"Server.pfx";
             new Server(certificate, AuthHandler.Init(), true);
 
+
             //var client = new Client("localhost", "Fiets", false);
+
 
             //var client = new Client("localhost", "Fiets", true, "name");
 
