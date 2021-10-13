@@ -1,14 +1,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RemoteHealthcare;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using System.Runtime.InteropServices.ComTypes;
-using System.Threading;
-using Newtonsoft.Json.Schema;
-using System.IO;
-using System.Drawing;
-using RemoteHealthcare;
 
 namespace VirtualReality
 {
@@ -70,7 +65,17 @@ namespace VirtualReality
             string bikeUUID = VRMethod.AddModelBike(ref connection, bikename1, position, rotation);
 
             VRMethod.CreateBikePanel(ref connection);
-            VRMethod.DrawOnBikePanel(ref connection, "This is our panel");
+            VRMethod.CreateMessagePanel(ref connection);
+            VRMethod.DrawOnBikePanel(ref connection, "hoegaboega");
+            VRMethod.DrawChatMessage(ref connection, "PLACEHOLDER[Ontvangen messages van doktor applicatie]", "messagePanel");
+            VRMethod.DrawOnBikePanel(ref connection, "Loading...");
+            VRMethod.DrawChatMessage(ref connection, "PLACEHOLDER[Ontvangen messages van doktor applicatie]");
+
+            /// Note: This will eventually probably be replaced with an update method that calls on to DrawBikeData to update with the received data.
+            double speedData = 5.2;
+            double resistanceData = 1.2;
+            double heartrateData = 92;
+            VRMethod.DrawBikeData(ref connection, speedData, resistanceData, heartrateData);
 
             UpdateSceneList();
 
@@ -193,10 +198,10 @@ namespace VirtualReality
         {
             Console.WriteLine("Creating a tunnel");
             // create a tunnel
-            JObject tunnelCreateJson = new JObject {{"id", "tunnel/create"}};
+            JObject tunnelCreateJson = new JObject { { "id", "tunnel/create" } };
 
 
-            JObject dataJson = new JObject {{"session", userSessions[sessionId]}};
+            JObject dataJson = new JObject { { "session", userSessions[sessionId] } };
             // place to set the key 
             string sessionKey = "";
             dataJson.Add("key", sessionKey);

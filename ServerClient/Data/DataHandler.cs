@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using Newtonsoft.Json.Linq;
 using System;
-using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.IO;
 
 namespace ServerClient.Data
 {
@@ -23,6 +23,7 @@ namespace ServerClient.Data
 
         public void LoadAllData()
         {
+            ClientData.Clear();
             string[] storageFiles = Directory.GetFiles(storageLocation);
             foreach (string file in storageFiles)
             {

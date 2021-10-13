@@ -1,0 +1,29 @@
+﻿<Window x:Class="DoctorApplication.ClientHistoryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DoctorApplication"
+        mc:Ignorable="d"
+        Title="ClientHistoryWindow" Height="450" Width="500">
+    <Grid>
+        <ListView Name="UserGrid" Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Clients, Mode=TwoWay}" SelectedItem="{Binding SelectedClient}" Margin="10,10,177,10">
+            <ListView.View>
+                <GridView x:Name="grdClientsHistory">
+                    <GridViewColumn Header="Time" DisplayMemberBinding="{Binding Time}"  Width="Auto" />
+                    <GridViewColumn Header="Speed" DisplayMemberBinding="{Binding Speed}"  Width="Auto" />
+                    <GridViewColumn Header="Distance" DisplayMemberBinding="{Binding Distance_Traveled}"  Width="Auto" />
+                    <GridViewColumn Header="RPM" DisplayMemberBinding="{Binding Distance_Traveled}"  Width="Auto" />
+                    <GridViewColumn Header="Heartrate" DisplayMemberBinding="{Binding Distance_Traveled}"  Width="Auto" />
+
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Button Content="Back" HorizontalAlignment="Left" Margin="328,385,0,0" VerticalAlignment="Top" Height="39" Width="162" Click="btnBack_Click"/>
+        <Label Content="Client ID:" HorizontalAlignment="Left" Margin="324,15,0,0" VerticalAlignment="Top"/>
+        <Label Content="ID Placeholder" HorizontalAlignment="Left" Margin="328,40,0,0" VerticalAlignment="Top"/>
+        <Label Content="Client Name:" HorizontalAlignment="Left" Margin="324,66,0,0" VerticalAlignment="Top"/>
+        <Label Content="Name Placeholder" HorizontalAlignment="Left" Margin="328,97,0,0" VerticalAlignment="Top"/>
+
+    </Grid>
+</Window>

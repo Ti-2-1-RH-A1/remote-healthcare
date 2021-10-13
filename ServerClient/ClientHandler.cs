@@ -15,6 +15,7 @@ namespace ServerClient
         private readonly AuthHandler auth;
         private readonly Stream stream;
         private readonly ClientsManager manager;
+        private readonly DataHandler dataHandler;
         public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
         public Dictionary<string, Callback> actions;
         private readonly byte[] buffer = new byte[1024];
@@ -118,7 +119,7 @@ namespace ServerClient
 
         private Callback GetClients()
         {
-            return delegate(Dictionary<string, string> header, Dictionary<string, string> data)
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
                 SendPacket(header, new Dictionary<string, string>(){
                     { "Result", "Ok" },
@@ -129,7 +130,7 @@ namespace ServerClient
 
         private Callback disconnectCallback()
         {
-            return delegate(Dictionary<string, string> header, Dictionary<string, string> data)
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
                 SendPacket(header, new Dictionary<string, string>()
                 {
@@ -192,6 +193,7 @@ namespace ServerClient
                     data.TryGetValue("name", out string name);
                     dataHandler.AddFile(id, name);
                     Console.WriteLine("Patient logged in.");
+                    this.IsDoctor = false;
                 }
                 manager.Add(this);
             };

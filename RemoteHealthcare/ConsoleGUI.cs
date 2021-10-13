@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace RemoteHealthcare
 {
-    enum MenuOptions
+    internal enum MenuOptions
     {
         START_SIM = '0',
         RUN_STEP = '1',
@@ -12,9 +12,9 @@ namespace RemoteHealthcare
         CLOSE_CONNECTION = '4',
     }
 
-    class ConsoleGUI
+    internal class ConsoleGUI
     {
-        readonly Program program;
+        private readonly Program program;
 
         public ConsoleGUI(Program program)
         {

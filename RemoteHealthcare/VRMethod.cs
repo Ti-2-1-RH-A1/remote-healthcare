@@ -4,13 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Threading;
 using VirtualReality;
 
 namespace RemoteHealthcare
 {
-    class VRMethod
+    internal class VRMethod
     {
         /// <summary>
         /// isStatusOk does <c>checks if a string contains an ok message</c>
@@ -577,6 +576,113 @@ namespace RemoteHealthcare
             Console.WriteLine(response);
         }
 
+        public static void CreateMessagePanel(ref Connection connection, string panelName = "messagePanel")
+        {
+            int[] position = { -40, 135, 55 };
+            int[] rotation = { 330, 120, 0 };
+            int[] size = { 50, 25 };
+            int[] resolution = { 512, 512 };
+            int[] background = { 1, 1, 1, 1 };
+
+            CreatePanel(ref connection, panelName, position, rotation, size, resolution, background, true, GetBikeID(ref connection));
+        }
+
+        /// <summary>
+        /// This method can make a panel transparent.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="panelName"></param>
+        public static void setTransparentPanel(ref Connection connection, string panelName)
+        {
+            JObject clearColorObject = new JObject { {"id", JsonID.SCENE_PANEL_SETCLEARCOLOR } };
+
+            JObject clearColorData = new JObject();
+            clearColorData.Add("id", GetIdFromNodeName(ref connection, panelName));
+            clearColorData.Add("color", new JArray(1, 1, 1, 0));
+
+            clearColorObject.Add("data", clearColorData);
+
+            string response = "";
+            connection.SendViaTunnel(clearColorObject, (callbackResponse => response = callbackResponse));
+            while (response.Length == 0)
+            {
+                Thread.Sleep(10);
+            }
+
+            Console.WriteLine(response);
+        }
+
+        /// <summary>
+        /// Draws a message from the doctor on a panel
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="message"></param>
+        /// <param name="panelName"></param>
+        public static void DrawChatMessage(ref Connection connection, string message, string panelName = "messagePanel")
+        {
+            ClearPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
+            int[] headerPosition = { 90, 30 };
+            int[] position = { 5, 70 };
+            int[] color = { 100, 0, 0, 1 };
+
+            Drawtext(ref connection, panelName, "Bericht van de dokter", headerPosition, 42, color, "segoeui");
+            
+            color[0] = 0;
+            int maximum = 45;
+            var tempStr = "";
+            List<string> list = new List<string>();
+            string[] subs = message.Split(' ');
+            foreach(var sub in subs)
+            {
+                if (tempStr.Length + sub.Length > maximum)
+                {
+                    list.Add(tempStr);
+                    tempStr = sub + " ";
+                }
+                else
+                {
+                    tempStr += sub + " ";
+                }
+            }
+            list.Add(tempStr);
+
+            foreach(String line in list)
+            {
+                Drawtext(ref connection, panelName, line, position, 32, color, "segoeui");
+                position[1] = position[1] + 30;
+            }
+
+            SwapPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
+        }
+
+        /// <summary>
+        /// Draws the data coming from the bike onto the bike panel.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="speedData"></param>
+        /// <param name="resistanceData"></param>
+        /// <param name="heartrateData"></param>
+        /// <param name="panelName"></param>
+        public static void DrawBikeData(ref Connection connection, double speedData, double resistanceData, double heartrateData, string panelName = "bikePanel")
+        {
+            ClearPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
+            int[] headerPosition = { 30, 40 };
+            int[] headerColor = { 100, 0, 0, 1 };
+            int[] dataPosition = { 160, 40 };
+            int[] dataColor = { 0, 0, 0, 1 };
+
+            Drawtext(ref connection, panelName, "Snelheid: ", headerPosition, 32, headerColor, "segoeui");
+            Drawtext(ref connection, panelName, speedData.ToString(), dataPosition, 32, dataColor, "segoeui");
+            headerPosition[1] = dataPosition[1] = 100;
+            Drawtext(ref connection, panelName, "Weerstand: ", headerPosition, 32, headerColor, "segoeui");
+            Drawtext(ref connection, panelName, resistanceData.ToString(), dataPosition, 32, dataColor, "segoeui");
+            headerPosition[1] = dataPosition[1] = 160;
+            Drawtext(ref connection, panelName, "Hartslag: ", headerPosition, 32, headerColor, "segoeui");
+            Drawtext(ref connection, panelName, heartrateData.ToString(), dataPosition, 32, dataColor, "segoeui");
+
+            SwapPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
+        }
+
         /// <summary>
         /// Creates a panel for the bike
         /// </summary>
@@ -824,7 +930,7 @@ namespace RemoteHealthcare
         public static void SetCamera(ref Connection connection, string bikeId)
         {
             JObject dataCamera = new JObject();
-            dataCamera.Add("id", GetIdFromNodeName(ref connection,"Camera"));
+            dataCamera.Add("id", GetIdFromNodeName(ref connection, "Camera"));
             dataCamera.Add("parent", bikeId);
 
             JObject transformCamera = new JObject();

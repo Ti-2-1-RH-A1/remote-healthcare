@@ -10,7 +10,9 @@ namespace ServerClient
             string certificate = @"Server.pfx";
             new Server(certificate, AuthHandler.Init(), true);
 
-            var client = new Client("localhost", "Fiets", false, "Robin");
+
+            //var client = new Client("localhost", "Fiets", false);
+
 
             //var client = new Client("localhost", "Fiets", true, "name");
 
@@ -18,7 +20,7 @@ namespace ServerClient
 
             // client.SendPacket(new Dictionary<string, string>() {
             //     { "Method", "Get" }
-            // }, new Dictionary<string, string>(), (header, data) =>
+            // }, new Dictionary<string, string>(), (e1, e2) =>
             // {
             //     Console.WriteLine(e1);
             //     Console.WriteLine(e2);

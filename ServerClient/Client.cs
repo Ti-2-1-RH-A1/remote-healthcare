@@ -29,7 +29,8 @@ namespace ServerClient
         private readonly byte[] buffer;
         private string totalBufferText;
         public bool loggedIn;
-        private bool useSSL;
+        private readonly bool useSSL;
+        private string name;
 
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
         public event EventHandler DataReceived;
@@ -37,7 +38,7 @@ namespace ServerClient
         public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
         public Dictionary<int, Callback> serialActions;
 
-        public Client(string host = "localhost", string authkey = "fiets", bool useSSL = true)
+        public Client(string host = "localhost", string authkey = "none", bool useSSL = true, string name = "No Name")
         {
             this.useSSL = useSSL;
             serialActions = new Dictionary<int, Callback>();
@@ -46,7 +47,7 @@ namespace ServerClient
             client.BeginConnect(host, 7777, new AsyncCallback(OnConnect), null);
             buffer = new byte[1024];
             loggedIn = false;
-
+            this.name = name;
             Console.WriteLine("Client created");
         }
 
@@ -89,10 +90,34 @@ namespace ServerClient
             }
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
-            SendPacket(new Dictionary<string, string>() {
-                { "Method", "Login" },
-                { "Auth", authKey }
-            }, new Dictionary<string, string>());
+
+            if (!Directory.Exists("/client"))
+            {
+                Directory.CreateDirectory("/client");
+            }
+
+            if (File.Exists("/client/id.txt"))
+            {
+                string id = File.ReadAllText("/client/id.txt");
+                SendPacket(new Dictionary<string, string>() {
+                                { "Method", "Login" },
+                                { "Auth", authKey }
+                }, new Dictionary<string, string>()
+                    {
+                        {"id", id},
+                        {"name", name},
+                    });
+            }
+            else
+            {
+                SendPacket(new Dictionary<string, string>() {
+                    { "Method", "Login" },
+                    { "Auth", authKey }
+                }, new Dictionary<string, string>()
+                {
+                    {"name", name}
+                });
+            }
         }
 
         private void OnRead(IAsyncResult ar)
@@ -132,10 +157,10 @@ namespace ServerClient
         private void HandleData(string packetData)
         {
             (Dictionary<string, string> headers, Dictionary<string, string> data) = Protocol.ParsePacket(packetData);
-
+            data.TryGetValue("message", out string messageValue);
             if (headers.TryGetValue("Method", out string methodValue))
             {
-                if (!(data.TryGetValue("Result", out string resultValue)))
+                if (!data.TryGetValue("Result", out string resultValue))
                 {
                     Console.WriteLine("Response from server did not contain result. Skipping packet!");
                     return;
@@ -145,14 +170,18 @@ namespace ServerClient
                 {
                     if (resultValue == "Error")
                     {
-                        data.TryGetValue("message", out string messageValue);
+                        
                         Console.WriteLine("Received error packet: {0}", messageValue);
                         SendPacket(new Dictionary<string, string>() {
                             { "Method", "Disconnect" }
                         }, new Dictionary<string, string>());
 
-
                         return;
+                    }
+
+                    if (data.TryGetValue("id", out string id))
+                    {
+                        File.WriteAllText("/client/id.txt", id);
                     }
 
                     Console.WriteLine("Login");

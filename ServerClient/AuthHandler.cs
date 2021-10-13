@@ -7,29 +7,37 @@ namespace ServerClient
 {
     public class AuthHandler
     {
-        private Dictionary<string, bool> keys;
-
-        public AuthHandler()
-        {
-            keys = new Dictionary<string, bool>() {
-                { "EchteDokter", true },
-                { "Fiets", false },
-                { "Tinus", true },
-                { "Henk", false }
-            };
-        }
+        private readonly Dictionary<string, bool> keys;
+        private static readonly string authDir = Directory.GetCurrentDirectory() + "\\clients";
 
         public AuthHandler(Dictionary<string, bool> keys)
         {
             this.keys = keys;
         }
 
+        public static AuthHandler Init()
+        {
+            if (!Directory.Exists(authDir)) Directory.CreateDirectory(authDir);
+            if (File.Exists(authDir + "\\key.txt"))
+            {
+                return LoadKeysFromFile(authDir + "\\key.txt");
+            }
+            AuthHandler auth = new(new Dictionary<string, bool>() {
+                { "EchteDokter", true },
+                { "Fiets", false },
+                { "Tinus", true },
+                { "Henk", false },
+            });
+            auth.SaveKeysToFile(authDir + "\\key.txt");
+            return auth;
+        }
+
         /// <summary>
         /// Checks if key is valid
         /// </summary>
         /// <param name="keyToCheck"></param>
-        /// <returns>(Key exists, Key is docter)</returns>
-        public (bool, bool) Check(string keyToCheck) => 
+        /// <returns>(Key exists, Key is doctor)</returns>
+        public (bool, bool) Check(string keyToCheck) =>
             keys.TryGetValue(keyToCheck, out bool value) ? (true, value) : (false, false);
 
         public void SaveKeysToFile(string filename) =>
