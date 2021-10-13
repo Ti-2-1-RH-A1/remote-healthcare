@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ServerClient
 {
@@ -146,6 +147,25 @@ namespace ServerClient
             }
             Write($"{Protocol.StringifyHeaders(headers)}{Protocol.StringifyData(data)}");
         }
+
+        /// <summary>
+        /// This method sends a packet to the server and returns the result headers and data.
+        /// </summary>
+        /// <param name="headers">Headers to send</param>
+        /// <param name="data">Data to send</param>
+        /// <returns>Result headers and data</returns>
+        public async Task<(Dictionary<string, string> headers, Dictionary<string, string> data)>
+            SendPacketAsync(Dictionary<string, string> headers, Dictionary<string, string> data) =>
+            await Task.Run(() =>
+            {
+                TaskCompletionSource<(Dictionary<string, string>, Dictionary<string, string>)> resolve = new();
+
+                // Send packet and resolve on completed.
+                SendPacket(headers, data, (resHeader, resData) => resolve.SetResult((resHeader, resData)));
+
+                // return resolved result.
+                return resolve.Task;
+            });
 
         private void Write(string data)
         {
