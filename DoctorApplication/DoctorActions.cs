@@ -5,10 +5,12 @@ namespace DoctorApplication
     internal class DoctorActions
     {
         private ClientManager clientManager;
+        private MainWindow mainWindow;
 
-        public DoctorActions()
+        public DoctorActions(MainWindow mainWindow)
         {
-            clientManager = new ClientManager();
+            clientManager = new ClientManager(mainWindow);
+            this.mainWindow = mainWindow;
         }
 
         public async Task Start()
