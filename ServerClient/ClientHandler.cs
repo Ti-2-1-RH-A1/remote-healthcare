@@ -12,6 +12,8 @@ namespace ServerClient
     {
         private readonly TcpClient tcpClient;
         public string authKey;
+        public string UUID;
+        public string Name;
         private readonly AuthHandler auth;
         private readonly Stream stream;
         private readonly ClientsManager manager;
@@ -79,6 +81,11 @@ namespace ServerClient
                 }
                 SendError(header, "ID not found!");
             };
+        }
+
+        public override string ToString()
+        {
+            return this.UUID;
         }
 
         private Callback Post()
@@ -167,6 +174,8 @@ namespace ServerClient
 
                     Console.WriteLine("Doctor logged in.");
                     this.IsDoctor = true;
+                    this.UUID = "DOCTOR-" + Guid.NewGuid();
+                    this.Name = "Doctor";
                 }
                 else
                 {
@@ -177,6 +186,7 @@ namespace ServerClient
                             { "Result", "ok" },
                             { "message", "Patient logged in." },
                         });
+                        this.UUID = id;
                     }
                     else
                     {
@@ -187,11 +197,12 @@ namespace ServerClient
                             { "message", "Patient logged in." },
                             { "id", myuuid.ToString()},
                         });
-                        id = myuuid.ToString();
+                        this.UUID = myuuid.ToString();
                     }
 
                     data.TryGetValue("name", out string name);
-                    dataHandler.AddFile(id, name);
+                    this.Name = name;
+                    dataHandler.AddFile(this.UUID, name);
                     Console.WriteLine("Patient logged in.");
                     this.IsDoctor = false;
                 }

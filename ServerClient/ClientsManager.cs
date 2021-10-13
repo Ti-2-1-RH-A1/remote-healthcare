@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ServerClient
 {
@@ -13,13 +14,13 @@ namespace ServerClient
             clients = new Dictionary<string, ClientHandler>();
         }
 
-        public void Add(ClientHandler clientHandler) => clients.Add(clientHandler.authKey, clientHandler);
+        public void Add(ClientHandler clientHandler) => clients.Add(clientHandler.UUID, clientHandler);
 
         public void Disconnect(ClientHandler client)
         {
-            if (client.authKey != null && clients.ContainsKey(client.authKey))
+            if (client.UUID != null && clients.ContainsKey(client.UUID))
             {
-                clients.Remove(client.authKey);
+                clients.Remove(client.UUID);
             }
             else
             {
@@ -29,9 +30,19 @@ namespace ServerClient
             Console.WriteLine("Client disconnected");
         }
 
+
+        /// <summary>
+        /// Gets all logged in patient clients
+        /// </summary>
+        /// <returns>List<ClientHandler></returns>
         public List<ClientHandler> GetClients()
         {
-            return new List<ClientHandler>(clients.Values);
+            Console.WriteLine(clients);
+            Dictionary<string, ClientHandler> dic = clients
+                .Where(p => !p.Key.Contains("DOCTOR"))
+                .ToDictionary(p => p.Key, p => p.Value);
+            Console.WriteLine(dic);
+            return new List<ClientHandler>(dic.Values);
         }
         /// <summary>
         /// send a header and data to a list of clients
