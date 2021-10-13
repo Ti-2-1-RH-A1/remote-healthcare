@@ -24,7 +24,7 @@ namespace DoctorApplication
 
             client.SendPacket(new Dictionary<string, string>()
             {
-                { "Method", "GetClients" }
+                {"Method", "GetClients"}
             }, new Dictionary<string, string>(), (header, data) =>
             {
                 Console.WriteLine(header);
@@ -60,11 +60,11 @@ namespace DoctorApplication
         public void SendMessageToAll(string message)
         {
             List<string> clientsId = new List<string>();
-            clients.ForEach((s1)=>clientsId.Add(s1.clientAuthKey));
+            clients.ForEach((s1) => clientsId.Add(s1.clientAuthKey));
 
             SendToClients(clientsId, "Message", new Dictionary<string, string>()
             {
-                { "Message", message }
+                {"Message", message}
             });
         }
 
@@ -86,16 +86,15 @@ namespace DoctorApplication
             {
                 data = new Dictionary<string, string>()
                 {
-                    { "Clients", clientsString }
+                    {"Clients", clientsString}
                 };
             }
 
             client.SendPacket(new Dictionary<string, string>()
-                {
-                    { "Method", "SendToClients" },
-                    { "Action", action }
-                }, data);
-            
+            {
+                {"Method", "SendToClients"},
+                {"Action", action}
+            }, data);
         }
     }
 }
