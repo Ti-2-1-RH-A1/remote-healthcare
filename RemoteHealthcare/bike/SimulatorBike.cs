@@ -60,7 +60,6 @@ namespace RemoteHealthcare.Bike
             // Main simulation loop.
             while (this.isRunning)
             {
-                Console.WriteLine("test");
                 float speed = this.GenerateSpeed(stopwatch.ElapsedMilliseconds);
                 GenerateDistanceTravled(stopwatch.ElapsedMilliseconds, prevMilis, ref totalDistanceTravled, speed);
                 float rpm = GenerateRPM(speed);
@@ -71,7 +70,7 @@ namespace RemoteHealthcare.Bike
                 this.DataReceived((DataTypes.BIKE_ELAPSED_TIME, stopwatch.ElapsedMilliseconds / 1000));
 
                 prevMilis = stopwatch.ElapsedMilliseconds;
-                Thread.Sleep(50); // Let the simulator wait until simulating the next dataset.
+                Thread.Sleep(500); // Let the simulator wait until simulating the next dataset.
             }
         }
 

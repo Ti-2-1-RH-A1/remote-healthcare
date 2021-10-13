@@ -30,7 +30,7 @@ namespace RemoteHealthcare
         {
             // TODO [Martijn] Implementation
 
-            if (data != null) HandelDataEvents?.Invoke(((DataTypes, float)) data);
+            HandelDataEvents?.Invoke(((DataTypes, float)) data);
 
 
             // Rest of the handel code.

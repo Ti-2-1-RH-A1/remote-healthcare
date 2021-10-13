@@ -100,14 +100,13 @@ namespace RemoteHealthcare.VR
 
         /// <summary>SendViaTunnel does <c> a tcp data send via a tunnel</c> as long as you have made a connection first </summary>
         /// Returns a string with the response
-        public async Task SendViaTunnel(JObject jObject, Callback callback = null)
+        public void SendViaTunnel(JObject jObject, Callback callback = null)
         {
             if (currentSessionID.Length == 0)
             {
                 Console.WriteLine("not connected");
-                await waitForConnection();
+                waitForConnection().Wait();
             }
-
 
             string randomIntAsString = random.Next(111111, 999999).ToString();
             JObject tunnelJSon = new JObject();
