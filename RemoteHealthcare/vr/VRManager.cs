@@ -1,11 +1,10 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RemoteHealthcare;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 
-namespace RemoteHealthcare.vr
+namespace RemoteHealthcare.VR
 {
     public class VRManager
     {

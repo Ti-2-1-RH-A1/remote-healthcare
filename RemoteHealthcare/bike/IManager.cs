@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using static RemoteHealthcare.bike.BikeManager;
+using static RemoteHealthcare.Bike.BikeManager;
 
-namespace RemoteHealthcare.bike
+namespace RemoteHealthcare.Bike
 {
     public interface IDeviceManager
     {

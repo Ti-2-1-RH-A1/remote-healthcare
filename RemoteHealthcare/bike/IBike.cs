@@ -1,4 +1,4 @@
-﻿namespace RemoteHealthcare.bike
+﻿namespace RemoteHealthcare.Bike
 {
     interface IBike
     {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RemoteHealthcare.bike;
+using RemoteHealthcare.Bike;
 using System;
 using System.Threading;
 

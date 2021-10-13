@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace RemoteHealthcare.bike
+namespace RemoteHealthcare.Bike
 {
     public class BikeDataParser
     {

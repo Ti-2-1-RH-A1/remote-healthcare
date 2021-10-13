@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace RemoteHealthcare.bike
+namespace RemoteHealthcare.Bike
 {
     public class BikeManager : IBikeManager
     {

@@ -1,4 +1,4 @@
-﻿using RemoteHealthcare.bike;
+﻿using RemoteHealthcare.Bike;
 using System;
 using System.Text.RegularExpressions;
 using System.Threading;

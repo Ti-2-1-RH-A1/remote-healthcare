@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using RemoteHealthcare.bike;
-using RemoteHealthcare.hrm;
-using RemoteHealthcare.vr;
+using RemoteHealthcare.Bike;
+using RemoteHealthcare.Hrm;
+using RemoteHealthcare.VR;
 using System;
 
 namespace RemoteHealthcare

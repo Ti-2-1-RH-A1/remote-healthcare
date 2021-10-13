@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace RemoteHealthcare.vr
+namespace RemoteHealthcare.VR
 {
     public class Connection
     {

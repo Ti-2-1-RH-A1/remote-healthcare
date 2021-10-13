@@ -1,5 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RemoteHealthcare.bike;
+using RemoteHealthcare.Bike;
 
 namespace RemoteHealthcare.Tests
 {

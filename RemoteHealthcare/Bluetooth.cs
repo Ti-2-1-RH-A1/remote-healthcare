@@ -2,10 +2,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Avans.TI.BLE;
-using RemoteHealthcare.bike;
-using RemoteHealthcare.hrm;
-using Avans.TI.BLE;
-using avansBikeData = Avans.TI.BLE.BLESubscriptionValueChangedEventArgs;
+using RemoteHealthcare.Bike;
+using RemoteHealthcare.Hrm;
 
 namespace RemoteHealthcare
 {

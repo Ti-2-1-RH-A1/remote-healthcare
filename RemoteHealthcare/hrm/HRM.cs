@@ -3,7 +3,7 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 
-namespace RemoteHealthcare.hrm
+namespace RemoteHealthcare.Hrm
 {
     public class HRM
     {

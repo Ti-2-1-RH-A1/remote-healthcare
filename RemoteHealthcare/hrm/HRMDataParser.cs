@@ -1,4 +1,4 @@
-﻿namespace RemoteHealthcare.hrm
+﻿namespace RemoteHealthcare.Hrm
 {
     class HRMDataParser
     {
