@@ -25,10 +25,9 @@ namespace RemoteHealthcare
             vrManager.Start();
         }
 
-        public void HandleData((DataTypes, float)? data)
+        public void HandleData((DataTypes, float) data)
         {
             // TODO [Martijn] Implementation
-            if (data == null) { return; }
 
             // Rest of the handel code.
         }

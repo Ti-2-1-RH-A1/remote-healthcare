@@ -27,7 +27,7 @@ namespace RemoteHealthcare.hrm
             DataReceived(HRMDataParser.ParseHRMData(e.Data));
         }
 
-        public void DataReceived((DataTypes, float)? data)
+        public void DataReceived((DataTypes, float) data)
         {
             services.GetService<DeviceManager>().HandleData(data);
         }

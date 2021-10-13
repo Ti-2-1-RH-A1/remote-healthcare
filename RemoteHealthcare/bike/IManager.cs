@@ -8,7 +8,7 @@ namespace RemoteHealthcare.bike
     public interface IDeviceManager
     {
         public void Start((IBikeManager.BikeType, string) bikeTypeAndId);
-        public void HandleData((DataTypes, float)? data);
+        public void HandleData((DataTypes, float) data);
     }
 
     public interface IBikeManager

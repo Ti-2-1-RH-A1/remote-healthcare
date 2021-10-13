@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace RemoteHealthcare.bike
 {
@@ -8,12 +9,8 @@ namespace RemoteHealthcare.bike
         private readonly IBike simulatorBike;   // Instance of the simulated bike run by the program.
         private IBike activeBike;               // Instance of the bike currently being used. I.E. the real- or simulated bike.
 
-        private readonly IServiceProvider services;
-
         public BikeManager(IServiceProvider serviceProvider)
         {
-            this.services = serviceProvider;
-
             this.realBike = new RealBike(serviceProvider);
             this.simulatorBike = new SimulatorBike(serviceProvider);
         }
@@ -52,5 +49,9 @@ namespace RemoteHealthcare.bike
                 this.activeBike.Start();
             }
         }
+
+        public Thread GetSimThread() => (this.simulatorBike as SimulatorBike).GetSimThread();
+        public bool SimIsRunning() => (this.simulatorBike as SimulatorBike).IsRunning();
+        public void SimSetRunning(bool running) => (this.simulatorBike as SimulatorBike).SetRunning(running);
     }
 }

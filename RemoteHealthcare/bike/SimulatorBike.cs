@@ -20,6 +20,14 @@ namespace RemoteHealthcare.bike
         }
 
         /// <summary>
+        /// The destructor makes sure the simTread is aborted if the SimulatorBike instance is deleted.
+        /// </summary>
+        ~SimulatorBike()
+        {
+            if (this.simThread.IsAlive) { this.simThread.Abort(); }
+        }
+
+        /// <summary>
         /// This method starts the simulator for the bike. It starts a new thread that runs a continuous loop simulating
         /// all data sets that are needed.
         /// The simulator can be stopped by calling the the <see cref="Stop"/> method.
@@ -32,6 +40,11 @@ namespace RemoteHealthcare.bike
             this.simThread.Start();
         }
 
+        /// <summary>
+        /// When this method is called the boolean to keep running the simulator is set to false.
+        /// This does not mean the simulator will stop immediately, if it is halfway through a simulation
+        /// it will first finish that loop before ending.
+        /// </summary>
         public void Stop()
         {
             this.isRunning = false;
@@ -44,6 +57,7 @@ namespace RemoteHealthcare.bike
             long prevMilis = stopwatch.ElapsedMilliseconds;
             float totalDistanceTravled = 0;
 
+            // Main simulation loop.
             while (this.isRunning)
             {
                 float speed = this.GenerateSpeed(stopwatch.ElapsedMilliseconds);
@@ -87,6 +101,7 @@ namespace RemoteHealthcare.bike
         }
 
         public bool IsRunning() => this.isRunning;
+        public void SetRunning(bool whyAreYouRunning) => this.isRunning = whyAreYouRunning;
 
         public Thread GetSimThread() => this.simThread;
     }
