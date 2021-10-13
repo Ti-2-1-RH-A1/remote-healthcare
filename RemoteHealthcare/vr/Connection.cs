@@ -1,21 +1,21 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
-using Newtonsoft.Json.Linq;
 
 namespace RemoteHealthcare.vr
 {
     public class Connection
     {
-        private NetworkStream networkStream;
+        private readonly NetworkStream networkStream;
         public string currentSessionID { get; set; }
 
         private delegate void Reconnect();
 
-        private Reconnect reconnect;
+        private readonly Reconnect reconnect;
 
-        private static Random random = new Random();
+        private static readonly Random random = new Random();
 
         public Connection(NetworkStream networkStream, VRManager vrManager)
         {
@@ -30,7 +30,7 @@ namespace RemoteHealthcare.vr
 
 
         /// <summary>ReceiveFromTcp does <c>recieving data from a tcp stream</c> using a network stream decodes using ASCII to a string</summary>
-        public void ReceiveFromTcp(out string receivedData,bool useTimeOut)
+        public void ReceiveFromTcp(out string receivedData, bool useTimeOut)
         {
             if (useTimeOut)
             {
@@ -121,24 +121,24 @@ namespace RemoteHealthcare.vr
         }
 
         public delegate void Callback(string response);
-        private Dictionary<string, Callback> callbacks = new Dictionary<string, Callback>();
+        private readonly Dictionary<string, Callback> callbacks = new Dictionary<string, Callback>();
 
         /// <summary>
         /// entry of the network thread
         /// </summary>
-        void Run()
+        private void Run()
         {
             bool running = true;
             while (running)
             {
                 if (currentSessionID.Length > 1)
                 {
-                    ReceiveFromTcp(out var receivedData,false);
+                    ReceiveFromTcp(out var receivedData, false);
                     Console.WriteLine(receivedData);
 
                     JObject tunnel = JObject.Parse(receivedData);
-                    JObject idObject = (JObject) tunnel.GetValue("data");
-                    JObject dataObject = (JObject) idObject.GetValue("data");
+                    JObject idObject = (JObject)tunnel.GetValue("data");
+                    JObject dataObject = (JObject)idObject.GetValue("data");
                     if (dataObject.ContainsKey("serial"))
                     {
                         JToken jToken = dataObject.GetValue("serial");
@@ -151,7 +151,7 @@ namespace RemoteHealthcare.vr
                             callbacks.Remove(serial);
                         }
                     }
-                    
+
                 }
             }
         }

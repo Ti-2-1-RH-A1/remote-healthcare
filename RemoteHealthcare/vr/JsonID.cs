@@ -1,6 +1,6 @@
 ﻿namespace RemoteHealthcare.vr
 {
-    class JsonID
+    internal class JsonID
     {
         // Scene ID's
         public static readonly string SCENE_GET = "scene/get";

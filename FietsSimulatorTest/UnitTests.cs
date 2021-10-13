@@ -5,7 +5,7 @@ using RemoteHealthcare.bike;
 using System;
 using System.Threading;
 
-namespace FietsSimulatorTest
+namespace RemoteHealthcare.Tests
 {
     [TestClass]
     public class UnitTests
