@@ -34,7 +34,7 @@ namespace ServerClient
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
         public event EventHandler DataReceived;
 
-        public delegate void Callback(Dictionary<string, string> packetData, Dictionary<string, string> headerData);
+        public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
         public Dictionary<int, Callback> serialActions;
 
         public Client(string host = "localhost", string authkey = "fiets", bool useSSL = true)
@@ -171,7 +171,7 @@ namespace ServerClient
                         {
                             if (serialActions.TryGetValue(serialInt, out Callback action))
                             {
-                                action(data, headers);
+                                action(headers, data);
                                 serialActions.Remove(serialInt);
                             }
                         }

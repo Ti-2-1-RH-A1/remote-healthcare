@@ -37,7 +37,6 @@ namespace ServerClient.Data
 
         public void AddFile(string id, string name)
         {
-
             if (File.Exists(FilePath(id)))
             {
                 JObject jo = JObject.Parse(File.ReadAllText(FilePath(id)));
