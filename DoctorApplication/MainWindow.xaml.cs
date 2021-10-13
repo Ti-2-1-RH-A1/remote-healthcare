@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 
 namespace DoctorApplication
 {
@@ -7,9 +8,14 @@ namespace DoctorApplication
     /// </summary>
     public partial class MainWindow : Window
     {
+        private DoctorActions doctorActions;
         public MainWindow()
         {
+            doctorActions = new DoctorActions();
+            Task start = doctorActions.Start();
+            start.Wait();
             InitializeComponent();
+            
         }
 
         private void btnBroadcast_Click(object sender, RoutedEventArgs e)
@@ -20,6 +26,12 @@ namespace DoctorApplication
         private void btnHistory_Click(object sender, RoutedEventArgs e)
         {
             DoctorActions.HistoryWindow();
+        }
+
+        private void btnMessage_Click(object sender, RoutedEventArgs e)
+        {
+            doctorActions.SendToAll("test");
+
         }
     }
 }

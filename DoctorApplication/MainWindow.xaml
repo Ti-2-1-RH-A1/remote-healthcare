@@ -33,7 +33,7 @@
 
 
                 <!-- Buttons-->
-                <Button Content="Message selected client" Grid.Row="1" Grid.Column="1" Name="btnMessage"/>
+                <Button Content="Message selected client" Grid.Row="1" Grid.Column="1" Name="btnMessage" Click="btnMessage_Click"/>
                 <Button Content="Message all clients" Grid.Row="1"  Grid.Column="3" Name="btnBroadcast" Click="btnBroadcast_Click"/>
                 <Button Content="Emergency stop client" Grid.Row="3" Grid.Column="1" Name="btnEmergency"/>
                 <Button Content="History" Grid.Row="3" Grid.Column="3" Name="btnHistory" Click="btnHistory_Click"/>
