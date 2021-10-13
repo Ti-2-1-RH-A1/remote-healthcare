@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
+using ServerClient;
 
 namespace DoctorApplication
 {
@@ -11,8 +12,19 @@ namespace DoctorApplication
         private readonly List<Client> clients = new();
         private ServerClient.Client client;
 
-        public ClientManager()
+        public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
+
+        public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
+        public Dictionary<string, Callback> actions;
+        public MainWindow MainWindow;
+        public ClientManager(MainWindow mainWindow)
         {
+            actions = new Dictionary<string, Callback>() {
+                {"GetClients", AddClientsFromString()},
+                
+            };
+
+            this.MainWindow = mainWindow;
         }
 
         public async Task Start()
@@ -23,35 +35,51 @@ namespace DoctorApplication
                 Thread.Sleep(10);
             }
 
+            client.DataReceived += HandleData;
+
             client.SendPacket(new Dictionary<string, string>()
             {
                 { "Method", "GetClients" }
-            }, new Dictionary<string, string>(), (header, data) =>
+            }, new Dictionary<string, string>());
+        }
+
+        
+
+        private void HandleData(object Client, DataReceivedArgs e)
+        {
+            e.headers.TryGetValue("Method", out string item);
+
+            if (actions.TryGetValue(item, out Callback action))
             {
-                Console.WriteLine(header);
-                Console.WriteLine(data);
-                AddClientsFromString(data["Data"]);
-            });
+                action(e.headers, e.data);
+                return;
+            }
         }
 
         /// <summary>
         /// generate a list of active clients based on a string
         /// </summary>
         /// <param name="clientsString"></param>
-        private void AddClientsFromString(string clientsString)
+        private Callback AddClientsFromString()
         {
-            string[] strings = clientsString[0..^1].Split(";");
-
-            foreach (string clientString in strings)
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
-                string[] split = clientString.Split("|");
+                string[] strings = data["Data"][0..^1].Split(";");
 
-                Client client = new()
+                foreach (string clientString in strings)
                 {
-                    clientAuthKey = split[0]
-                };
-                clients.Add(client);
-            }
+                    string[] split = clientString.Split("|");
+
+                    Client client = new()
+                    {
+                        clientSerial = split[0],
+                        clientName = split[1]
+                    };
+                    clients.Add(client);
+                    MainWindow.addToList(client);
+                }
+            };
+            
         }
 
         /// <summary>
@@ -61,7 +89,7 @@ namespace DoctorApplication
         public void SendMessageToAll(string message)
         {
             List<string> clientsId = new List<string>();
-            clients.ForEach((s1) => clientsId.Add(s1.clientAuthKey));
+            clients.ForEach((s1) => clientsId.Add(s1.clientSerial));
 
             SendToClients(clientsId, "Message", new Dictionary<string, string>()
             {
