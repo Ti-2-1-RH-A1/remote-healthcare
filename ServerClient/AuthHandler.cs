@@ -40,17 +40,14 @@ namespace ServerClient
         public (bool, bool) Check(string keyToCheck) =>
             keys.TryGetValue(keyToCheck, out bool value) ? (true, value) : (false, false);
 
-        public void SaveKeysToFile(string filename)
-        {
+        public void SaveKeysToFile(string filename) =>
             new XElement("root", keys.Select(kv => new XElement(kv.Key, kv.Value)))
                         .Save(filename, SaveOptions.OmitDuplicateNamespaces);
-        }
-        public static AuthHandler LoadKeysFromFile(string filename)
-        {
-            Dictionary<string, bool> keysLoaded = XElement.Parse(File.ReadAllText(filename))
-                           .Elements()
-                           .ToDictionary(k => k.Name.ToString(), v => bool.Parse(v.Value));
-            return new AuthHandler(keysLoaded);
-        }
+
+        public static AuthHandler LoadKeysFromFile(string filename) =>
+            new(XElement.Parse(File.ReadAllText(filename))
+                .Elements()
+                .ToDictionary(k => k.Name.ToString(), v => bool.Parse(v.Value)));
+
     }
 }

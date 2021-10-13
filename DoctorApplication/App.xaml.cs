@@ -7,6 +7,5 @@ namespace DoctorApplication
     /// </summary>
     public partial class App : Application
     {
-        private readonly ClientManager clientManager = new ClientManager();
     }
 }

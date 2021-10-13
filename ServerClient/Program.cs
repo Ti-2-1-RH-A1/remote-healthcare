@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ServerClient
@@ -9,9 +8,9 @@ namespace ServerClient
         public static async Task Main(string[] args)
         {
             string certificate = @"Server.pfx";
-            new Server(certificate, AuthHandler.Init(), false);
+            new Server(certificate, AuthHandler.Init(), true);
 
-            var client = new Client("localhost", "Fiets", false);
+            //var client = new Client("localhost", "Fiets", false);
 
             //var client = new Client("localhost", "Fiets", true, "name");
 
@@ -24,6 +23,7 @@ namespace ServerClient
             //     Console.WriteLine(e1);
             //     Console.WriteLine(e2);
             // }); 
+            await Task.Delay(-1);
 
             Console.ReadLine();
         }
