@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RemoteHealthcare.hrm
+namespace RemoteHealthcare.Hrm
 {
     class HRMManager
     {

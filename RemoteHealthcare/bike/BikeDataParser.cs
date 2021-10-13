@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace RemoteHealthcare.bike
+namespace RemoteHealthcare.Bike
 {
     public class BikeDataParser
     {
@@ -51,16 +51,12 @@ namespace RemoteHealthcare.bike
 
         private static List<(DataTypes, float)> ParseBikeDataPage25(byte[] data)
         {
-            List<(DataTypes, float)> convertedData = new List<(DataTypes, float)>();
-            convertedData.Add(((DataTypes.BIKE_RPM, ParseRPM(data))));
-            convertedData.Add(((DataTypes.BIKE_ACCPOWER, ParseAccPower(data))));
-            convertedData.Add(((DataTypes.BIKE_INSPOWER, ParseInsPower(data))));
+            List<(DataTypes, float)> convertedData = new List<(DataTypes, float)>
+            {
+                ((DataTypes.BIKE_RPM, ParseRPM(data)))
+            };
             return convertedData;
         }
-
-        private static int ParseAccPower(byte[] data) => TwoByteToInt(data[3], data[4]);
-
-        private static int ParseInsPower(byte[] data) => TwoByteToInt(data[5], (byte)(data[6] >> 4));
 
         private static int ParseRPM(byte[] data) => TwoByteToInt(data[2]);
 

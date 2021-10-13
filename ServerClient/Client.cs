@@ -29,20 +29,25 @@ namespace ServerClient
         private readonly byte[] buffer;
         private string totalBufferText;
         public bool loggedIn;
-        private bool useSSL;
+        private readonly bool useSSL;
+        private string name;
 
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
-        public event EventHandler DataReceived;
+        public event DataReceivedHandler DataReceived;
 
-        public Client(string authkey = "fiets", bool useSSL = true)
+        public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
+        public Dictionary<int, Callback> serialActions;
+
+        public Client(string host = "localhost", string authkey = "none", bool useSSL = true, string name = "No Name")
         {
             this.useSSL = useSSL;
+            serialActions = new Dictionary<int, Callback>();
             authKey = authkey;
             client = new TcpClient();
-            client.BeginConnect("localhost", 7777, new AsyncCallback(OnConnect), null);
+            client.BeginConnect(host, 7777, new AsyncCallback(OnConnect), null);
             buffer = new byte[1024];
             loggedIn = false;
-
+            this.name = name;
             Console.WriteLine("Client created");
         }
 
@@ -79,15 +84,40 @@ namespace ServerClient
                 Console.WriteLine($"Exception: {e.Message}");
                 if (e.InnerException != null) Console.WriteLine($"Inner exception: {e.InnerException.Message}");
                 Console.WriteLine("Authentication failed - closing the connection.");
+                stream.Close();
                 client.Close();
                 return;
             }
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
-            SendPacket(new Dictionary<string, string>() {
-                { "Method", "Login" },
-                { "Auth", authKey }
-            }, new Dictionary<string, string>());
+
+            if (!Directory.Exists("/client"))
+            {
+                Directory.CreateDirectory("/client");
+            }
+
+            if (File.Exists("/client/id.txt"))
+            {
+                string id = File.ReadAllText("/client/id.txt");
+                SendPacket(new Dictionary<string, string>() {
+                                { "Method", "Login" },
+                                { "Auth", authKey }
+                }, new Dictionary<string, string>()
+                    {
+                        {"id", id},
+                        {"name", name},
+                    });
+            }
+            else
+            {
+                SendPacket(new Dictionary<string, string>() {
+                    { "Method", "Login" },
+                    { "Auth", authKey }
+                }, new Dictionary<string, string>()
+                {
+                    {"name", name}
+                });
+            }
         }
 
         private void OnRead(IAsyncResult ar)
@@ -99,14 +129,23 @@ namespace ServerClient
             while (totalBufferText.Contains("\r\n\r\n\r\n"))
             {
                 string packet = totalBufferText.Substring(0, totalBufferText.IndexOf("\r\n\r\n\r\n"));
-                totalBufferText = totalBufferText[(totalBufferText.IndexOf("\r\n\r\n\r\n") + 6)..];
+                totalBufferText = totalBufferText[(totalBufferText.IndexOf("\r\n\r\n\r\n") + (totalBufferText.Length - totalBufferText.IndexOf("\r\n\r\n\r\n")))..];
                 HandleData(packet);
             }
-            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+
+            if (stream.CanRead) stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
-        public void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
+        public void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data, Callback callback = null)
+        {
+            if (callback != null)
+            {
+                int randInt = new Random().Next();
+                serialActions.Add(randInt, callback);
+                headers.Add("Serial", randInt.ToString());
+            }
             Write($"{Protocol.StringifyHeaders(headers)}{Protocol.StringifyData(data)}");
+        }
 
         private void Write(string data)
         {
@@ -118,21 +157,53 @@ namespace ServerClient
         private void HandleData(string packetData)
         {
             (Dictionary<string, string> headers, Dictionary<string, string> data) = Protocol.ParsePacket(packetData);
-
+            data.TryGetValue("message", out string messageValue);
             if (headers.TryGetValue("Method", out string methodValue))
             {
-                switch (methodValue)
+                if (!data.TryGetValue("Result", out string resultValue))
                 {
-                    case "Login":
-                        Console.WriteLine("Login");
-                        loggedIn = true;
-                        break;
+                    Console.WriteLine("Response from server did not contain result. Skipping packet!");
+                    return;
+                }
 
-                    case "Get":
-                        Console.WriteLine("Get");
-                        DataReceivedArgs PacketInformation = new DataReceivedArgs(headers, data);
-                        DataReceived?.Invoke(this, PacketInformation);
-                        break;
+                if (methodValue == "Login")
+                {
+                    if (resultValue == "Error")
+                    {
+                        Console.WriteLine("Received error packet: {0}", messageValue);
+                        SendPacket(new Dictionary<string, string>() {
+                            { "Method", "Disconnect" },
+                        }, new Dictionary<string, string>());
+                        return;
+                    }
+
+                    if (data.TryGetValue("id", out string id))
+                    {
+                        File.WriteAllText("/client/id.txt", id);
+                    }
+
+                    Console.WriteLine("Login");
+                    loggedIn = true;
+                }
+                else if (methodValue == "Disconnect")
+                {
+                    stream.Close();
+                    client.Close();
+                }
+                else
+                {
+                    if (headers.TryGetValue("Serial", out string serial))
+                    {
+                        if (int.TryParse(serial, out int serialInt))
+                        {
+                            if (serialActions.TryGetValue(serialInt, out Callback action))
+                            {
+                                action(headers, data);
+                                serialActions.Remove(serialInt);
+                            }
+                        }
+                    }
+                    DataReceived?.Invoke(this, new DataReceivedArgs(headers, data));
                 }
             }
             else

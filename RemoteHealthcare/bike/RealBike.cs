@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 
-namespace RemoteHealthcare.bike
+namespace RemoteHealthcare.Bike
 {
     public class RealBike : BLE, IBike
     {

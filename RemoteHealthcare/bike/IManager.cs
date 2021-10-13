@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using static RemoteHealthcare.bike.BikeManager;
+using static RemoteHealthcare.Bike.BikeManager;
 
-namespace RemoteHealthcare.bike
+namespace RemoteHealthcare.Bike
 {
     public interface IDeviceManager
     {
         public void Start((IBikeManager.BikeType, string) bikeTypeAndId);
-        public void HandleData((DataTypes, float)? data);
+        public void HandleData((DataTypes, float) data);
     }
 
     public interface IBikeManager

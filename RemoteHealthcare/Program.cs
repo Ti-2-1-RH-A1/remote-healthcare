@@ -1,14 +1,14 @@
-﻿using RemoteHealthcare.bike;
+﻿using RemoteHealthcare.Bike;
 using System;
 using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace RemoteHealthcare
 {
-    class Program
+    internal class Program
     {
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var deviceManager = new DeviceManager();
             deviceManager.Start(Init());

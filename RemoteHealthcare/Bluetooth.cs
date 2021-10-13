@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Avans.TI.BLE;
-using RemoteHealthcare.bike;
-using RemoteHealthcare.hrm;
+using RemoteHealthcare.Bike;
+using RemoteHealthcare.Hrm;
 
 namespace RemoteHealthcare
 {

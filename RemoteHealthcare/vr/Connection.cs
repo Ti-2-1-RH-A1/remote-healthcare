@@ -1,22 +1,23 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace RemoteHealthcare.vr
+namespace RemoteHealthcare.VR
 {
     public class Connection
     {
-        private NetworkStream networkStream;
+        private readonly NetworkStream networkStream;
         public string currentSessionID { get; set; }
 
         private delegate void Reconnect();
 
-        private Reconnect reconnect;
+        private readonly Reconnect reconnect;
 
-        private static Random random = new Random();
+        private static readonly Random random = new Random();
 
         public Connection(NetworkStream networkStream, VRManager vrManager)
         {
@@ -134,7 +135,7 @@ namespace RemoteHealthcare.vr
         /// <summary>
         /// entry of the network thread
         /// </summary>
-        void Run()
+        private void Run()
         {
             bool running = true;
             while (running)
@@ -145,8 +146,8 @@ namespace RemoteHealthcare.vr
                     Console.WriteLine(receivedData);
 
                     JObject tunnel = JObject.Parse(receivedData);
-                    JObject idObject = (JObject) tunnel.GetValue("data");
-                    JObject dataObject = (JObject) idObject.GetValue("data");
+                    JObject idObject = (JObject)tunnel.GetValue("data");
+                    JObject dataObject = (JObject)idObject.GetValue("data");
                     if (dataObject.ContainsKey("serial"))
                     {
                         JToken jToken = dataObject.GetValue("serial");
