@@ -16,5 +16,10 @@ namespace DoctorApplication
         {
 
         }
+
+        private void btnHistory_Click(object sender, RoutedEventArgs e)
+        {
+            DoctorActions.HistoryWindow();
+        }
     }
 }
