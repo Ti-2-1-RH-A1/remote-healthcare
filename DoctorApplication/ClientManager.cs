@@ -11,7 +11,7 @@ namespace DoctorApplication
     public class ClientManager
     {
         private readonly Dictionary<string, Client> clients = new();
-        private ServerClient.Client client;
+        private NetProtocol.Client client;
 
 
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
