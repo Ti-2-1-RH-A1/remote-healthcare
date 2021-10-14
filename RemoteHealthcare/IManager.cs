@@ -10,16 +10,27 @@ namespace RemoteHealthcare.Bike
         public void Start((IBikeManager.BikeType, string) bikeTypeAndId);
         public void HandleData((DataTypes, float) data);
         public event Action<(DataTypes, float)> HandelDataEvents;
-
     }
 
     public interface IBikeManager
     {
-        public void StartBike(BikeType bikeType, string bikeId = null);
+        public void Start(BikeType bikeType, string bikeId = null);
         public enum BikeType
         {
             REAL_BIKE,
             SIMULATOR_BIKE
         }
+    }
+
+    public interface IVRManager
+    {
+        public void Start();
+        public void HandleData((DataTypes, float) data);
+    }
+
+    public interface IHRMManager
+    {
+        public void DataReceived((DataTypes, float) data);
+        public void Start();
     }
 }

@@ -18,32 +18,24 @@ namespace RemoteHealthcare
 
         public void Start((IBikeManager.BikeType, string) bikeTypeAndId)
         {
-            var bikeManager = services.GetService<BikeManager>();
-            bikeManager.StartBike(bikeTypeAndId.Item1, bikeTypeAndId.Item2);
-            var hrmManager = services.GetService<HRMManager>();
-            hrmManager.StartHRM();
-            var vrManager = services.GetService<VRManager>();
-            vrManager.Start();
+            services.GetService<IBikeManager>().Start(bikeTypeAndId.Item1, bikeTypeAndId.Item2);
+            services.GetService<IHRMManager>().Start();
+            services.GetService<IVRManager>().Start();
         }
 
         public void HandleData((DataTypes, float) data)
         {
-            // TODO [Martijn] Implementation
-
             HandelDataEvents?.Invoke(((DataTypes, float)) data);
-
-
-            // Rest of the handel code.
         }
 
         private IServiceProvider BuildServiceProvider()
         {
             return new ServiceCollection()
-                .AddSingleton(new Bluetooth(BLEInstance.BIKE))
-                .AddSingleton(new Bluetooth(BLEInstance.HEARTRATE))
-                .AddSingleton<BikeManager>()
-                .AddSingleton<HRMManager>()
-                .AddSingleton<VRManager>()
+                .AddSingleton<Bluetooth>(new Bluetooth(BLEInstance.BIKE))
+                .AddSingleton<Bluetooth>(new Bluetooth(BLEInstance.HEARTRATE))
+                .AddSingleton<IBikeManager, BikeManager>()
+                .AddSingleton<IHRMManager, HRMManager>()
+                .AddSingleton<IVRManager, VRManager>()
                 .AddSingleton<IDeviceManager>(this)
                 .BuildServiceProvider();
         }
