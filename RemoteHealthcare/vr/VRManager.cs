@@ -67,9 +67,9 @@ namespace RemoteHealthcare.VR
 
             nodes = VRMethod.GetScene(ref connection);
 
-            //string terrainUuid = VRMethod.CreateTerrain(ref connection);
+            string terrainUuid = VRMethod.CreateTerrain(ref connection);
 
-            //VRMethod.SetTexture(ref connection, terrainUuid);
+            VRMethod.SetTexture(ref connection, terrainUuid);
 
             JArray position = new JArray { 20, 0, 20 };
             JArray rotation = new JArray { 0, 0, 0 };

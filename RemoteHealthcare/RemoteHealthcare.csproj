@@ -26,4 +26,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="heightmap.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
