@@ -36,13 +36,18 @@ namespace ServerClient
             }
         }
 
-    public void Disconnect(ClientHandler client)
+
+        /// <summary>
+        /// Sends the disconnect message to all doctors
+        /// </summary>
+        /// <param name="client"></param>
+        public void Disconnect(ClientHandler client)
         {
-            client.SendPacket(new Dictionary<string, string>(){
-                { "Method", "RemoveClient" },
-            }, new Dictionary<string, string>(){
-                { "Data", client.UUID},
-            });
+            SendToClients(ClientType.DOCTOR,
+                "RemoveClient",
+                new Dictionary<string, string>(){
+                    { "Data", client.UUID},
+                });
             if (client.UUID != null && clients.ContainsKey(client.UUID))
             {
                 clients.Remove(client.UUID);
@@ -97,7 +102,7 @@ namespace ServerClient
         }
         
         /// <summary>
-        /// 
+        /// Returns a list of clients specified to the enum
         /// </summary>
         /// <param name="clientType"></param>
         /// <returns>List with client UUID's</returns>
