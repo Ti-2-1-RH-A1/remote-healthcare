@@ -1,5 +1,5 @@
 ﻿using NetProtocol;
-using NetProtocol.Data;
+using ServerClient.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;

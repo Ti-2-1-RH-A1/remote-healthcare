@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
-using ServerClient;
+using NetProtocol;
 
 namespace DoctorApplication
 {
@@ -29,7 +29,7 @@ namespace DoctorApplication
 
         public async Task Start()
         {
-            client = new ServerClient.Client("localhost", "EchteDokter", false);
+            client = new NetProtocol.Client("localhost", "EchteDokter", false);
 
             while (!client.loggedIn)
             {
