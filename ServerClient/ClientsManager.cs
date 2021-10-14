@@ -134,7 +134,7 @@ namespace ServerClient
                 ClientHandler clientHandler = clients[uuid];
                 clientHandler.SendPacket(new Dictionary<string, string>()
                 {
-                    {"Method", action}
+                    { "Method", action },
                 }, dict);
 
             }

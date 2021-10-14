@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
-using ServerClient;
+using NetProtocol;
 
 namespace DoctorApplication
 {
@@ -12,6 +12,7 @@ namespace DoctorApplication
     {
         private readonly Dictionary<string, Client> clients = new();
         private ServerClient.Client client;
+
 
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
 
@@ -33,7 +34,8 @@ namespace DoctorApplication
 
         public async Task Start()
         {
-            client = new ServerClient.Client("localhost", "EchteDokter", false);
+            client = new NetProtocol.Client("localhost", "EchteDokter", false);
+
             while (!client.loggedIn)
             {
                 Thread.Sleep(10);
@@ -43,7 +45,7 @@ namespace DoctorApplication
 
             client.SendPacket(new Dictionary<string, string>()
             {
-                { "Method", "GetClients" }
+                { "Method", "GetClients" },
             }, new Dictionary<string, string>());
         }
 
@@ -126,7 +128,7 @@ namespace DoctorApplication
         {
             SendToClients(clients.Keys.ToList(), "Message", new Dictionary<string, string>()
             {
-                { "Message", message }
+                { "Message", message },
             });
         }
 
@@ -148,14 +150,14 @@ namespace DoctorApplication
             {
                 data = new Dictionary<string, string>()
                 {
-                    { "Clients", clientsString }
+                    { "Clients", clientsString },
                 };
             }
 
             client.SendPacket(new Dictionary<string, string>()
             {
                 { "Method", "SendToClients" },
-                { "Action", action }
+                { "Action", action },
             }, data);
         }
     }
