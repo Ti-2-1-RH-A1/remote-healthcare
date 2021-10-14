@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace DoctorApplication
 {
@@ -11,22 +13,53 @@ namespace DoctorApplication
         private DoctorActions doctorActions;
         public MainWindow()
         {
-            doctorActions = new DoctorActions();
+            doctorActions = new DoctorActions(this);
             Task start = doctorActions.Start();
             start.Wait();
-            InitializeComponent();
-            
+            InitializeComponent();      
         }
 
-        private void btnBroadcast_Click(object sender, RoutedEventArgs e)
+
+        /// <summary>
+        /// Adds a client to the listview in de mainwindow
+        /// </summary>
+        /// <param name="client"></param>
+        public void AddToList(Client client)
+        {
+            Dispatcher.BeginInvoke(new Action(delegate ()
+            {
+                ListView list = UserGrid;
+                list.Items.Add(client);
+            }));
+        }
+
+        /// <summary>
+        /// Removes a client from the listview in de mainwindow
+        /// </summary>
+        /// <param name="client"></param>
+        public void RemovefromList(Client client)
+        {
+            Dispatcher.BeginInvoke(new Action(delegate ()
+            {
+                ListView list = UserGrid;
+                int index = list.Items.IndexOf(client);
+                list.Items.RemoveAt(index);
+            }));
+        }
+
+        private void BtnBroadcast_Click(object sender, RoutedEventArgs e)
         {
 
         }
 
-        private void btnMessage_Click(object sender, RoutedEventArgs e)
+        private void btnHistory_Click(object sender, RoutedEventArgs e)
+        {
+            DoctorActions.HistoryWindow();
+        }
+
+        private void BtnMessage_Click(object sender, RoutedEventArgs e)
         {
             doctorActions.SendToAll("test");
-
         }
     }
 }

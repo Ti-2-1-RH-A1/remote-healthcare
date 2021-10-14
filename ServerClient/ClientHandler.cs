@@ -1,4 +1,5 @@
-﻿using ServerClient.Data;
+﻿using NetProtocol;
+using ServerClient.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +13,8 @@ namespace ServerClient
     {
         private readonly TcpClient tcpClient;
         public string authKey;
+        public string UUID;
+        public string Name;
         private readonly AuthHandler auth;
         private readonly Stream stream;
         private readonly ClientsManager manager;
@@ -81,6 +84,11 @@ namespace ServerClient
             };
         }
 
+        public override string ToString()
+        {
+            return this.UUID;
+        }
+
         private Callback Post()
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
@@ -123,7 +131,7 @@ namespace ServerClient
             {
                 SendPacket(header, new Dictionary<string, string>(){
                     { "Result", "Ok" },
-                    { "Data", Util.StringifyClients(manager.GetClients())},
+                    { "Data", Util.StringifyClients(manager.GetClients()) },
                 });
             };
         }
@@ -167,6 +175,8 @@ namespace ServerClient
 
                     Console.WriteLine("Doctor logged in.");
                     this.IsDoctor = true;
+                    this.UUID = "DOCTOR-" + Guid.NewGuid();
+                    this.Name = "Doctor";
                 }
                 else
                 {
@@ -177,6 +187,7 @@ namespace ServerClient
                             { "Result", "ok" },
                             { "message", "Patient logged in." },
                         });
+                        this.UUID = id;
                     }
                     else
                     {
@@ -185,16 +196,19 @@ namespace ServerClient
                         {
                             { "Result", "ok" },
                             { "message", "Patient logged in." },
-                            { "id", myuuid.ToString()},
+                            { "id", myuuid.ToString() },
                         });
-                        id = myuuid.ToString();
+                        this.UUID = myuuid.ToString();
                     }
 
                     data.TryGetValue("name", out string name);
-                    dataHandler.AddFile(id, name);
+                    this.Name = name;
+                    dataHandler.AddFile(this.UUID, name);
                     Console.WriteLine("Patient logged in.");
                     this.IsDoctor = false;
                 }
+                if (!dataHandler.ClientData.ContainsKey(UUID))
+                    dataHandler.ClientData.Add(this.UUID, new ClientData());
                 manager.Add(this);
             };
         }
@@ -211,7 +225,7 @@ namespace ServerClient
             {
                 stream.Close();
                 tcpClient.Close();
-                manager.Disconnect(this);
+
                 return;
             }
 

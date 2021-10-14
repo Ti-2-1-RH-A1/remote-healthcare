@@ -15,4 +15,6 @@
     </None>
   </ItemGroup>
 
+  <Import Project="..\NetProtocol\NetProtocol.projitems" Label="Shared" />
+
 </Project>

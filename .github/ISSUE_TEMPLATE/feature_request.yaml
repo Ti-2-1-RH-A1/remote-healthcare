@@ -7,14 +7,6 @@ body:
     attributes:
       value: |
         You will file a new feature!
-  - type: input
-    id: feature
-    attributes:
-      label: Feature
-      description: What is the feature in a few short words?
-      placeholder: ex. It needs to show a menu
-    validations:
-      required: true
   - type: textarea
     id: feature-detail
     attributes:

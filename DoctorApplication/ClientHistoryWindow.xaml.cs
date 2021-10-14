@@ -24,6 +24,11 @@ namespace DoctorApplication
             InitializeComponent();
         }
 
+        public ClientHistoryWindow(String clientID)
+        {
+            InitializeComponent();
+        }
+
         private void btnBack_Click(object sender, RoutedEventArgs e)
         {
 

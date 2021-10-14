@@ -33,16 +33,16 @@
 
 
                 <!-- Buttons-->
-                <Button Content="Message selected client" Grid.Row="1" Grid.Column="1" Name="btnMessage" Click="btnMessage_Click"/>
-                <Button Content="Message all clients" Grid.Row="1"  Grid.Column="3" Name="btnBroadcast" Click="btnBroadcast_Click"/>
+                <Button Content="Message selected client" Grid.Row="1" Grid.Column="1" Name="btnMessage" Click="BtnMessage_Click"/>
+                <Button Content="Message all clients" Grid.Row="1"  Grid.Column="3" Name="btnBroadcast" Click="BtnBroadcast_Click"/>
                 <Button Content="Emergency stop client" Grid.Row="3" Grid.Column="1" Name="btnEmergency"/>
-                <Button Content="History" Grid.Row="3" Grid.Column="3" Name="btnHistory"/>
+                <Button Content="History" Grid.Row="3" Grid.Column="3" Name="btnHistory" Click="btnHistory_Click"/>
             </Grid>
-            <ListView Name="UserGrid" Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Clients, Mode=TwoWay}" SelectedItem="{Binding SelectedClient}"  >
+            <ListView Name="UserGrid" Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Client, Mode=TwoWay}" SelectedItem="{Binding SelectedClient}"  >
                 <ListView.View>
                     <GridView x:Name="grdClients">
-                        <GridViewColumn Header="Client ID" DisplayMemberBinding="{Binding ClientID}"  Width="Auto"/>
-                        <GridViewColumn Header="Client Name" DisplayMemberBinding="{Binding ClientName}"  Width="Auto" />
+                        <GridViewColumn Header="Client ID" DisplayMemberBinding="{Binding clientSerial}"  Width="Auto"/>
+                        <GridViewColumn Header="Client Name" DisplayMemberBinding="{Binding clientName}"  Width="Auto" />
 
                     </GridView>
                 </ListView.View>

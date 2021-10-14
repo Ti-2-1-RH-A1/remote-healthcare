@@ -1,7 +1,9 @@
 ﻿using RemoteHealthcare.Bike;
+using RemoteHealthcare.ServerCom;
 using System;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace RemoteHealthcare
 {
