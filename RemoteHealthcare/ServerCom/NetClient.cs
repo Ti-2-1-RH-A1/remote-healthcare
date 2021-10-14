@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NetProtocol;
@@ -24,15 +23,18 @@ namespace RemoteHealthcare.ServerCom
                 Thread.Sleep(10);
             }
 
-            // Test request.
+        }
+
+        public void SendData(string name, float data)
+        {
             client.SendPacket(new Dictionary<string, string>()
             {
-                { "Method", "GetClients" },
-            }, new Dictionary<string, string>(), (header, data) =>
-            {
-                Console.WriteLine(header);
-                Console.WriteLine(data);
+                { "Method", "Post" },
+                { "Id", this.client.UUID },
+            }, new Dictionary<string, string>() {
+                { name, data.ToString() },
             });
         }
+
     }
 }

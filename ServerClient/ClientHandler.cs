@@ -207,6 +207,8 @@ namespace ServerClient
                     Console.WriteLine("Patient logged in.");
                     this.IsDoctor = false;
                 }
+                if (!dataHandler.ClientData.ContainsKey(UUID))
+                    dataHandler.ClientData.Add(this.UUID, new ClientData());
                 manager.Add(this);
             };
         }
@@ -223,7 +225,7 @@ namespace ServerClient
             {
                 stream.Close();
                 tcpClient.Close();
-                
+
                 return;
             }
 

@@ -32,6 +32,7 @@ namespace NetProtocol
         public bool loggedIn;
         private readonly bool useSSL;
         private string name;
+        public string UUID;
 
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
         public event DataReceivedHandler DataReceived;
@@ -108,6 +109,7 @@ namespace NetProtocol
                         { "id", id },
                         { "name", name },
                     });
+                UUID = id;
             }
             else
             {
@@ -117,6 +119,16 @@ namespace NetProtocol
                 }, new Dictionary<string, string>()
                 {
                     { "name", name },
+                }, (Dictionary<string, string> header, Dictionary<string, string> data) =>
+                {
+                    if (data.TryGetValue("id", out string id))
+                    {
+                        UUID = id;
+                    }
+                    else
+                    {
+                        loggedIn = false;
+                    }
                 });
             }
         }

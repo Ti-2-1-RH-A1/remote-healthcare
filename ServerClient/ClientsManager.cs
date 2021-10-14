@@ -23,20 +23,20 @@ namespace ServerClient
 
         public void Add(ClientHandler clientHandler)
         {
-        
-            clients.Add(clientHandler.UUID, clientHandler);
+            if (!clients.ContainsKey(clientHandler.UUID))
+                clients.Add(clientHandler.UUID, clientHandler);
             if (!clientHandler.UUID.Contains("DOCTOR"))
             {
-                Console.WriteLine("No doctor client: "+clientHandler.UUID);
+                Console.WriteLine("No doctor client: " + clientHandler.UUID);
                 SendToClients(ClientType.DOCTOR,
                     "NewClient",
                     new Dictionary<string, string>(){
                     { "Data", Util.StringifyClients(new List<ClientHandler>(){clientHandler})},
-                }); 
+                });
             }
         }
 
-    public void Disconnect(ClientHandler client)
+        public void Disconnect(ClientHandler client)
         {
             client.SendPacket(new Dictionary<string, string>(){
                 { "Method", "RemoveClient" },
@@ -51,7 +51,7 @@ namespace ServerClient
             {
                 Console.WriteLine(client.ToString() + " not found");
             }
-            
+
             Console.WriteLine("Client disconnected");
         }
 
@@ -95,7 +95,7 @@ namespace ServerClient
             clientUUIDs = GetClientUUID(clientType);
             SendToUUID(clientUUIDs, action, data);
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -113,7 +113,7 @@ namespace ServerClient
                     return clients.Keys
                         .Where(p => !p.Contains("DOCTOR"))
                         .ToList();
-                case ClientType.ALL: 
+                case ClientType.ALL:
                 default:
                     return clients.Keys
                         .ToList();
