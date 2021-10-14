@@ -35,7 +35,7 @@ namespace RemoteHealthcare
             return new ServiceCollection()
                 .AddSingleton<Bluetooth>(new Bluetooth(BLEInstance.BIKE))
                 .AddSingleton<Bluetooth>(new Bluetooth(BLEInstance.HEARTRATE))
-                .AddSingleton<ComManager>()
+                .AddSingleton<IComManager, ComManager>()
                 .AddSingleton<IBikeManager, BikeManager>()
                 .AddSingleton<IHRMManager, HRMManager>()
                 .AddSingleton<IVRManager, VRManager>()

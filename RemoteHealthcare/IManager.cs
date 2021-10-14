@@ -33,4 +33,9 @@ namespace RemoteHealthcare.Bike
         public void DataReceived((DataTypes, float) data);
         public void Start();
     }
+
+    public interface IComManager
+    {
+        public void Start();
+    }
 }
