@@ -58,6 +58,7 @@ namespace ServerClient.Data
             }
         }
 
+
         public bool StoreData(string id, Dictionary<string, string> healthData)
         {
             if (!ClientData.ContainsKey(id)) return false;
