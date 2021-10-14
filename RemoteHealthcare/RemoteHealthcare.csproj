@@ -28,4 +28,10 @@
 
   <Import Project="..\NetProtocol\NetProtocol.projitems" Label="Shared" />
 
+  <ItemGroup>
+    <None Update="heightmap.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

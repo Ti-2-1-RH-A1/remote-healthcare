@@ -86,8 +86,7 @@ namespace RemoteHealthcare.Bike
 
         private float GenerateSpeed(long elapsedMilis)
         {
-            float convertedResistance = 1 / (this.resistance + 1);
-            return (float)(5 + 5 * Math.Sin(elapsedMilis)) * convertedResistance;
+            return (float)(6 + 5 * Math.Sin(elapsedMilis * 0.00008f)) * ((100 - this.resistance) / 100);
         }
 
         private void GenerateDistanceTravled(long elapsedMilis, long prevMilis, ref float totalDistanceTravled, float speed)
