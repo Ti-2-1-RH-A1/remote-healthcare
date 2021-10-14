@@ -222,7 +222,7 @@ namespace ServerClient
             {
                 stream.Close();
                 tcpClient.Close();
-                manager.Disconnect(this);
+                
                 return;
             }
 

@@ -160,14 +160,10 @@ namespace ServerClient
             data.TryGetValue("message", out string messageValue);
             if (headers.TryGetValue("Method", out string methodValue))
             {
-                if (!data.TryGetValue("Result", out string resultValue))
-                {
-                    Console.WriteLine("Response from server did not contain result. Skipping packet!");
-                    return;
-                }
-
+                
                 if (methodValue == "Login")
                 {
+                    data.TryGetValue("Result", out string resultValue);
                     if (resultValue == "Error")
                     {
                         

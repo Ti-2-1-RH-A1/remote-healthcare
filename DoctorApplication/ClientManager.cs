@@ -21,7 +21,7 @@ namespace DoctorApplication
         {
             actions = new Dictionary<string, Callback>() {
                 {"GetClients", AddClientsFromString()},
-                
+                {"NewClient", AddConnectedClient()}
             };
 
             this.MainWindow = mainWindow;
@@ -64,6 +64,10 @@ namespace DoctorApplication
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
+                if (data["Data"] == "Data")
+                {
+                    return;
+                }
                 string[] strings = data["Data"][0..^1].Split(";");
 
                 foreach (string clientString in strings)
@@ -80,6 +84,22 @@ namespace DoctorApplication
                 }
             };
             
+        }
+
+        private Callback AddConnectedClient()
+        {
+            return delegate(Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                string[] split = data["Data"][0..^1].Split("|");
+
+                Client client = new()
+                {
+                    clientSerial = split[0],
+                    clientName = split[1]
+                };
+                clients.Add(client);
+                MainWindow.addToList(client);
+            };
         }
 
         /// <summary>
