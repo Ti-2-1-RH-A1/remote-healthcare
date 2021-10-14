@@ -3,6 +3,8 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using Microsoft.Extensions.DependencyInjection;
+using RemoteHealthcare.Bike;
 
 namespace RemoteHealthcare.VR
 {
@@ -12,8 +14,9 @@ namespace RemoteHealthcare.VR
         private Dictionary<string, string> userSessions;
         private Connection connection;
         private Dictionary<string, string> nodes;
-
-        public VRManager()
+        private readonly IServiceProvider services;
+        private bool isReady = false;
+        public VRManager(IServiceProvider serviceProvider)
         {
             // Initialise and connect to the TcpClient
             // On server: 145.48.6.10 and port: 6666
@@ -21,6 +24,8 @@ namespace RemoteHealthcare.VR
             client.Connect("145.48.6.10", 6666);
 
             // Request the session list from the server
+            this.services = serviceProvider;
+            services.GetService<IDeviceManager>().HandelDataEvents += HandleData;
 
             connection = new Connection(client.GetStream(), this);
 
@@ -42,6 +47,14 @@ namespace RemoteHealthcare.VR
             nodes = VRMethod.GetScene(ref connection);
         }
 
+        public void HandleData((DataTypes, float) data)
+        {
+            if (data.Item1 == DataTypes.BIKE_SPEED)
+            {
+                updateBikeSpeed(data.Item2);
+            }
+
+        }
 
         /// <summary>Start does <c>The beginning of the VRManager</c> This is the beginning of the program, als 
         /// sometimes called the start of a programs life</summary>
@@ -54,13 +67,14 @@ namespace RemoteHealthcare.VR
 
             nodes = VRMethod.GetScene(ref connection);
 
-            string terrainUuid = VRMethod.CreateTerrain(ref connection);
+            //string terrainUuid = VRMethod.CreateTerrain(ref connection);
 
-            VRMethod.SetTexture(ref connection, terrainUuid);
+            //VRMethod.SetTexture(ref connection, terrainUuid);
 
             JArray position = new JArray { 20, 0, 20 };
             JArray rotation = new JArray { 0, 0, 0 };
             string bikename1 = "Bike";
+            
             string bikeUUID = VRMethod.AddModelBike(ref connection, bikename1, position, rotation);
 
             VRMethod.CreateBikePanel(ref connection);
@@ -79,7 +93,7 @@ namespace RemoteHealthcare.VR
             UpdateSceneList();
 
             Random rnd = new Random();
-            for (int i = 0; i < 200; i++)
+            for (int i = 0; i < 20; i++)
             {
                 JArray positionTree = new JArray { rnd.Next(75, 130), 1, rnd.Next(90, 140) };
                 JArray rotationTree = new JArray { 0, rnd.Next(1, 360), 0 };
@@ -152,6 +166,7 @@ namespace RemoteHealthcare.VR
             VRMethod.SetCamera(ref connection, bikeUUID);
 
             VRMethod.FollowRoute(ref connection, routeUUID, bikeUUID);
+            isReady = true;
         }
 
         /// <summary>
@@ -187,6 +202,15 @@ namespace RemoteHealthcare.VR
                 {
                     Console.WriteLine("couldn't connect to that client");
                 }
+            }
+        }
+
+        public void updateBikeSpeed(float speed)
+        {
+            if (isReady)
+            {
+                string bikeId = VRMethod.GetBikeID(ref connection);
+                VRMethod.ChangeSpeed(ref connection, bikeId, speed);
             }
         }
 

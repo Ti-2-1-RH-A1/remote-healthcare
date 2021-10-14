@@ -9,6 +9,7 @@ namespace RemoteHealthcare
     public class DeviceManager : IDeviceManager
     {
         private readonly IServiceProvider services;
+        public event Action<(DataTypes, float)> HandelDataEvents;
 
         public DeviceManager()
         {
@@ -27,9 +28,7 @@ namespace RemoteHealthcare
 
         public void HandleData((DataTypes, float) data)
         {
-            // TODO [Martijn] Implementation
-
-            // Rest of the handel code.
+            HandelDataEvents?.Invoke(((DataTypes, float)) data);
         }
 
         private IServiceProvider BuildServiceProvider()
