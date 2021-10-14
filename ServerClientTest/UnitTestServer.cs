@@ -2,11 +2,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NetProtocol;
 
 namespace ServerClient.Tests
 {
     [TestClass()]
-    public class UnitTests
+    public class UnitTestServer
     {
         [TestMethod()]
         public void StringifyParseHeadersTest()
@@ -37,7 +38,7 @@ namespace ServerClient.Tests
         [TestMethod()]
         public async Task TestServerAsync()
         {
-            new Server("", new AuthHandler(), false);
+            new Server("", AuthHandler.Init(), false);
 
             await Task.Delay(1000);
 
@@ -45,12 +46,18 @@ namespace ServerClient.Tests
 
             await Task.Delay(3500);
             Assert.IsTrue(client.loggedIn);
+            client.SendPacket(new Dictionary<string, string>() {
+                { "Method", "Get" },
+            }, new Dictionary<string, string>(), (e1, e2) =>
+            {
+                Assert.IsTrue(true);
+            });
         }
 
         [TestMethod()]
         public void TestNoCertError()
         {
-            Assert.ThrowsException<Exception>(() => new Server(@"Serhdjfjhdver.pfx", new AuthHandler()));
+            Assert.ThrowsException<Exception>(() => new Server(@"Serhdjfjhdver.pfx", AuthHandler.Init()));
         }
 
         [TestMethod()]

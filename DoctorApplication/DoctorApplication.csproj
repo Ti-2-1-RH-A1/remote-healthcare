@@ -4,6 +4,14 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <StartupObject>DoctorApplication.App</StartupObject>
+    <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <Import Project="..\NetProtocol\NetProtocol.projitems" Label="Shared" />
 
 </Project>

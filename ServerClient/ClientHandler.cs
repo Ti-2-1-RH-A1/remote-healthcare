@@ -1,18 +1,25 @@
-﻿using System;
+﻿using NetProtocol;
+using ServerClient.Data;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 
 namespace ServerClient
 {
-    internal class ClientHandler
+    public class ClientHandler
     {
         private readonly TcpClient tcpClient;
+        public string authKey;
+        public string UUID;
+        public string Name;
         private readonly AuthHandler auth;
         private readonly Stream stream;
         private readonly ClientsManager manager;
-        public delegate void Callback(Dictionary<string, string> packetData, Dictionary<string, string> headerData);
+        private readonly DataHandler dataHandler;
+        public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
         public Dictionary<string, Callback> actions;
         private readonly byte[] buffer = new byte[1024];
         private string totalBufferText = "";
@@ -21,28 +28,122 @@ namespace ServerClient
 
         public ClientHandler(TcpClient tcpClient, Stream stream, AuthHandler auth, ClientsManager manager)
         {
+            dataHandler = new DataHandler();
+            dataHandler.LoadAllData();
             this.manager = manager;
             this.tcpClient = tcpClient;
             this.auth = auth;
             this.stream = stream;
             actions = new Dictionary<string, Callback>() {
                 { "Login", LoginMethode() },
-                { "Disconnect", disconnectCallback()}
+                { "Disconnect", disconnectCallback() },
+                { "GetClients", GetClients() },
+                { "SendToClients", SendToClients() },
+                { "Post", Post() },
+                { "Get", Get() },
             };
             this.stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
+        private Callback Get()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                if (header.TryGetValue("Id", out string id))
+                {
+                    if (dataHandler.ClientData.TryGetValue(id, out ClientData clientData))
+                    {
+                        if (header.TryGetValue("GetKeys", out string getKeys))
+                        {
+                            // Parse keys to recieve
+                            List<string> keys = new(getKeys.Split(","));
+                            Dictionary<string, string> result = new();
+
+                            // Get data from datastore
+                            PropertyInfo[] properties = typeof(ClientData).GetProperties();
+                            foreach (PropertyInfo property in properties)
+                            {
+                                if (keys.Contains(property.Name))
+                                {
+                                    result.TryAdd(property.Name, property.GetValue(clientData) as string);
+                                }
+                            }
+
+                            // Send result to client
+                            result.Add("Result", "Ok");
+                            SendPacket(header, result);
+                            return;
+                        }
+                        SendError(header, "Keys not found!");
+                        return;
+                    }
+                    SendError(header, "Client not found!");
+                    return;
+                }
+                SendError(header, "ID not found!");
+            };
+        }
+
+        public override string ToString()
+        {
+            return this.UUID;
+        }
+
+        private Callback Post()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                if (header.TryGetValue("Id", out string id))
+                {
+                    if (dataHandler.ClientData.TryGetValue(id, out ClientData clientData))
+                    {
+                        PropertyInfo[] properties = typeof(ClientData).GetProperties();
+                        foreach (PropertyInfo property in properties)
+                        {
+                            if (data.TryGetValue(property.Name, out string value))
+                            {
+                                property.SetValue(clientData, value);
+                            }
+                        }
+                        SendPacket(header, new Dictionary<string, string>(){
+                            { "Result", "Ok" },
+                        });
+                        return;
+                    }
+                    SendError(header, "Client not found!");
+                    return;
+                }
+                SendError(header, "ID not found!");
+            };
+        }
+
+        private Callback SendToClients()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                manager.SendToClients(header, data);
+            };
+        }
+
+        private Callback GetClients()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                SendPacket(header, new Dictionary<string, string>(){
+                    { "Result", "Ok" },
+                    { "Data", Util.StringifyClients(manager.GetClients()) },
+                });
+            };
+        }
+
         private Callback disconnectCallback()
         {
-            return delegate(Dictionary<string, string> packetData, Dictionary<string, string> headerData)
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
-                SendPacket(new Dictionary<string, string>()
+                SendPacket(header, new Dictionary<string, string>()
                 {
-                    {"Method", "Disconnect"}
-                }, new Dictionary<string, string>()
-                {
-                    {"Result", "ok"},
-                    {"message", "Request for disconnect received"}
+                    { "Result", "ok" },
+                    { "message", "Request for disconnect received" },
                 });
 
                 stream.Close();
@@ -53,43 +154,62 @@ namespace ServerClient
 
         private Callback LoginMethode()
         {
-            return delegate (Dictionary<string, string> packetData, Dictionary<string, string> headerData)
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
-                headerData.TryGetValue("Auth", out string key);
-                var (DoesExist, IsDoctor) = auth.Check(key);
+                header.TryGetValue("Auth", out string key);
+                (bool DoesExist, bool IsDoctor) = auth.Check(key);
                 if (!DoesExist)
                 {
-                    SendPacket(new Dictionary<string, string>() {
-                        { "Method", "Login" }
-                    }, new Dictionary<string, string>(){
-                        { "Result", "Error" },
-                        {"message","Key doesn't exist"}
-                    });
+                    SendError(header, "Key doesn't exist");
                     Console.WriteLine("Key doesn't exist");
                     return;
                 }
+
+                authKey = key;
                 if (IsDoctor)
                 {
-                    SendPacket(new Dictionary<string, string>() {
-                        { "Method", "Login" }
-                    }, new Dictionary<string, string>(){
+                    SendPacket(header, new Dictionary<string, string>(){
                         { "Result", "ok" },
-                        {"message","Doctor logged in."}
+                        { "message", "Doctor logged in." },
                     });
+
                     Console.WriteLine("Doctor logged in.");
                     this.IsDoctor = true;
+                    this.UUID = "DOCTOR-" + Guid.NewGuid();
+                    this.Name = "Doctor";
                 }
                 else
                 {
-                    this.IsDoctor = false;
-                        SendPacket(new Dictionary<string, string>() {
-                        { "Method", "Login" }
-                    }, new Dictionary<string, string>(){
-                        { "Result", "ok" },
-                        {"message","Patient logged in."}
-                    });
+                    if (data.TryGetValue("id", out string id))
+                    {
+                        SendPacket(header, new Dictionary<string, string>()
+                        {
+                            { "Result", "ok" },
+                            { "message", "Patient logged in." },
+                        });
+                        this.UUID = id;
+                    }
+                    else
+                    {
+                        Guid myuuid = Guid.NewGuid();
+                        SendPacket(header, new Dictionary<string, string>()
+                        {
+                            { "Result", "ok" },
+                            { "message", "Patient logged in." },
+                            { "id", myuuid.ToString() },
+                        });
+                        this.UUID = myuuid.ToString();
+                    }
+
+                    data.TryGetValue("name", out string name);
+                    this.Name = name;
+                    dataHandler.AddFile(this.UUID, name);
                     Console.WriteLine("Patient logged in.");
+                    this.IsDoctor = false;
                 }
+                if (!dataHandler.ClientData.ContainsKey(UUID))
+                    dataHandler.ClientData.Add(this.UUID, new ClientData());
+                manager.Add(this);
             };
         }
 
@@ -99,54 +219,46 @@ namespace ServerClient
             {
                 int receivedBytes = stream.EndRead(ar);
                 string receivedText = Encoding.ASCII.GetString(buffer, 0, receivedBytes);
-                
-
                 totalBufferText += receivedText;
             }
             catch (IOException)
             {
                 stream.Close();
                 tcpClient.Close();
-                manager.Disconnect(this);
+
                 return;
             }
 
             while (totalBufferText.Contains("\r\n\r\n\r\n"))
             {
-                (Dictionary<string, string> headerData, Dictionary<string, string> packetData) = Protocol.ParsePacket(totalBufferText);
-                
-                totalBufferText = totalBufferText.Substring(totalBufferText.IndexOf("\r\n\r\n\r\n") + (totalBufferText.Length-totalBufferText.IndexOf("\r\n\r\n\r\n")));
-                HandleData(packetData, headerData);
+                (Dictionary<string, string> header, Dictionary<string, string> data) = Protocol.ParsePacket(totalBufferText);
+
+                totalBufferText = totalBufferText[(totalBufferText.IndexOf("\r\n\r\n\r\n") + (totalBufferText.Length - totalBufferText.IndexOf("\r\n\r\n\r\n")))..];
+                HandleData(header, data);
             }
 
             if (stream.CanRead) stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
-        private void HandleData(Dictionary<string, string> packetData, Dictionary<string, string> headerData)
+        private void HandleData(Dictionary<string, string> header, Dictionary<string, string> data)
         {
-            headerData.TryGetValue("Method", out string item);
+            header.TryGetValue("Method", out string item);
 
             if (actions.TryGetValue(item, out Callback action))
             {
-                action(packetData, headerData);
+                action(header, data);
+                return;
             }
-            else
-            {
-                headerData.TryGetValue("Serial", out string serial);
-                SendPacket(new Dictionary<string, string>() {
-                    { "Method", item },
-                    { "Serial", serial },
-                }, new Dictionary<string, string>(){
-                    { "Result", "Error" },
-                    { "message", "Method not found" },
-                });
-            }
-
-
-
+            SendError(header, "Method not found");
         }
 
-        private void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
+        public void SendError(Dictionary<string, string> header, string message) =>
+            SendPacket(header, new Dictionary<string, string>(){
+                { "Result", "Error" },
+                { "Message", message },
+            });
+
+        public void SendPacket(Dictionary<string, string> headers, Dictionary<string, string> data) =>
             Write($"{Protocol.StringifyHeaders(headers)}{Protocol.StringifyData(data)}");
 
         public void Write(string data)

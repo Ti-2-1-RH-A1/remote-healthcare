@@ -1,17 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace DoctorApplication
 {
@@ -20,14 +10,56 @@ namespace DoctorApplication
     /// </summary>
     public partial class MainWindow : Window
     {
+        private DoctorActions doctorActions;
         public MainWindow()
         {
-            InitializeComponent();
+            doctorActions = new DoctorActions(this);
+            Task start = doctorActions.Start();
+            start.Wait();
+            InitializeComponent();      
         }
 
-        private void btnBroadcast_Click(object sender, RoutedEventArgs e)
+
+        /// <summary>
+        /// Adds a client to the listview in de mainwindow
+        /// </summary>
+        /// <param name="client"></param>
+        public void AddToList(Client client)
+        {
+            Dispatcher.BeginInvoke(new Action(delegate ()
+            {
+                ListView list = UserGrid;
+                list.Items.Add(client);
+            }));
+        }
+
+        /// <summary>
+        /// Removes a client from the listview in de mainwindow
+        /// </summary>
+        /// <param name="client"></param>
+        public void RemovefromList(Client client)
+        {
+            Dispatcher.BeginInvoke(new Action(delegate ()
+            {
+                ListView list = UserGrid;
+                int index = list.Items.IndexOf(client);
+                list.Items.RemoveAt(index);
+            }));
+        }
+
+        private void BtnBroadcast_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void btnHistory_Click(object sender, RoutedEventArgs e)
+        {
+            DoctorActions.HistoryWindow();
+        }
+
+        private void BtnMessage_Click(object sender, RoutedEventArgs e)
+        {
+            doctorActions.SendToAll("test");
         }
     }
 }

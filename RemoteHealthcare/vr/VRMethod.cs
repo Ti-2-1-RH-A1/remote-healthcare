@@ -4,13 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Threading;
-using VirtualReality;
 
-namespace RemoteHealthcare
+namespace RemoteHealthcare.VR
 {
-    class VRMethod
+    internal class VRMethod
     {
         /// <summary>
         /// isStatusOk does <c>checks if a string contains an ok message</c>
@@ -245,16 +243,8 @@ namespace RemoteHealthcare
             tunnelSetTerrain.Add("data", dataAddNodeJson);
 
             // Send the message via the connection
-            string responseTerrainTexture = "";
-            connection.SendViaTunnel(tunnelSetTerrain, (callbackResponse => responseTerrainTexture = callbackResponse));
-            while (responseTerrainTexture.Length == 0)
-            {
-                Thread.Sleep(10);
-            }
-
-            dynamic terrainRespond = JsonConvert.DeserializeObject(responseTerrainTexture);
-
-            Console.WriteLine(tunnelSetTerrain);
+            connection.SendViaTunnel(tunnelSetTerrain);
+            
         }
 
         /// <summary>GetScene does <c>recieves a scene from a a connected client</c> using a network stream decodes using ASCII to a string</summary>
@@ -566,15 +556,108 @@ namespace RemoteHealthcare
             dataJObject.Add("font", font);
 
             message.Add("data", dataJObject);
+            connection.SendViaTunnel(message);
+        }
 
-            string response = "";
-            connection.SendViaTunnel(message, (callbackResponse => response = callbackResponse));
-            while (response.Length == 0)
+        public static void CreateMessagePanel(ref Connection connection, string panelName = "messagePanel")
+        {
+            int[] position = { -40, 135, 55 };
+            int[] rotation = { 330, 120, 0 };
+            int[] size = { 50, 25 };
+            int[] resolution = { 512, 512 };
+            int[] background = { 1, 1, 1, 1 };
+
+            CreatePanel(ref connection, panelName, position, rotation, size, resolution, background, true, GetBikeID(ref connection));
+        }
+
+        /// <summary>
+        /// This method can make a panel transparent.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="panelName"></param>
+        public static void setTransparentPanel(ref Connection connection, string panelName)
+        {
+            JObject clearColorObject = new JObject { {"id", JsonID.SCENE_PANEL_SETCLEARCOLOR } };
+
+            JObject clearColorData = new JObject();
+            clearColorData.Add("id", GetIdFromNodeName(ref connection, panelName));
+            clearColorData.Add("color", new JArray(1, 1, 1, 0));
+
+            clearColorObject.Add("data", clearColorData);
+
+            connection.SendViaTunnel(clearColorObject);
+           
+        }
+
+        /// <summary>
+        /// Draws a message from the doctor on a panel
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="message"></param>
+        /// <param name="panelName"></param>
+        public static void DrawChatMessage(ref Connection connection, string message, string panelName = "messagePanel")
+        {
+            ClearPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
+            int[] headerPosition = { 90, 30 };
+            int[] position = { 5, 70 };
+            int[] color = { 100, 0, 0, 1 };
+
+            Drawtext(ref connection, panelName, "Bericht van de dokter", headerPosition, 42, color, "segoeui");
+            
+            color[0] = 0;
+            int maximum = 45;
+            var tempStr = "";
+            List<string> list = new List<string>();
+            string[] subs = message.Split(' ');
+            foreach(var sub in subs)
             {
-                Thread.Sleep(10);
+                if (tempStr.Length + sub.Length > maximum)
+                {
+                    list.Add(tempStr);
+                    tempStr = sub + " ";
+                }
+                else
+                {
+                    tempStr += sub + " ";
+                }
+            }
+            list.Add(tempStr);
+
+            foreach(String line in list)
+            {
+                Drawtext(ref connection, panelName, line, position, 32, color, "segoeui");
+                position[1] = position[1] + 30;
             }
 
-            Console.WriteLine(response);
+            SwapPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
+        }
+
+        /// <summary>
+        /// Draws the data coming from the bike onto the bike panel.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="speedData"></param>
+        /// <param name="resistanceData"></param>
+        /// <param name="heartrateData"></param>
+        /// <param name="panelName"></param>
+        public static void DrawBikeData(ref Connection connection, double speedData, double resistanceData, double heartrateData, string panelName = "bikePanel")
+        {
+            ClearPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
+            int[] headerPosition = { 30, 40 };
+            int[] headerColor = { 100, 0, 0, 1 };
+            int[] dataPosition = { 160, 40 };
+            int[] dataColor = { 0, 0, 0, 1 };
+
+            Drawtext(ref connection, panelName, "Snelheid: ", headerPosition, 32, headerColor, "segoeui");
+            Drawtext(ref connection, panelName, speedData.ToString(), dataPosition, 32, dataColor, "segoeui");
+            headerPosition[1] = dataPosition[1] = 100;
+            Drawtext(ref connection, panelName, "Weerstand: ", headerPosition, 32, headerColor, "segoeui");
+            Drawtext(ref connection, panelName, resistanceData.ToString(), dataPosition, 32, dataColor, "segoeui");
+            headerPosition[1] = dataPosition[1] = 160;
+            Drawtext(ref connection, panelName, "Hartslag: ", headerPosition, 32, headerColor, "segoeui");
+            Drawtext(ref connection, panelName, heartrateData.ToString(), dataPosition, 32, dataColor, "segoeui");
+
+            SwapPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
         }
 
         /// <summary>
@@ -631,10 +714,32 @@ namespace RemoteHealthcare
             connection.SendViaTunnel(message);
         }
 
+        /// <summary>
+        /// ChangeSpeed method changes the speed of the bike in the VR Environment.
+        /// </summary>
+        /// <param name="bikeId">The id of the bike that needs its speed changed</param>
+        /// <param name="speed">The speed measured in m/s</param>
+        public static void ChangeSpeed(ref Connection connection, string bikeId, float speed)
+        {
+            JObject dataSpeed = new JObject();
+            dataSpeed.Add("node", bikeId);
+            dataSpeed.Add("speed", speed);
 
+            JObject speedObject = new JObject { { "id", JsonID.ROUTE_FOLLOW_SPEED } };
+            speedObject.Add("data", dataSpeed);
+
+            connection.SendViaTunnel(speedObject);
+            
+        }
+
+        private static string bikeId = null;
         public static string GetBikeID(ref Connection connection)
         {
-            return GetIdFromNodeName(ref connection, "Bike");
+            if (bikeId == null)
+            {
+                bikeId = GetIdFromNodeName(ref connection, "Bike");
+            }
+            return bikeId;
         }
 
         /// <summary>
@@ -675,14 +780,8 @@ namespace RemoteHealthcare
 
             Console.WriteLine("\n\n" + node.ToString() + "\n\n");
 
-            string response = "";
-            connection.SendViaTunnel(node, (callbackResponse => response = callbackResponse));
-            while (response.Length == 0)
-            {
-                Thread.Sleep(10);
-            }
-
-            Console.WriteLine(response);
+            connection.SendViaTunnel(node);
+            
         }
 
 
@@ -824,7 +923,7 @@ namespace RemoteHealthcare
         public static void SetCamera(ref Connection connection, string bikeId)
         {
             JObject dataCamera = new JObject();
-            dataCamera.Add("id", GetIdFromNodeName(ref connection,"Camera"));
+            dataCamera.Add("id", GetIdFromNodeName(ref connection, "Camera"));
             dataCamera.Add("parent", bikeId);
 
             JObject transformCamera = new JObject();
@@ -839,16 +938,7 @@ namespace RemoteHealthcare
             JObject cameraObject = new JObject { { "id", JsonID.SCENE_NODE_UPDATE } };
             cameraObject.Add("data", dataCamera);
 
-            string response = "";
-            connection.SendViaTunnel(cameraObject, (callbackResponse => response = callbackResponse));
-            while (response.Length == 0)
-            {
-                Thread.Sleep(10);
-            }
-
-            dynamic routeRespond = JsonConvert.DeserializeObject(response);
-
-            Console.WriteLine(routeRespond);
+            connection.SendViaTunnel(cameraObject);
         }
     }
 }
