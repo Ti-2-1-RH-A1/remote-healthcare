@@ -30,8 +30,6 @@ namespace DoctorApplication
             this.MainWindow = mainWindow;
         }
 
-        
-
         public async Task Start()
         {
             client = new NetProtocol.Client("localhost", "EchteDokter", false);

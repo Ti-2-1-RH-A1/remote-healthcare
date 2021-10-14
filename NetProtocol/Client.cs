@@ -178,7 +178,7 @@ namespace NetProtocol
         {
             Console.WriteLine("[CLIENT] Sending disconnect packet");
             SendPacket(new Dictionary<string, string>() {
-                { "Method", "Disconnect" }
+                { "Method", "Disconnect" },
             }, new Dictionary<string, string>());
             Console.WriteLine("[CLIENT] Send disconnect packet");
         }
