@@ -22,9 +22,9 @@ namespace DoctorApplication
         public ClientManager(MainWindow mainWindow)
         {
             actions = new Dictionary<string, Callback>() {
-                {"GetClients", AddClientsFromString()},
-                {"NewClient", AddConnectedClient()},
-                {"RemoveClient", RemoveDisconnectedClient()},
+                { "GetClients", AddClientsFromString() },
+                { "NewClient", AddConnectedClient() },
+                { "RemoveClient", RemoveDisconnectedClient() },
             };
 
             this.MainWindow = mainWindow;

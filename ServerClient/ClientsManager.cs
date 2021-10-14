@@ -23,19 +23,18 @@ namespace ServerClient
 
         public void Add(ClientHandler clientHandler)
         {
-        
-            clients.Add(clientHandler.UUID, clientHandler);
+            if (!clients.ContainsKey(clientHandler.UUID))
+                clients.Add(clientHandler.UUID, clientHandler);
             if (!clientHandler.UUID.Contains("DOCTOR"))
             {
-                Console.WriteLine("No doctor client: "+clientHandler.UUID);
+                Console.WriteLine("No doctor client: " + clientHandler.UUID);
                 SendToClients(ClientType.DOCTOR,
                     "NewClient",
                     new Dictionary<string, string>(){
                     { "Data", Util.StringifyClients(new List<ClientHandler>(){clientHandler})},
-                }); 
+                });
             }
         }
-
 
         /// <summary>
         /// Sends the disconnect message to all doctors
@@ -46,7 +45,7 @@ namespace ServerClient
             SendToClients(ClientType.DOCTOR,
                 "RemoveClient",
                 new Dictionary<string, string>(){
-                    { "Data", client.UUID},
+                    { "Data", client.UUID },
                 });
             if (client.UUID != null && clients.ContainsKey(client.UUID))
             {
@@ -56,7 +55,7 @@ namespace ServerClient
             {
                 Console.WriteLine(client.ToString() + " not found");
             }
-            
+
             Console.WriteLine("Client disconnected");
         }
 
@@ -100,7 +99,7 @@ namespace ServerClient
             clientUUIDs = GetClientUUID(clientType);
             SendToUUID(clientUUIDs, action, data);
         }
-        
+
         /// <summary>
         /// Returns a list of clients specified to the enum
         /// </summary>
@@ -118,7 +117,7 @@ namespace ServerClient
                     return clients.Keys
                         .Where(p => !p.Contains("DOCTOR"))
                         .ToList();
-                case ClientType.ALL: 
+                case ClientType.ALL:
                 default:
                     return clients.Keys
                         .ToList();
