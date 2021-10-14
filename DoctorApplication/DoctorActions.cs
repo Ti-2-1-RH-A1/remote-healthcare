@@ -22,12 +22,10 @@ namespace DoctorApplication
         /// send a message to all clients
         /// </summary>
         /// <param name="message"></param>
-
         public void SendToAll(string message)
         {
             clientManager.SendMessageToAll(message);
         }
-
 
         public static void HistoryWindow()
         {
@@ -45,5 +43,6 @@ namespace DoctorApplication
         //    ClientHistoryWindow clientHistoryWindow = new ClientHistoryWindow(client.clientSerial);
         //    clientHistoryWindow.ShowDialog();
         //}
+
     }
 }
