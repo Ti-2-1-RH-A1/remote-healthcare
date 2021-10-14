@@ -16,8 +16,7 @@ namespace DoctorApplication
             doctorActions = new DoctorActions(this);
             Task start = doctorActions.Start();
             start.Wait();
-            InitializeComponent();
-            
+            InitializeComponent();      
         }
 
         public void addToList(Client client)
@@ -27,12 +26,10 @@ namespace DoctorApplication
                 ListView list = UserGrid;
                 list.Items.Add(client);
             }));
-
         }
 
         public void removefromList(Client client)
         {
-
             Dispatcher.BeginInvoke(new Action(delegate ()
             {
                 ListView list = UserGrid;
@@ -41,16 +38,19 @@ namespace DoctorApplication
             }));
         }
 
-
         private void BtnBroadcast_Click(object sender, RoutedEventArgs e)
         {
 
         }
 
+        private void btnHistory_Click(object sender, RoutedEventArgs e)
+        {
+            DoctorActions.HistoryWindow();
+        }
+
         private void BtnMessage_Click(object sender, RoutedEventArgs e)
         {
             doctorActions.SendToAll("test");
-
         }
     }
 }
