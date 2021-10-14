@@ -28,12 +28,7 @@ namespace RemoteHealthcare
 
         public void HandleData((DataTypes, float) data)
         {
-            // TODO [Martijn] Implementation
-
             HandelDataEvents?.Invoke(((DataTypes, float)) data);
-
-
-            // Rest of the handel code.
         }
 
         private IServiceProvider BuildServiceProvider()
