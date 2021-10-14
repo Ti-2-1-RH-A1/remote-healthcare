@@ -27,7 +27,7 @@ namespace RemoteHealthcare.Tests
             Assert.IsTrue(bikeManager.SimIsRunning());
 
             bikeManager.SimSetRunning(false);
-            Thread.Sleep(150);
+            Thread.Sleep(1000);
 
             Assert.IsFalse(bikeManager.SimIsRunning());
             Assert.IsFalse(bikeManager.GetSimThread().IsAlive);
@@ -65,6 +65,8 @@ namespace RemoteHealthcare.Tests
                     break;
             }
         }
+
+        public event Action<(DataTypes, float)> HandelDataEvents;
 
         private IServiceProvider BuildServiceProvider()
         {

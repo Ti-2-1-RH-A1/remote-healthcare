@@ -92,7 +92,7 @@ namespace RemoteHealthcare.Bike
 
         private void GenerateDistanceTravled(long elapsedMilis, long prevMilis, ref float totalDistanceTravled, float speed)
         {
-            totalDistanceTravled += (elapsedMilis - prevMilis) / 1000 * speed;
+            totalDistanceTravled += (elapsedMilis - prevMilis) / 1000f * speed;
         }
 
         private float GenerateRPM(float speed)
