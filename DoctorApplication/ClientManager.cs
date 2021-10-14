@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using ServerClient;
@@ -9,7 +10,7 @@ namespace DoctorApplication
 {
     public class ClientManager
     {
-        private readonly List<Client> clients = new();
+        private readonly Dictionary<string, Client> clients = new();
         private ServerClient.Client client;
 
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
@@ -21,11 +22,14 @@ namespace DoctorApplication
         {
             actions = new Dictionary<string, Callback>() {
                 {"GetClients", AddClientsFromString()},
-                {"NewClient", AddConnectedClient()}
+                {"NewClient", AddConnectedClient()},
+                {"RemoveClient", RemoveDisconnectedClient()},
             };
 
             this.MainWindow = mainWindow;
         }
+
+        
 
         public async Task Start()
         {
@@ -79,7 +83,7 @@ namespace DoctorApplication
                         clientSerial = split[0],
                         clientName = split[1]
                     };
-                    clients.Add(client);
+                    clients.Add(split[0], client);
                     MainWindow.addToList(client);
                 }
             };
@@ -97,8 +101,20 @@ namespace DoctorApplication
                     clientSerial = split[0],
                     clientName = split[1]
                 };
-                clients.Add(client);
+                clients.Add(split[0], client);
                 MainWindow.addToList(client);
+            };
+        }
+
+        private Callback RemoveDisconnectedClient()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                data.TryGetValue("Data", out string uuid);
+                clients.TryGetValue(uuid, out Client client);
+                MainWindow.removefromList(client);
+                clients.Remove(uuid);
+                
             };
         }
 
@@ -108,10 +124,7 @@ namespace DoctorApplication
         /// <param name="message"></param>
         public void SendMessageToAll(string message)
         {
-            List<string> clientsId = new List<string>();
-            clients.ForEach((s1) => clientsId.Add(s1.clientSerial));
-
-            SendToClients(clientsId, "Message", new Dictionary<string, string>()
+            SendToClients(clients.Keys.ToList(), "Message", new Dictionary<string, string>()
             {
                 { "Message", message }
             });

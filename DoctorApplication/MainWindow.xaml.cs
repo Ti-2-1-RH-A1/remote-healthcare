@@ -33,7 +33,7 @@ namespace DoctorApplication
             Dispatcher.BeginInvoke(new Action(delegate ()
             {
                 ListView list = UserGrid;
-                int index = list.Items.IndexOf(client.clientSerial);
+                int index = list.Items.IndexOf(client);
                 list.Items.RemoveAt(index);
             }));
         }

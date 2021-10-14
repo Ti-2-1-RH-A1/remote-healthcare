@@ -36,13 +36,13 @@ namespace ServerClient
             }
         }
 
-    public void Disconnect(ClientHandler client)
+        public void Disconnect(ClientHandler client)
         {
-            client.SendPacket(new Dictionary<string, string>(){
-                { "Method", "RemoveClient" },
-            }, new Dictionary<string, string>(){
-                { "Data", client.UUID},
-            });
+            SendToClients(ClientType.DOCTOR,
+                "RemoveClient",
+                new Dictionary<string, string>(){
+                    { "Data", client.UUID},
+                });
             if (client.UUID != null && clients.ContainsKey(client.UUID))
             {
                 clients.Remove(client.UUID);
