@@ -6,8 +6,9 @@ using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace ServerClient
+namespace NetProtocol
 {
     public class DataReceivedArgs : EventArgs
     {
@@ -31,11 +32,12 @@ namespace ServerClient
         public bool loggedIn;
         private readonly bool useSSL;
         private string name;
+        public string UUID;
 
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
         public event DataReceivedHandler DataReceived;
 
-        public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
+        public delegate void Callback(Dictionary<string, string> packetData, Dictionary<string, string> headerData);
         public Dictionary<int, Callback> serialActions;
 
         public Client(string host = "localhost", string authkey = "none", bool useSSL = true, string name = "No Name")
@@ -67,7 +69,7 @@ namespace ServerClient
             {
                 if (useSSL)
                 {
-                    SslStream sslStream = new(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
+                    SslStream sslStream = new SslStream(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
 
                     // Try to authenticate as Client
                     sslStream.AuthenticateAsClient("localhost");
@@ -104,18 +106,29 @@ namespace ServerClient
                                 { "Auth", authKey }
                 }, new Dictionary<string, string>()
                     {
-                        {"id", id},
-                        {"name", name},
+                        { "id", id },
+                        { "name", name },
                     });
+                UUID = id;
             }
             else
             {
                 SendPacket(new Dictionary<string, string>() {
                     { "Method", "Login" },
-                    { "Auth", authKey }
+                    { "Auth", authKey },
                 }, new Dictionary<string, string>()
                 {
-                    {"name", name}
+                    { "name", name },
+                }, (Dictionary<string, string> header, Dictionary<string, string> data) =>
+                {
+                    if (data.TryGetValue("id", out string id))
+                    {
+                        UUID = id;
+                    }
+                    else
+                    {
+                        loggedIn = false;
+                    }
                 });
             }
         }
@@ -147,11 +160,39 @@ namespace ServerClient
             Write($"{Protocol.StringifyHeaders(headers)}{Protocol.StringifyData(data)}");
         }
 
+        /// <summary>
+        /// This method sends a packet to the server and returns the result headers and data.
+        /// </summary>
+        /// <param name="headers">Headers to send</param>
+        /// <param name="data">Data to send</param>
+        /// <returns>Result headers and data</returns>
+        public async Task<(Dictionary<string, string> headers, Dictionary<string, string> data)>
+            SendPacketAsync(Dictionary<string, string> headers, Dictionary<string, string> data) =>
+            await Task.Run(() =>
+            {
+                var resolve = new TaskCompletionSource<(Dictionary<string, string>, Dictionary<string, string>)>();
+
+                // Send packet and resolve on completed.
+                SendPacket(headers, data, (resHeader, resData) => resolve.SetResult((resHeader, resData)));
+
+                // return resolved result.
+                return resolve.Task;
+            });
+
         private void Write(string data)
         {
             byte[] dataAsBytes = Encoding.ASCII.GetBytes(data + "\r\n\r\n\r\n");
             stream.Write(dataAsBytes, 0, dataAsBytes.Length);
             stream.Flush();
+        }
+
+        public void Disconnect()
+        {
+            Console.WriteLine("[CLIENT] Sending disconnect packet");
+            SendPacket(new Dictionary<string, string>() {
+                { "Method", "Disconnect" },
+            }, new Dictionary<string, string>());
+            Console.WriteLine("[CLIENT] Send disconnect packet");
         }
 
         private void HandleData(string packetData)
@@ -160,14 +201,10 @@ namespace ServerClient
             data.TryGetValue("message", out string messageValue);
             if (headers.TryGetValue("Method", out string methodValue))
             {
-                if (!data.TryGetValue("Result", out string resultValue))
-                {
-                    Console.WriteLine("Response from server did not contain result. Skipping packet!");
-                    return;
-                }
-
+                
                 if (methodValue == "Login")
                 {
+                    data.TryGetValue("Result", out string resultValue);
                     if (resultValue == "Error")
                     {
                         Console.WriteLine("Received error packet: {0}", messageValue);
@@ -198,7 +235,7 @@ namespace ServerClient
                         {
                             if (serialActions.TryGetValue(serialInt, out Callback action))
                             {
-                                action(headers, data);
+                                action(data, headers);
                                 serialActions.Remove(serialInt);
                             }
                         }
@@ -211,6 +248,5 @@ namespace ServerClient
                 Console.WriteLine("Geen method gevonden!");
             }
         }
-
     }
 }
