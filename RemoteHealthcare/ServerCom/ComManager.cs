@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RemoteHealthcare.Bike;
 using System;
-using System.Threading.Tasks;
 
 namespace RemoteHealthcare.ServerCom
 {
