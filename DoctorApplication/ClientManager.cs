@@ -153,11 +153,10 @@ namespace DoctorApplication
             }
 
             client.SendPacket(new Dictionary<string, string>()
-                {
-                    { "Method", "SendToClients" },
-                    { "Action", action }
-                }, data);
-
+            {
+                { "Method", "SendToClients" },
+                { "Action", action }
+            }, data);
         }
     }
 }
