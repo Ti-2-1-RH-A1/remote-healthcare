@@ -36,6 +36,11 @@ namespace ServerClient
             }
         }
 
+
+        /// <summary>
+        /// Sends the disconnect message to all doctors
+        /// </summary>
+        /// <param name="client"></param>
         public void Disconnect(ClientHandler client)
         {
             SendToClients(ClientType.DOCTOR,
@@ -97,7 +102,7 @@ namespace ServerClient
         }
         
         /// <summary>
-        /// 
+        /// Returns a list of clients specified to the enum
         /// </summary>
         /// <param name="clientType"></param>
         /// <returns>List with client UUID's</returns>

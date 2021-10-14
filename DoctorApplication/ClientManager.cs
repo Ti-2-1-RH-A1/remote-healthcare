@@ -50,7 +50,11 @@ namespace DoctorApplication
         }
 
         
-
+        /// <summary>
+        /// Subscription for messages from the server
+        /// </summary>
+        /// <param name="Client"></param>
+        /// <param name="e">DataReceivedArgs</param>
         private void HandleData(object Client, DataReceivedArgs e)
         {
             e.headers.TryGetValue("Method", out string item);
@@ -86,12 +90,16 @@ namespace DoctorApplication
                         clientName = split[1]
                     };
                     clients.Add(split[0], client);
-                    MainWindow.addToList(client);
+                    MainWindow.AddToList(client);
                 }
             };
             
         }
 
+        /// <summary>
+        /// Handles the callback when a new client connects to the server
+        /// </summary>
+        /// <returns></returns>
         private Callback AddConnectedClient()
         {
             return delegate(Dictionary<string, string> header, Dictionary<string, string> data)
@@ -104,17 +112,20 @@ namespace DoctorApplication
                     clientName = split[1]
                 };
                 clients.Add(split[0], client);
-                MainWindow.addToList(client);
+                MainWindow.AddToList(client);
             };
         }
 
+        /// <summary>
+        /// Handles the disconnect callback
+        /// </summary>
         private Callback RemoveDisconnectedClient()
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
                 data.TryGetValue("Data", out string uuid);
                 clients.TryGetValue(uuid, out Client client);
-                MainWindow.removefromList(client);
+                MainWindow.RemovefromList(client);
                 clients.Remove(uuid);
                 
             };
