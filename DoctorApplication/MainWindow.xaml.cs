@@ -19,7 +19,12 @@ namespace DoctorApplication
             InitializeComponent();      
         }
 
-        public void addToList(Client client)
+
+        /// <summary>
+        /// Adds a client to the listview in de mainwindow
+        /// </summary>
+        /// <param name="client"></param>
+        public void AddToList(Client client)
         {
             Dispatcher.BeginInvoke(new Action(delegate ()
             {
@@ -28,12 +33,16 @@ namespace DoctorApplication
             }));
         }
 
-        public void removefromList(Client client)
+        /// <summary>
+        /// Removes a client from the listview in de mainwindow
+        /// </summary>
+        /// <param name="client"></param>
+        public void RemovefromList(Client client)
         {
             Dispatcher.BeginInvoke(new Action(delegate ()
             {
                 ListView list = UserGrid;
-                int index = list.Items.IndexOf(client.clientSerial);
+                int index = list.Items.IndexOf(client);
                 list.Items.RemoveAt(index);
             }));
         }

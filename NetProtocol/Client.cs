@@ -186,6 +186,15 @@ namespace NetProtocol
             stream.Flush();
         }
 
+        public void Disconnect()
+        {
+            Console.WriteLine("[CLIENT] Sending disconnect packet");
+            SendPacket(new Dictionary<string, string>() {
+                { "Method", "Disconnect" },
+            }, new Dictionary<string, string>());
+            Console.WriteLine("[CLIENT] Send disconnect packet");
+        }
+
         private void HandleData(string packetData)
         {
             (Dictionary<string, string> headers, Dictionary<string, string> data) = Protocol.ParsePacket(packetData);
