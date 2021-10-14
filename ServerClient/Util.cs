@@ -13,7 +13,7 @@ namespace ServerClient
             {
                 // stringBuilder.Append(client.somethingelse);
                 // stringBuilder.Append("|");
-                stringBuilder.Append(client.authKey);
+                stringBuilder.Append(client.UUID+"|"+client.Name);
                 stringBuilder.Append(";");
             }
 

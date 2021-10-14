@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ServerClient
 {
@@ -8,30 +9,66 @@ namespace ServerClient
     {
         private readonly Dictionary<string, ClientHandler> clients;
 
+        public enum ClientType
+        {
+            PATIENT,
+            DOCTOR,
+            ALL
+        }
+
         public ClientsManager()
         {
             clients = new Dictionary<string, ClientHandler>();
         }
 
-        public void Add(ClientHandler clientHandler) => clients.Add(clientHandler.authKey, clientHandler);
-
-        public void Disconnect(ClientHandler client)
+        public void Add(ClientHandler clientHandler)
         {
-            if (client.authKey != null && clients.ContainsKey(client.authKey))
+        
+            clients.Add(clientHandler.UUID, clientHandler);
+            if (!clientHandler.UUID.Contains("DOCTOR"))
             {
-                clients.Remove(client.authKey);
+                Console.WriteLine("No doctor client: "+clientHandler.UUID);
+                SendToClients(ClientType.DOCTOR,
+                    "NewClient",
+                    new Dictionary<string, string>(){
+                    { "Data", Util.StringifyClients(new List<ClientHandler>(){clientHandler})},
+                }); 
+            }
+        }
+
+    public void Disconnect(ClientHandler client)
+        {
+            client.SendPacket(new Dictionary<string, string>(){
+                { "Method", "RemoveClient" },
+            }, new Dictionary<string, string>(){
+                { "Data", client.UUID},
+            });
+            if (client.UUID != null && clients.ContainsKey(client.UUID))
+            {
+                clients.Remove(client.UUID);
             }
             else
             {
                 Console.WriteLine(client.ToString() + " not found");
             }
-
+            
             Console.WriteLine("Client disconnected");
         }
 
+
+        /// <summary>
+        /// Gets all logged in patient clients
+        /// </summary>
+        /// <returns>List<ClientHandler></returns>
         public List<ClientHandler> GetClients()
         {
-            return new List<ClientHandler>(clients.Values);
+            Console.WriteLine(clients);
+            Dictionary<string, ClientHandler> dic = clients
+                .Where(p => !p.Key.Contains("DOCTOR"))
+                .ToDictionary(p => p.Key, p => p.Value);
+            Console.WriteLine(dic);
+
+            return new List<ClientHandler>(dic.Values);
         }
         /// <summary>
         /// send a header and data to a list of clients
@@ -41,9 +78,47 @@ namespace ServerClient
         public void SendToClients(Dictionary<string, string> header, Dictionary<string, string> data)
         {
             string json = data["Clients"];
-            List<string> clientAuths;
-            clientAuths = JsonConvert.DeserializeObject<List<string>>(json);
-            SendToClients(clientAuths, header["Action"], data);
+            List<string> clientUUIDs;
+            clientUUIDs = JsonConvert.DeserializeObject<List<string>>(json);
+            SendToUUID(clientUUIDs, header["Action"], data);
+        }
+
+        /// <summary>
+        /// Send message to clients specified
+        /// </summary>
+        /// <param name="clientType"></param>
+        /// <param name="action"></param>
+        /// <param name="data"></param>
+        public void SendToClients(ClientType clientType, string action, Dictionary<string, string> data)
+        {
+            List<string> clientUUIDs;
+            clientUUIDs = GetClientUUID(clientType);
+            SendToUUID(clientUUIDs, action, data);
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="clientType"></param>
+        /// <returns>List with client UUID's</returns>
+        private List<string> GetClientUUID(ClientType clientType)
+        {
+            switch (clientType)
+            {
+                case ClientType.DOCTOR:
+                    return clients.Keys
+                        .Where(p => p.Contains("DOCTOR"))
+                        .ToList();
+                case ClientType.PATIENT:
+                    return clients.Keys
+                        .Where(p => !p.Contains("DOCTOR"))
+                        .ToList();
+                case ClientType.ALL: 
+                default:
+                    return clients.Keys
+                        .ToList();
+
+            }
         }
 
         /// <summary>
@@ -52,11 +127,11 @@ namespace ServerClient
         /// <param name="authKeys"></param>
         /// <param name="action"></param>
         /// <param name="dict"></param>
-        private void SendToClients(List<string> authKeys, string action, Dictionary<string, string> dict)
+        private void SendToUUID(List<string> uuidList, string action, Dictionary<string, string> dict)
         {
-            foreach (string authKey in authKeys)
+            foreach (string uuid in uuidList)
             {
-                ClientHandler clientHandler = clients[authKey];
+                ClientHandler clientHandler = clients[uuid];
                 clientHandler.SendPacket(new Dictionary<string, string>()
                 {
                     {"Method", action}
@@ -64,8 +139,5 @@ namespace ServerClient
 
             }
         }
-
-
-
     }
 }
