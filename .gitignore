@@ -350,3 +350,4 @@ MigrationBackup/
 .ionide/
 ServerClient/Properties/launchSettings.json
 /ServerClient/clients/storage/*.json
+ServerClient/clients/key.txt

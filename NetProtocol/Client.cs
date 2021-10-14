@@ -8,7 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ServerClient
+namespace NetProtocol
 {
     public class DataReceivedArgs : EventArgs
     {
@@ -68,7 +68,7 @@ namespace ServerClient
             {
                 if (useSSL)
                 {
-                    SslStream sslStream = new(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
+                    SslStream sslStream = new SslStream(client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
 
                     // Try to authenticate as Client
                     sslStream.AuthenticateAsClient("localhost");
@@ -105,18 +105,18 @@ namespace ServerClient
                                 { "Auth", authKey }
                 }, new Dictionary<string, string>()
                     {
-                        {"id", id},
-                        {"name", name},
+                        { "id", id },
+                        { "name", name },
                     });
             }
             else
             {
                 SendPacket(new Dictionary<string, string>() {
                     { "Method", "Login" },
-                    { "Auth", authKey }
+                    { "Auth", authKey },
                 }, new Dictionary<string, string>()
                 {
-                    {"name", name}
+                    { "name", name },
                 });
             }
         }
@@ -158,7 +158,7 @@ namespace ServerClient
             SendPacketAsync(Dictionary<string, string> headers, Dictionary<string, string> data) =>
             await Task.Run(() =>
             {
-                TaskCompletionSource<(Dictionary<string, string>, Dictionary<string, string>)> resolve = new();
+                var resolve = new TaskCompletionSource<(Dictionary<string, string>, Dictionary<string, string>)>();
 
                 // Send packet and resolve on completed.
                 SendPacket(headers, data, (resHeader, resData) => resolve.SetResult((resHeader, resData)));
@@ -231,6 +231,5 @@ namespace ServerClient
                 Console.WriteLine("Geen method gevonden!");
             }
         }
-
     }
 }

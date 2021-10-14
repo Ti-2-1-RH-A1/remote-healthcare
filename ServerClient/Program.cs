@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using NetProtocol;
 
 namespace ServerClient
 {
@@ -9,7 +9,7 @@ namespace ServerClient
         public static async Task Main(string[] args)
         {
             string certificate = @"Server.pfx";
-            new Server(certificate, AuthHandler.Init(), true);
+            new Server(certificate, AuthHandler.Init(), false);
 
             //var client = new Client("localhost", "Fiets", false);
 

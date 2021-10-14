@@ -1,4 +1,5 @@
-﻿using ServerClient.Data;
+﻿using NetProtocol;
+using NetProtocol.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -123,7 +124,7 @@ namespace ServerClient
             {
                 SendPacket(header, new Dictionary<string, string>(){
                     { "Result", "Ok" },
-                    { "Data", Util.StringifyClients(manager.GetClients())},
+                    { "Data", Util.StringifyClients(manager.GetClients()) },
                 });
             };
         }
@@ -185,7 +186,7 @@ namespace ServerClient
                         {
                             { "Result", "ok" },
                             { "message", "Patient logged in." },
-                            { "id", myuuid.ToString()},
+                            { "id", myuuid.ToString() },
                         });
                         id = myuuid.ToString();
                     }

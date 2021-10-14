@@ -9,7 +9,7 @@ namespace DoctorApplication
     public class ClientManager
     {
         private readonly List<Client> clients = new();
-        private ServerClient.Client client;
+        private NetProtocol.Client client;
 
         public ClientManager()
         {
@@ -17,7 +17,7 @@ namespace DoctorApplication
 
         public async Task Start()
         {
-            client = new ServerClient.Client("localhost", "EchteDokter", true);
+            client = new NetProtocol.Client("localhost", "EchteDokter", true);
             while (!client.loggedIn)
             {
                 Thread.Sleep(10);
@@ -25,7 +25,7 @@ namespace DoctorApplication
 
             client.SendPacket(new Dictionary<string, string>()
             {
-                { "Method", "GetClients" }
+                { "Method", "GetClients" },
             }, new Dictionary<string, string>(), (header, data) =>
             {
                 Console.WriteLine(header);
@@ -65,7 +65,7 @@ namespace DoctorApplication
 
             SendToClients(clientsId, "Message", new Dictionary<string, string>()
             {
-                { "Message", message }
+                { "Message", message },
             });
         }
 
@@ -87,14 +87,14 @@ namespace DoctorApplication
             {
                 data = new Dictionary<string, string>()
                 {
-                    { "Clients", clientsString }
+                    { "Clients", clientsString },
                 };
             }
 
             client.SendPacket(new Dictionary<string, string>()
             {
                 { "Method", "SendToClients" },
-                { "Action", action }
+                { "Action", action },
             }, data);
         }
     }
