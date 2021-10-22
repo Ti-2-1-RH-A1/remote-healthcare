@@ -9,6 +9,7 @@
     <Import_RootNamespace>NetProtocol</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Auth\AuthKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Client.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Protocol.cs" />
   </ItemGroup>
