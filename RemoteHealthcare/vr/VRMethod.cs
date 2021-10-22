@@ -5,9 +5,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Threading;
-using VirtualReality;
 
-namespace RemoteHealthcare
+namespace RemoteHealthcare.VR
 {
     internal class VRMethod
     {
@@ -106,7 +105,7 @@ namespace RemoteHealthcare
             connection.SendViaTunnel(message, callbackResponse => response = callbackResponse);
 
 
-            Console.WriteLine("Delete node response: " + response);
+            //Console.WriteLine("Delete node response: " + response);
 
             return IsStatusOk(ref connection, response);
         }
@@ -117,10 +116,10 @@ namespace RemoteHealthcare
         /// <param name="connection"> connection to send data to and receive responses from</param>
         public static dynamic CreateTerrain(ref Connection connection)
         {
+            Console.WriteLine("Enter a path to a heightmap");
 
-            Console.WriteLine("Enter a path to an heightmap");
-
-            string entryPath = @"" + Console.ReadLine();
+            string entryPath = Directory.GetCurrentDirectory() + "/heightmap.png";
+            Console.WriteLine(entryPath);
             if (!File.Exists(entryPath))
             {
                 Console.WriteLine("No file found");
@@ -158,7 +157,7 @@ namespace RemoteHealthcare
                 Thread.Sleep(10);
             }
 
-            Console.WriteLine(tunnelCreationResponse);
+            //Console.WriteLine(tunnelCreationResponse);
 
             dynamic responseDeserializeObject = JsonConvert.DeserializeObject(tunnelCreationResponse);
             string response = responseDeserializeObject.ToString();
@@ -219,7 +218,7 @@ namespace RemoteHealthcare
 
             dynamic terrainRespond = JsonConvert.DeserializeObject(responseTerrain);
 
-            Console.WriteLine(tunnelAddTerrainNode);
+            //Console.WriteLine(tunnelAddTerrainNode);
 
             return terrainRespond.data.uuid;
         }
@@ -244,16 +243,8 @@ namespace RemoteHealthcare
             tunnelSetTerrain.Add("data", dataAddNodeJson);
 
             // Send the message via the connection
-            string responseTerrainTexture = "";
-            connection.SendViaTunnel(tunnelSetTerrain, (callbackResponse => responseTerrainTexture = callbackResponse));
-            while (responseTerrainTexture.Length == 0)
-            {
-                Thread.Sleep(10);
-            }
-
-            dynamic terrainRespond = JsonConvert.DeserializeObject(responseTerrainTexture);
-
-            Console.WriteLine(tunnelSetTerrain);
+            connection.SendViaTunnel(tunnelSetTerrain);
+            
         }
 
         /// <summary>GetScene does <c>recieves a scene from a a connected client</c> using a network stream decodes using ASCII to a string</summary>
@@ -383,7 +374,7 @@ namespace RemoteHealthcare
 
             dynamic routeRespond = JsonConvert.DeserializeObject(response);
 
-            Console.WriteLine(jsonModelBike);
+            //Console.WriteLine(jsonModelBike);
 
             return routeRespond.data.uuid;
         }
@@ -448,7 +439,7 @@ namespace RemoteHealthcare
             JObject dataObjectHeader = new JObject { { "id", JsonID.ROUTE_ADD } };
             dataObjectHeader.Add("data", nodesObjectHeader);
 
-            Console.WriteLine(dataObjectHeader);
+            //Console.WriteLine(dataObjectHeader);
 
             string response = "";
             connection.SendViaTunnel(dataObjectHeader, (callbackResponse => response = callbackResponse));
@@ -460,7 +451,7 @@ namespace RemoteHealthcare
             dynamic routeRespond = JsonConvert.DeserializeObject(response);
 
 
-            Console.WriteLine(response);
+            //Console.WriteLine(response);
 
             return routeRespond.data.uuid;
         }
@@ -565,15 +556,7 @@ namespace RemoteHealthcare
             dataJObject.Add("font", font);
 
             message.Add("data", dataJObject);
-
-            string response = "";
-            connection.SendViaTunnel(message, (callbackResponse => response = callbackResponse));
-            while (response.Length == 0)
-            {
-                Thread.Sleep(10);
-            }
-
-            Console.WriteLine(response);
+            connection.SendViaTunnel(message);
         }
 
         public static void CreateMessagePanel(ref Connection connection, string panelName = "messagePanel")
@@ -602,14 +585,8 @@ namespace RemoteHealthcare
 
             clearColorObject.Add("data", clearColorData);
 
-            string response = "";
-            connection.SendViaTunnel(clearColorObject, (callbackResponse => response = callbackResponse));
-            while (response.Length == 0)
-            {
-                Thread.Sleep(10);
-            }
-
-            Console.WriteLine(response);
+            connection.SendViaTunnel(clearColorObject);
+           
         }
 
         /// <summary>
@@ -737,10 +714,32 @@ namespace RemoteHealthcare
             connection.SendViaTunnel(message);
         }
 
+        /// <summary>
+        /// ChangeSpeed method changes the speed of the bike in the VR Environment.
+        /// </summary>
+        /// <param name="bikeId">The id of the bike that needs its speed changed</param>
+        /// <param name="speed">The speed measured in m/s</param>
+        public static void ChangeSpeed(ref Connection connection, string bikeId, float speed)
+        {
+            JObject dataSpeed = new JObject();
+            dataSpeed.Add("node", bikeId);
+            dataSpeed.Add("speed", speed);
 
+            JObject speedObject = new JObject { { "id", JsonID.ROUTE_FOLLOW_SPEED } };
+            speedObject.Add("data", dataSpeed);
+
+            connection.SendViaTunnel(speedObject);
+            
+        }
+
+        private static string bikeId = null;
         public static string GetBikeID(ref Connection connection)
         {
-            return GetIdFromNodeName(ref connection, "Bike");
+            if (bikeId == null)
+            {
+                bikeId = GetIdFromNodeName(ref connection, "Bike");
+            }
+            return bikeId;
         }
 
         /// <summary>
@@ -779,16 +778,10 @@ namespace RemoteHealthcare
 
             JObject node = CreateNode(name, components, parent);
 
-            Console.WriteLine("\n\n" + node.ToString() + "\n\n");
+            //Console.WriteLine("\n\n" + node.ToString() + "\n\n");
 
-            string response = "";
-            connection.SendViaTunnel(node, (callbackResponse => response = callbackResponse));
-            while (response.Length == 0)
-            {
-                Thread.Sleep(10);
-            }
-
-            Console.WriteLine(response);
+            connection.SendViaTunnel(node);
+            
         }
 
 
@@ -835,14 +828,14 @@ namespace RemoteHealthcare
                 Thread.Sleep(10);
             }
 
-            Console.WriteLine("this one: \n" + response);
+            //Console.WriteLine("this one: \n" + response);
 
             JObject responseJObject = JObject.Parse(response);
             JObject responseData = (JObject)(responseJObject.GetValue("data")?[0]);
             if (responseData != null)
             {
                 string s = responseData.GetValue("uuid")?.ToString();
-                Console.WriteLine(s);
+                //Console.WriteLine(s);
                 return s;
             }
 
@@ -872,11 +865,11 @@ namespace RemoteHealthcare
             jsonData.Add("files", jsonFiles);
             sendJson.Add("data", jsonData);
 
-            Console.WriteLine(sendJson);
+            //Console.WriteLine(sendJson);
             string skyboxUpdateResponse = "";
             connection.SendViaTunnel(sendJson, response => skyboxUpdateResponse = response);
 
-            Console.WriteLine(skyboxUpdateResponse);
+            //Console.WriteLine(skyboxUpdateResponse);
         }
 
         /// <summary>
@@ -904,12 +897,14 @@ namespace RemoteHealthcare
             jsonData.Add("files", jsonFiles);
             sendJson.Add("data", jsonData);
 
-            Console.WriteLine(sendJson);
+            //Console.WriteLine(sendJson);
 
             string skyboxUpdateRespone = "";
             connection.SendViaTunnel(sendJson, response => skyboxUpdateRespone = response);
 
-            Console.WriteLine(skyboxUpdateRespone);
+            //
+            //
+            //Console.WriteLine(skyboxUpdateRespone);
 
             // set the time
             JObject tunnelSetTimeJson = new JObject { { "id", JsonID.SCENE_SKYBOX_SETTIME } };
@@ -945,16 +940,7 @@ namespace RemoteHealthcare
             JObject cameraObject = new JObject { { "id", JsonID.SCENE_NODE_UPDATE } };
             cameraObject.Add("data", dataCamera);
 
-            string response = "";
-            connection.SendViaTunnel(cameraObject, (callbackResponse => response = callbackResponse));
-            while (response.Length == 0)
-            {
-                Thread.Sleep(10);
-            }
-
-            dynamic routeRespond = JsonConvert.DeserializeObject(response);
-
-            Console.WriteLine(routeRespond);
+            connection.SendViaTunnel(cameraObject);
         }
     }
 }

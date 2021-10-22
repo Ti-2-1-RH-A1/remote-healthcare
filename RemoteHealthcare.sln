@@ -5,17 +5,23 @@ VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RemoteHealthcare", "RemoteHealthcare\RemoteHealthcare.csproj", "{FF44DB88-4E80-4CF5-9100-2919DC985216}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FietsSimulatorTest", "FietsSimulatorTest\FietsSimulatorTest.csproj", "{548C4995-F317-4989-B8F9-BC0F7483A60F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RemoteHealthcareTest", "FietsSimulatorTest\RemoteHealthcareTest.csproj", "{548C4995-F317-4989-B8F9-BC0F7483A60F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerClient", "ServerClient\ServerClient.csproj", "{14405CD2-2FBC-4A60-A755-629AF7277547}"
 EndProject
-
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoctorApplication", "DoctorApplication\DoctorApplication.csproj", "{2352A8FD-DC96-496C-A4C5-4B80DCA21FD1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DoctorApplication", "DoctorApplication\DoctorApplication.csproj", "{2352A8FD-DC96-496C-A4C5-4B80DCA21FD1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerClientTest", "ServerClientTest\ServerClientTest.csproj", "{C19B120B-0399-49BF-8A8E-244CCCC1C5EF}"
-
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerClientTest", "ServerClientTest\ServerClientTest.csproj", "{C19B120B-0399-49BF-8A8E-244CCCC1C5EF}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "NetProtocol", "NetProtocol\NetProtocol.shproj", "{494B3D05-9481-4786-A503-CFCCE2A6E9D2}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		NetProtocol\NetProtocol.projitems*{14405cd2-2fbc-4a60-a755-629af7277547}*SharedItemsImports = 5
+		NetProtocol\NetProtocol.projitems*{2352a8fd-dc96-496c-a4c5-4b80dca21fd1}*SharedItemsImports = 5
+		NetProtocol\NetProtocol.projitems*{494b3d05-9481-4786-a503-cfcce2a6e9d2}*SharedItemsImports = 13
+		NetProtocol\NetProtocol.projitems*{ff44db88-4e80-4cf5-9100-2919dc985216}*SharedItemsImports = 5
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -33,17 +39,14 @@ Global
 		{14405CD2-2FBC-4A60-A755-629AF7277547}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14405CD2-2FBC-4A60-A755-629AF7277547}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{14405CD2-2FBC-4A60-A755-629AF7277547}.Release|Any CPU.Build.0 = Release|Any CPU
-
 		{2352A8FD-DC96-496C-A4C5-4B80DCA21FD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2352A8FD-DC96-496C-A4C5-4B80DCA21FD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2352A8FD-DC96-496C-A4C5-4B80DCA21FD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2352A8FD-DC96-496C-A4C5-4B80DCA21FD1}.Release|Any CPU.Build.0 = Release|Any CPU
-
 		{C19B120B-0399-49BF-8A8E-244CCCC1C5EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C19B120B-0399-49BF-8A8E-244CCCC1C5EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C19B120B-0399-49BF-8A8E-244CCCC1C5EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C19B120B-0399-49BF-8A8E-244CCCC1C5EF}.Release|Any CPU.Build.0 = Release|Any CPU
-
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

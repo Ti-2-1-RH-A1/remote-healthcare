@@ -1,20 +1,22 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RemoteHealthcare;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using Microsoft.Extensions.DependencyInjection;
+using RemoteHealthcare.Bike;
 
-namespace VirtualReality
+namespace RemoteHealthcare.VR
 {
-    public class VrManager
+    public class VRManager : IVRManager
     {
-        //private NetworkStream networkStream;
         private Dictionary<string, string> userSessions;
         private Connection connection;
         private Dictionary<string, string> nodes;
+        private readonly IServiceProvider services;
+        private bool isReady = false;
 
-        public VrManager()
+        public VRManager(IServiceProvider serviceProvider)
         {
             // Initialise and connect to the TcpClient
             // On server: 145.48.6.10 and port: 6666
@@ -22,6 +24,8 @@ namespace VirtualReality
             client.Connect("145.48.6.10", 6666);
 
             // Request the session list from the server
+            this.services = serviceProvider;
+            services.GetService<IDeviceManager>().HandelDataEvents += HandleData;
 
             connection = new Connection(client.GetStream(), this);
 
@@ -43,6 +47,14 @@ namespace VirtualReality
             nodes = VRMethod.GetScene(ref connection);
         }
 
+        public void HandleData((DataTypes, float) data)
+        {
+            if (data.Item1 == DataTypes.BIKE_SPEED)
+            {
+                UpdateBikeSpeed(data.Item2);
+            }
+
+        }
 
         /// <summary>Start does <c>The beginning of the VRManager</c> This is the beginning of the program, als 
         /// sometimes called the start of a programs life</summary>
@@ -62,6 +74,7 @@ namespace VirtualReality
             JArray position = new JArray { 20, 0, 20 };
             JArray rotation = new JArray { 0, 0, 0 };
             string bikename1 = "Bike";
+            
             string bikeUUID = VRMethod.AddModelBike(ref connection, bikename1, position, rotation);
 
             VRMethod.CreateBikePanel(ref connection);
@@ -80,7 +93,7 @@ namespace VirtualReality
             UpdateSceneList();
 
             Random rnd = new Random();
-            for (int i = 0; i < 200; i++)
+            for (int i = 0; i < 20; i++)
             {
                 JArray positionTree = new JArray { rnd.Next(75, 130), 1, rnd.Next(90, 140) };
                 JArray rotationTree = new JArray { 0, rnd.Next(1, 360), 0 };
@@ -153,6 +166,7 @@ namespace VirtualReality
             VRMethod.SetCamera(ref connection, bikeUUID);
 
             VRMethod.FollowRoute(ref connection, routeUUID, bikeUUID);
+            isReady = true;
         }
 
         /// <summary>
@@ -191,6 +205,14 @@ namespace VirtualReality
             }
         }
 
+        public void UpdateBikeSpeed(float speed)
+        {
+            if (isReady)
+            {
+                string bikeId = VRMethod.GetBikeID(ref connection);
+                VRMethod.ChangeSpeed(ref connection, bikeId, speed);
+            }
+        }
 
         /// <summary>CreateTunnel does <c>Creating a network tunnel</c> returns <returns>A Boolean</returns> sends the correct json and then checks connection status based on that it returns a boolean</summary>
         ///
@@ -199,7 +221,6 @@ namespace VirtualReality
             Console.WriteLine("Creating a tunnel");
             // create a tunnel
             JObject tunnelCreateJson = new JObject { { "id", "tunnel/create" } };
-
 
             JObject dataJson = new JObject { { "session", userSessions[sessionId] } };
             // place to set the key 

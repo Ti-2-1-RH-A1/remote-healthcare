@@ -1,16 +1,18 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
-using ServerClient;
+using NetProtocol;
 
 namespace DoctorApplication
 {
     public class ClientManager
     {
-        private readonly List<Client> clients = new();
-        private ServerClient.Client client;
+        private readonly Dictionary<string, Client> clients = new();
+        private NetProtocol.Client client;
+
 
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
 
@@ -20,8 +22,9 @@ namespace DoctorApplication
         public ClientManager(MainWindow mainWindow)
         {
             actions = new Dictionary<string, Callback>() {
-                {"GetClients", AddClientsFromString()},
-                
+                { "GetClients", AddClientsFromString() },
+                { "NewClient", AddConnectedClient() },
+                { "RemoveClient", RemoveDisconnectedClient() },
             };
 
             this.MainWindow = mainWindow;
@@ -29,7 +32,8 @@ namespace DoctorApplication
 
         public async Task Start()
         {
-            client = new ServerClient.Client("localhost", "EchteDokter", false);
+            client = new NetProtocol.Client("localhost", "EchteDokter", false);
+
             while (!client.loggedIn)
             {
                 Thread.Sleep(10);
@@ -39,12 +43,16 @@ namespace DoctorApplication
 
             client.SendPacket(new Dictionary<string, string>()
             {
-                { "Method", "GetClients" }
+                { "Method", "GetClients" },
             }, new Dictionary<string, string>());
         }
 
         
-
+        /// <summary>
+        /// Subscription for messages from the server
+        /// </summary>
+        /// <param name="Client"></param>
+        /// <param name="e">DataReceivedArgs</param>
         private void HandleData(object Client, DataReceivedArgs e)
         {
             e.headers.TryGetValue("Method", out string item);
@@ -64,6 +72,10 @@ namespace DoctorApplication
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
+                if (data["Data"] == "Data")
+                {
+                    return;
+                }
                 string[] strings = data["Data"][0..^1].Split(";");
 
                 foreach (string clientString in strings)
@@ -75,11 +87,46 @@ namespace DoctorApplication
                         clientSerial = split[0],
                         clientName = split[1]
                     };
-                    clients.Add(client);
-                    MainWindow.addToList(client);
+                    clients.Add(split[0], client);
+                    MainWindow.AddToList(client);
                 }
             };
             
+        }
+
+        /// <summary>
+        /// Handles the callback when a new client connects to the server
+        /// </summary>
+        /// <returns></returns>
+        private Callback AddConnectedClient()
+        {
+            return delegate(Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                string[] split = data["Data"][0..^1].Split("|");
+
+                Client client = new()
+                {
+                    clientSerial = split[0],
+                    clientName = split[1]
+                };
+                clients.Add(split[0], client);
+                MainWindow.AddToList(client);
+            };
+        }
+
+        /// <summary>
+        /// Handles the disconnect callback
+        /// </summary>
+        private Callback RemoveDisconnectedClient()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                data.TryGetValue("Data", out string uuid);
+                clients.TryGetValue(uuid, out Client client);
+                MainWindow.RemovefromList(client);
+                clients.Remove(uuid);
+                
+            };
         }
 
         /// <summary>
@@ -88,12 +135,9 @@ namespace DoctorApplication
         /// <param name="message"></param>
         public void SendMessageToAll(string message)
         {
-            List<string> clientsId = new List<string>();
-            clients.ForEach((s1) => clientsId.Add(s1.clientSerial));
-
-            SendToClients(clientsId, "Message", new Dictionary<string, string>()
+            SendToClients(clients.Keys.ToList(), "Message", new Dictionary<string, string>()
             {
-                { "Message", message }
+                { "Message", message },
             });
         }
 
@@ -115,16 +159,15 @@ namespace DoctorApplication
             {
                 data = new Dictionary<string, string>()
                 {
-                    { "Clients", clientsString }
+                    { "Clients", clientsString },
                 };
             }
 
             client.SendPacket(new Dictionary<string, string>()
-                {
-                    { "Method", "SendToClients" },
-                    { "Action", action }
-                }, data);
-
+            {
+                { "Method", "SendToClients" },
+                { "Action", action },
+            }, data);
         }
     }
 }

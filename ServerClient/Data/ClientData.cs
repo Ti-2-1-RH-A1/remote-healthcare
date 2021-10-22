@@ -4,12 +4,10 @@
     {
         public string client_id { get; set; }
         public string client_name { get; set; }
-        public float speed;
-        public float time;
-        public int distance_traveled;
-        public int rpm;
-        public int accPower;
-        public int insPower;
-        public int heartrate;
+        public string speed { get; set; }
+        public string time { get; set; }
+        public string distance_traveled { get; set; }
+        public string rpm { get; set; }
+        public string heartrate { get; set; }
     }
 }

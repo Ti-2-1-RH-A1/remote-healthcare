@@ -3,8 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 
-namespace VirtualReality
+namespace RemoteHealthcare.VR
 {
     public class Connection
     {
@@ -17,7 +18,7 @@ namespace VirtualReality
 
         private static readonly Random random = new Random();
 
-        public Connection(NetworkStream networkStream, VrManager vrManager)
+        public Connection(NetworkStream networkStream, VRManager vrManager)
         {
             this.networkStream = networkStream;
             currentSessionID = "";
@@ -40,7 +41,6 @@ namespace VirtualReality
             {
                 networkStream.ReadTimeout = -1;
             }
-
 
 
             // read a small part of the packet and receive the packet length
@@ -89,6 +89,13 @@ namespace VirtualReality
             networkStream.Flush();
         }
 
+        private async Task waitForConnection()
+        {
+            while (currentSessionID.Length == 0)
+            {
+                await Task.Delay(10);
+            }
+        }
 
         /// <summary>SendViaTunnel does <c> a tcp data send via a tunnel</c> as long as you have made a connection first </summary>
         /// Returns a string with the response
@@ -97,31 +104,31 @@ namespace VirtualReality
             if (currentSessionID.Length == 0)
             {
                 Console.WriteLine("not connected");
+                waitForConnection().Wait();
             }
-            else
+
+            string randomIntAsString = random.Next(111111, 999999).ToString();
+            JObject tunnelJSon = new JObject();
+            tunnelJSon.Add("id", "tunnel/send");
+            JObject tunnelJObject = new JObject();
+            tunnelJObject.Add("dest", currentSessionID);
+
+            jObject.Add("serial", randomIntAsString);
+
+            if (callback != null)
             {
-                string randomIntAsString = random.Next(111111, 999999).ToString();
-                JObject tunnelJSon = new JObject();
-                tunnelJSon.Add("id", "tunnel/send");
-                JObject tunnelJObject = new JObject();
-                tunnelJObject.Add("dest", currentSessionID);
-
-                jObject.Add("serial", randomIntAsString);
-
-                if (callback != null)
-                {
-                    callbacks.Add(randomIntAsString, callback);
-                }
-
-                tunnelJObject.Add("data", jObject);
-                tunnelJSon.Add("data", tunnelJObject);
-                //Console.WriteLine(tunnelJSon.ToString());
-                SendToTcp(tunnelJSon.ToString());
+                callbacks.Add(randomIntAsString, callback);
             }
+
+            tunnelJObject.Add("data", jObject);
+            tunnelJSon.Add("data", tunnelJObject);
+            //Console.WriteLine(tunnelJSon.ToString());
+            SendToTcp(tunnelJSon.ToString());
         }
 
         public delegate void Callback(string response);
-        private readonly Dictionary<string, Callback> callbacks = new Dictionary<string, Callback>();
+
+        private Dictionary<string, Callback> callbacks = new Dictionary<string, Callback>();
 
         /// <summary>
         /// entry of the network thread
@@ -134,7 +141,7 @@ namespace VirtualReality
                 if (currentSessionID.Length > 1)
                 {
                     ReceiveFromTcp(out var receivedData, false);
-                    Console.WriteLine(receivedData);
+                    //Console.WriteLine(receivedData);
 
                     JObject tunnel = JObject.Parse(receivedData);
                     JObject idObject = (JObject)tunnel.GetValue("data");
@@ -143,7 +150,7 @@ namespace VirtualReality
                     {
                         JToken jToken = dataObject.GetValue("serial");
                         string serial = jToken.ToString();
-                        Console.WriteLine(serial);
+                        //Console.WriteLine(serial);
 
                         if (callbacks.ContainsKey(serial))
                         {
@@ -151,7 +158,6 @@ namespace VirtualReality
                             callbacks.Remove(serial);
                         }
                     }
-
                 }
             }
         }
