@@ -24,12 +24,24 @@ namespace RemoteHealthcare.ServerCom
 
         }
 
-        public void SendData(string name, float data)
+        public void SendRealtime(string name, float data)
         {
             client.SendPacket(new Dictionary<string, string>()
             {
+                { "Method", "PostRT" },
+                { "Id", client.UUID },
+            }, new Dictionary<string, string>() {
+                { name, data.ToString() },
+            });
+        }
+
+        public void SendPost(string name, float data)
+        {
+            SendRealtime(name, data);
+            client.SendPacket(new Dictionary<string, string>()
+            {
                 { "Method", "Post" },
-                { "Id", this.client.UUID },
+                { "Id", client.UUID },
             }, new Dictionary<string, string>() {
                 { name, data.ToString() },
             });

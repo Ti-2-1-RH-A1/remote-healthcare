@@ -25,6 +25,7 @@ namespace DoctorApplication
                 { "GetClients", AddClientsFromString() },
                 { "NewClient", AddConnectedClient() },
                 { "RemoveClient", RemoveDisconnectedClient() },
+                { "Realtime", ReceiveRealtime() },
             };
 
             this.MainWindow = mainWindow;
@@ -47,7 +48,6 @@ namespace DoctorApplication
             }, new Dictionary<string, string>());
         }
 
-        
         /// <summary>
         /// Subscription for messages from the server
         /// </summary>
@@ -62,6 +62,17 @@ namespace DoctorApplication
                 action(e.headers, e.data);
                 return;
             }
+        }
+
+        /// <summary>
+        /// receives realtime data from client
+        /// </summary>
+        private Callback ReceiveRealtime()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                Console.WriteLine(data.Values);
+            };
         }
 
         /// <summary>
@@ -91,7 +102,7 @@ namespace DoctorApplication
                     MainWindow.AddToList(client);
                 }
             };
-            
+
         }
 
         /// <summary>
@@ -100,7 +111,7 @@ namespace DoctorApplication
         /// <returns></returns>
         private Callback AddConnectedClient()
         {
-            return delegate(Dictionary<string, string> header, Dictionary<string, string> data)
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
                 string[] split = data["Data"][0..^1].Split("|");
 
@@ -125,7 +136,7 @@ namespace DoctorApplication
                 clients.TryGetValue(uuid, out Client client);
                 MainWindow.RemovefromList(client);
                 clients.Remove(uuid);
-                
+
             };
         }
 
