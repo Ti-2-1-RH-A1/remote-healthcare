@@ -27,11 +27,12 @@ namespace DoctorApplication
         public ClientHistoryWindow(String clientID)
         {
             InitializeComponent();
+            labelClientID.Content = clientID;
         }
 
         private void btnBack_Click(object sender, RoutedEventArgs e)
         {
-
+            Close();
         }
     }
 }
