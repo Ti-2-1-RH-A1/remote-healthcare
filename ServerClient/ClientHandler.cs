@@ -39,6 +39,7 @@ namespace ServerClient
                 { "SendToClients", SendToClients() },
                 { "Post", Post() },
                 { "Get", Get() },
+                { "PostRT", PostRT() }, // post realtime to doctor.
             };
             this.stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
@@ -82,10 +83,7 @@ namespace ServerClient
             };
         }
 
-        public override string ToString()
-        {
-            return this.UUID;
-        }
+        public override string ToString() => UUID;
 
         private Callback Post()
         {
@@ -112,6 +110,14 @@ namespace ServerClient
                     return;
                 }
                 SendError(header, "ID not found!");
+            };
+        }
+
+        private Callback PostRT()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                manager.SendToClients(ClientsManager.ClientType.DOCTOR, "Realtime", data);
             };
         }
 

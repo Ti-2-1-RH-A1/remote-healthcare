@@ -19,7 +19,7 @@ namespace RemoteHealthcare
 
         public void Start((IBikeManager.BikeType, string) bikeTypeAndId)
         {
-            services.GetService<ComManager>().Start();
+            services.GetService<IComManager>().Start();
             services.GetService<IBikeManager>().Start(bikeTypeAndId.Item1, bikeTypeAndId.Item2);
             services.GetService<IHRMManager>().Start();
             services.GetService<IVRManager>().Start();

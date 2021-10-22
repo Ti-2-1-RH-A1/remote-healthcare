@@ -26,19 +26,19 @@ namespace RemoteHealthcare.ServerCom
             switch (data.Item1)
             {
                 case DataTypes.BIKE_SPEED:
-                    netClient.SendData("speed", data.Item2);
+                    netClient.SendPost("speed", data.Item2);
                     break;
                 case DataTypes.BIKE_ELAPSED_TIME:
-                    netClient.SendData("time", data.Item2);
+                    netClient.SendPost("time", data.Item2);
                     break;
                 case DataTypes.BIKE_DISTANCE:
-                    netClient.SendData("distance_traveled", data.Item2);
+                    netClient.SendPost("distance_traveled", data.Item2);
                     break;
                 case DataTypes.BIKE_RPM:
-                    netClient.SendData("rpm", data.Item2);
+                    netClient.SendPost("rpm", data.Item2);
                     break;
                 case DataTypes.HRM_HEARTRATE:
-                    netClient.SendData("heartrate", data.Item2);
+                    netClient.SendPost("heartrate", data.Item2);
                     break;
             }
         }
