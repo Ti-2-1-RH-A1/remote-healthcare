@@ -36,6 +36,19 @@ namespace ServerClient.Data
             }
         }
 
+        public JObject LoadClientHistoryData(string clientID)
+        {
+            if (File.Exists(FilePath(clientID)))
+            {
+                return JObject.Parse(File.ReadAllText(FilePath(clientID)));
+                
+            }
+            else
+            {
+
+            }
+        }
+
         public void AddFile(string id, string name)
         {
             if (File.Exists(FilePath(id)))
