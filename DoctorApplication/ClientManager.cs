@@ -20,7 +20,7 @@ namespace DoctorApplication
         public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
         public Dictionary<string, Callback> actions;
         public MainWindow MainWindow;
-        DoctorActions doctorActions;
+        public DoctorActions doctorActions;
 
         public ClientManager(MainWindow mainWindow)
         {

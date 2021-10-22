@@ -33,7 +33,7 @@ namespace DoctorApplication
 
         public void OpenSelectClientWindow()
         {
-            selectClientHistory = new SelectClientHistory();
+            selectClientHistory = new SelectClientHistory(mainWindow);
             selectClientHistory.ShowDialog();
         }
 

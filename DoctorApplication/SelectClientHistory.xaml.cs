@@ -21,14 +21,10 @@ namespace DoctorApplication
     public partial class SelectClientHistory : Window
     {
         DoctorActions doctorActions;
-        public SelectClientHistory()
+        public SelectClientHistory(MainWindow main)
         {
+            doctorActions = new DoctorActions(main);
             InitializeComponent();
-            Client client = new Client();
-            client.clientAuthKey = "aweq1312";
-            client.clientName = "Naam van client";
-            client.clientSerial = "12are";
-            UserGrid.Items.Add(client);
 
         }
 
