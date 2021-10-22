@@ -16,7 +16,7 @@ namespace RemoteHealthcare.ServerCom
 
         public async Task Start()
         {
-            client = new Client("localhost", "Henk", false);
+            client = new Client("localhost", false, "Henk");
             while (!client.loggedIn)
             {
                 Thread.Sleep(10);

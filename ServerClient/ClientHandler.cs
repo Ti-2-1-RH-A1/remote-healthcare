@@ -28,8 +28,7 @@ namespace ServerClient
 
         public ClientHandler(TcpClient tcpClient, Stream stream, AuthHandler auth, ClientsManager manager)
         {
-            dataHandler = new DataHandler();
-            dataHandler.LoadAllData();
+            
             this.manager = manager;
             this.tcpClient = tcpClient;
             this.auth = auth;
