@@ -34,9 +34,12 @@ namespace DoctorApplication
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Trace.WriteLine("Select pressed");
-            Client client = (Client)UserGrid.SelectedItem;
-            DoctorActions.OpenHistoryWindow(client.clientSerial);
-            Close();
+            if(UserGrid.SelectedItems.Count > 0)
+            {
+                Client client = (Client)UserGrid.SelectedItem;
+                DoctorActions.OpenHistoryWindow(client.clientSerial);
+                Close();
+            }
         }
     }
 }
