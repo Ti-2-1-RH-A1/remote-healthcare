@@ -56,7 +56,7 @@ namespace DoctorApplication
         private void HandleData(object Client, DataReceivedArgs e)
         {
             e.headers.TryGetValue("Method", out string item);
-
+        
             if (actions.TryGetValue(item, out Callback action))
             {
                 action(e.headers, e.data);

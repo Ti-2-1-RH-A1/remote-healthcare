@@ -14,7 +14,7 @@ namespace RemoteHealthcare.VR
         private Connection connection;
         private Dictionary<string, string> nodes;
         private readonly IServiceProvider services;
-        private bool isReady = false;
+        public bool isReady = false;
 
         public VRManager(IServiceProvider serviceProvider)
         {
