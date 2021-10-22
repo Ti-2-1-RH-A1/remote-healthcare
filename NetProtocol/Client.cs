@@ -40,11 +40,12 @@ namespace NetProtocol
         public delegate void Callback(Dictionary<string, string> packetData, Dictionary<string, string> headerData);
         public Dictionary<int, Callback> serialActions;
 
-        public Client(string host = "localhost", bool useSSL = true, string name = "No Name")
+        public Client(string host = "localhost", bool useSSL = true, string name = "No Name", string authkey = "")
         {
             this.useSSL = useSSL;
             serialActions = new Dictionary<int, Callback>();
-            authKey = Auth.AuthKey.GetAuthKey();
+            if (authkey == "") authKey = Auth.AuthKey.GetAuthKey();
+            else authKey = authkey;
             client = new TcpClient();
             client.BeginConnect(host, 7777, new AsyncCallback(OnConnect), null);
             buffer = new byte[1024];
