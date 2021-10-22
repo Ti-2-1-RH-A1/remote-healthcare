@@ -42,11 +42,8 @@ namespace ServerClient.Data
             {
                 return JObject.Parse(File.ReadAllText(FilePath(clientID)));
                 
-            }
-            else
-            {
-
-            }
+            } 
+                return new JObject();
         }
 
         public void AddFile(string id, string name)

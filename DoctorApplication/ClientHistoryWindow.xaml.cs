@@ -19,10 +19,11 @@ namespace DoctorApplication
     /// </summary>
     public partial class ClientHistoryWindow : Window
     {
-        public ClientHistoryWindow(string clientID)
+        public ClientHistoryWindow(Client client)
         {
             InitializeComponent();
-            labelClientID.Content = clientID;
+            labelClientID.Content = client.clientSerial;
+            labelClientName.Content = client.clientName;
         }
 
         private void btnBack_Click(object sender, RoutedEventArgs e)

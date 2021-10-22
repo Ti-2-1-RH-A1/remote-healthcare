@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using NetProtocol;
+using Newtonsoft.Json.Linq;
 
 namespace DoctorApplication
 {
@@ -19,12 +20,16 @@ namespace DoctorApplication
         public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
         public Dictionary<string, Callback> actions;
         public MainWindow MainWindow;
+        DoctorActions doctorActions;
+
         public ClientManager(MainWindow mainWindow)
         {
             actions = new Dictionary<string, Callback>() {
                 { "GetClients", AddClientsFromString() },
                 { "NewClient", AddConnectedClient() },
                 { "RemoveClient", RemoveDisconnectedClient() },
+                { "GetHistory",  ReadHistoryData()},
+            
             };
 
             this.MainWindow = mainWindow;
@@ -129,6 +134,29 @@ namespace DoctorApplication
             };
         }
 
+        private Callback ReadHistoryData()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                data.TryGetValue("Data", out string Jdata);
+
+                JObject jo = JObject.Parse(Jdata);
+
+                doctorActions.UpdateHistoryWindow(jo);
+            };
+        }
+
+        public void RequestHistoryData(string clientID)
+        {
+            client.SendPacket(new Dictionary<string, string>()
+            {
+                { "Method", "GetHistory" }
+            }, new Dictionary<string, string>()
+            {
+                { "client_id", clientID }
+            });
+        }
+
         /// <summary>
         /// sends a message to the server with all clients and message
         /// </summary>
@@ -169,5 +197,7 @@ namespace DoctorApplication
                 { "Action", action },
             }, data);
         }
+
+
     }
 }

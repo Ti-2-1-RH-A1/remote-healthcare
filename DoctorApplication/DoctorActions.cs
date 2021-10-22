@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace DoctorApplication
 {
@@ -6,6 +8,8 @@ namespace DoctorApplication
     {
         private ClientManager clientManager;
         private MainWindow mainWindow;
+        private SelectClientHistory selectClientHistory;
+        private ClientHistoryWindow clientHistoryWindow;
 
         public DoctorActions(MainWindow mainWindow)
         {
@@ -27,17 +31,38 @@ namespace DoctorApplication
             clientManager.SendMessageToAll(message);
         }
 
-        public static void OpenSelectClientWindow()
+        public void OpenSelectClientWindow()
         {
-            SelectClientHistory selectClientHistory = new SelectClientHistory();
+            selectClientHistory = new SelectClientHistory();
             selectClientHistory.ShowDialog();
         }
 
-        public static void OpenHistoryWindow(string clientID)
+        public void OpenHistoryWindow(Client client)
         {
-            ClientHistoryWindow clientHistoryWindow = new ClientHistoryWindow(clientID);
+            string clientID = client.clientSerial;
+            clientHistoryWindow = new ClientHistoryWindow(client);
+            clientManager.RequestHistoryData(clientID);
             clientHistoryWindow.ShowDialog();
         }
 
+        public void UpdateHistoryWindow(JObject data)
+        {
+            JArray dataArray = data["data"] as JArray;
+            foreach (JObject item in dataArray)
+            {
+                string client_id = item["client_id"].ToString();
+                string client_name = item["client_name"].ToString();
+                string speed = item["speed"].ToString();
+                string time = item["time"].ToString();
+                string distance_traveled = item["distance_traveled"].ToString();
+                string rpm = item["rpm"].ToString();
+                string heartrate = item["heartrate"].ToString();
+
+                string[] row = { time, speed, distance_traveled, rpm, heartrate };
+                var listViewItem = new ListViewItem();
+                listViewItem.Content = row;
+                clientHistoryWindow.UserGrid.Items.Add(listViewItem);
+            }
+        }
     }
 }

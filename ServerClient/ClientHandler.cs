@@ -161,7 +161,7 @@ namespace ServerClient
                 if (!DoesExist)
                 {
                     SendError(header, "Key doesn't exist");
-                    Console.WriteLine("Key doesn't exist");
+                    Console.WriteLine("Key doesn't exist "+key);
                     return;
                 }
 
@@ -221,10 +221,8 @@ namespace ServerClient
                 SendPacket(header, new Dictionary<string, string>()
                 {
                     { "Result", "ok" },
-                    { "message", "Patient logged in." },
+                    { "data", manager.dataHandler.LoadClientHistoryData(id).ToString() },
                 });
-
-
             };
         }
 
