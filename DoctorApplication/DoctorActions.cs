@@ -33,22 +33,11 @@ namespace DoctorApplication
             selectClientHistory.ShowDialog();
         }
 
-        public static void OpenHistoryWindow()
-        {
-            ClientHistoryWindow clientHistoryWindow = new ClientHistoryWindow();
-            clientHistoryWindow.ShowDialog();
-        }
         public static void OpenHistoryWindow(string clientID)
         {
             ClientHistoryWindow clientHistoryWindow = new ClientHistoryWindow(clientID);
             clientHistoryWindow.ShowDialog();
         }
-
-        //public static void HistoryWindow(Client client)
-        //{
-        //    ClientHistoryWindow clientHistoryWindow = new ClientHistoryWindow(client.clientSerial);
-        //    clientHistoryWindow.ShowDialog();
-        //}
 
     }
 }

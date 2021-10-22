@@ -19,12 +19,7 @@ namespace DoctorApplication
     /// </summary>
     public partial class ClientHistoryWindow : Window
     {
-        public ClientHistoryWindow()
-        {
-            InitializeComponent();
-        }
-
-        public ClientHistoryWindow(String clientID)
+        public ClientHistoryWindow(string clientID)
         {
             InitializeComponent();
             labelClientID.Content = clientID;
