@@ -18,7 +18,6 @@ namespace ServerClient
         private readonly AuthHandler auth;
         private readonly Stream stream;
         private readonly ClientsManager manager;
-        private readonly DataHandler dataHandler;
         public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
         public Dictionary<string, Callback> actions;
         private readonly byte[] buffer = new byte[1024];
@@ -50,7 +49,7 @@ namespace ServerClient
             {
                 if (header.TryGetValue("Id", out string id))
                 {
-                    if (dataHandler.ClientData.TryGetValue(id, out ClientData clientData))
+                    if (manager.dataHandler.ClientData.TryGetValue(id, out ClientData clientData))
                     {
                         if (header.TryGetValue("GetKeys", out string getKeys))
                         {
@@ -94,7 +93,7 @@ namespace ServerClient
             {
                 if (header.TryGetValue("Id", out string id))
                 {
-                    if (dataHandler.ClientData.TryGetValue(id, out ClientData clientData))
+                    if (manager.dataHandler.ClientData.TryGetValue(id, out ClientData clientData))
                     {
                         PropertyInfo[] properties = typeof(ClientData).GetProperties();
                         foreach (PropertyInfo property in properties)
@@ -202,12 +201,12 @@ namespace ServerClient
 
                     data.TryGetValue("name", out string name);
                     this.Name = name;
-                    dataHandler.AddFile(this.UUID, name);
+                    manager.dataHandler.AddFile(this.UUID, name);
                     Console.WriteLine("Patient logged in.");
                     this.IsDoctor = false;
                 }
-                if (!dataHandler.ClientData.ContainsKey(UUID))
-                    dataHandler.ClientData.Add(this.UUID, new ClientData());
+                if (!manager.dataHandler.ClientData.ContainsKey(UUID))
+                    manager.dataHandler.ClientData.Add(this.UUID, new ClientData());
                 manager.Add(this);
             };
         }
