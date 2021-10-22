@@ -1,18 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using NetProtocol;
+using RemoteHealthcare.Bike;
 
 namespace RemoteHealthcare.ServerCom
 {
 
     class NetClient
     {
+        private readonly IServiceProvider iServiceProvider;
+
         private Client client;
         public Dictionary<string, Client.Callback> actions;
-
-        public NetClient()
+        public NetClient(IServiceProvider iServiceProvider)
         {
+            this.iServiceProvider = iServiceProvider;
             actions = actions = new Dictionary<string, Client.Callback>() {
                 { "Stop", StartClient() },
                 { "Start", StopClient() },
@@ -23,7 +28,7 @@ namespace RemoteHealthcare.ServerCom
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
-                
+                iServiceProvider.GetService<IDeviceManager>().StartTraining();
             };
         }
 
@@ -31,7 +36,7 @@ namespace RemoteHealthcare.ServerCom
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
-
+                iServiceProvider.GetService<IDeviceManager>().StopTraining();
             };
         }
 

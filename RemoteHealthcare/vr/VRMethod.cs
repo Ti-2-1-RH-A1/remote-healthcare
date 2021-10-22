@@ -732,7 +732,7 @@ namespace RemoteHealthcare.VR
             
         }
 
-        private static string bikeId = null;
+        public static string bikeId = null;
         public static string GetBikeID(ref Connection connection)
         {
             if (bikeId == null)
