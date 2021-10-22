@@ -9,7 +9,7 @@ namespace ServerClient
     public class ClientsManager
     {
         private readonly Dictionary<string, ClientHandler> clients;
-        private readonly DataHandler dataHandler;
+        public readonly DataHandler dataHandler;
 
         public enum ClientType
         {
