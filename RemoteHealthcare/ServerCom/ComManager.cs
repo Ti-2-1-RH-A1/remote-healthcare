@@ -4,7 +4,7 @@ using System;
 
 namespace RemoteHealthcare.ServerCom
 {
-    class ComManager
+    class ComManager : IComManager
     {
         private readonly NetClient netClient;
         private readonly IServiceProvider services;
@@ -21,7 +21,7 @@ namespace RemoteHealthcare.ServerCom
             services.GetService<IDeviceManager>().HandelDataEvents += HandleData;
         }
 
-        public void HandleData((DataTypes, float) data)
+        private void HandleData((DataTypes, float) data)
         {
             switch (data.Item1)
             {

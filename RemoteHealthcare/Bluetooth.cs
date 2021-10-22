@@ -32,16 +32,6 @@ namespace RemoteHealthcare
             ble.CloseDevice();
         }
 
-        public async Task<int> Start(RealBike realBike)
-        {
-            return await Start(RealBike.bikeTypeName + " " + realBike.bikeId, RealBike.bikeServiceName, RealBike.bikeSubscribtionCharacteristic);
-        }
-
-        public async Task<int> Start(HRM hrm)
-        {
-            return await Start(HRM.hrmTypeName, HRM.heartRateServiceName, HRM.heartSubscribtionCharacteristic);
-        }
-
         public async Task<int> Start(string deviceId, string serviceName, string subscribtionCharacteristic)
         {
             // Wait for half a second in case time is needed to recognise bluetooth devices

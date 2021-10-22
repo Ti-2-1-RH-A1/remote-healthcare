@@ -8,14 +8,14 @@ using RemoteHealthcare.Bike;
 
 namespace RemoteHealthcare.VR
 {
-    public class VRManager
+    public class VRManager : IVRManager
     {
-        //private NetworkStream networkStream;
         private Dictionary<string, string> userSessions;
         private Connection connection;
         private Dictionary<string, string> nodes;
         private readonly IServiceProvider services;
         private bool isReady = false;
+
         public VRManager(IServiceProvider serviceProvider)
         {
             // Initialise and connect to the TcpClient
@@ -51,7 +51,7 @@ namespace RemoteHealthcare.VR
         {
             if (data.Item1 == DataTypes.BIKE_SPEED)
             {
-                updateBikeSpeed(data.Item2);
+                UpdateBikeSpeed(data.Item2);
             }
 
         }
@@ -67,9 +67,9 @@ namespace RemoteHealthcare.VR
 
             nodes = VRMethod.GetScene(ref connection);
 
-            //string terrainUuid = VRMethod.CreateTerrain(ref connection);
+            string terrainUuid = VRMethod.CreateTerrain(ref connection);
 
-            //VRMethod.SetTexture(ref connection, terrainUuid);
+            VRMethod.SetTexture(ref connection, terrainUuid);
 
             JArray position = new JArray { 20, 0, 20 };
             JArray rotation = new JArray { 0, 0, 0 };
@@ -205,7 +205,7 @@ namespace RemoteHealthcare.VR
             }
         }
 
-        public void updateBikeSpeed(float speed)
+        public void UpdateBikeSpeed(float speed)
         {
             if (isReady)
             {
@@ -214,7 +214,6 @@ namespace RemoteHealthcare.VR
             }
         }
 
-
         /// <summary>CreateTunnel does <c>Creating a network tunnel</c> returns <returns>A Boolean</returns> sends the correct json and then checks connection status based on that it returns a boolean</summary>
         ///
         public bool CreateTunnel(string sessionId)
@@ -222,7 +221,6 @@ namespace RemoteHealthcare.VR
             Console.WriteLine("Creating a tunnel");
             // create a tunnel
             JObject tunnelCreateJson = new JObject { { "id", "tunnel/create" } };
-
 
             JObject dataJson = new JObject { { "session", userSessions[sessionId] } };
             // place to set the key 

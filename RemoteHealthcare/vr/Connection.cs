@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace RemoteHealthcare.VR
 {
@@ -142,7 +141,7 @@ namespace RemoteHealthcare.VR
                 if (currentSessionID.Length > 1)
                 {
                     ReceiveFromTcp(out var receivedData, false);
-                    Console.WriteLine(receivedData);
+                    //Console.WriteLine(receivedData);
 
                     JObject tunnel = JObject.Parse(receivedData);
                     JObject idObject = (JObject)tunnel.GetValue("data");
@@ -151,7 +150,7 @@ namespace RemoteHealthcare.VR
                     {
                         JToken jToken = dataObject.GetValue("serial");
                         string serial = jToken.ToString();
-                        Console.WriteLine(serial);
+                        //Console.WriteLine(serial);
 
                         if (callbacks.ContainsKey(serial))
                         {

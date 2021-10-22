@@ -21,7 +21,6 @@ namespace RemoteHealthcare.Bike
         public RealBike(IServiceProvider serviceProvider)
         {
             this.services = serviceProvider;
-
             this.bluetooth = services.GetServices<Bluetooth>().Where(b => b.BLEInstance == BLEInstance.BIKE).FirstOrDefault();
             bluetooth.DataReceived += Ble_DataReceived;
         }
@@ -44,7 +43,7 @@ namespace RemoteHealthcare.Bike
         {
             // bikeId shouldn't be null, as handled before Start is called upon
             this.bikeId = bikeId;
-            bluetooth.Start(this);
+            bluetooth.Start(bikeTypeName + " " + bikeId, bikeServiceName, bikeSubscribtionCharacteristic);
         }
 
         public void DataReceived((DataTypes, float) data)

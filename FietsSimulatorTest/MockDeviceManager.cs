@@ -19,7 +19,7 @@ namespace RemoteHealthcare.Tests
 
         public void Start((IBikeManager.BikeType, string) bikeTypeAndId)
         {
-            this.services.GetService<IBikeManager>().StartBike(IBikeManager.BikeType.SIMULATOR_BIKE);
+            this.services.GetService<IBikeManager>().Start(IBikeManager.BikeType.SIMULATOR_BIKE);
 
             Thread.Sleep(100);
 
