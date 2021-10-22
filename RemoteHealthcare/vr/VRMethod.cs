@@ -119,7 +119,7 @@ namespace RemoteHealthcare.VR
 
             Console.WriteLine("Enter a path to an heightmap");
 
-            string entryPath = @"" + Console.ReadLine();
+            string entryPath = Directory.GetCurrentDirectory() + "/heightmap.png";
             if (!File.Exists(entryPath))
             {
                 Console.WriteLine("No file found");
