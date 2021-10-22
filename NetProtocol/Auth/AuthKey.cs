@@ -23,8 +23,12 @@ namespace NetProtocol.Auth
             {
                 Directory.CreateDirectory(storageLocation);
             }
-            throw new FileNotFoundException("Key file not found created at: " + storageLocation + "key.txt");
-        
+
+            Console.WriteLine
+            ("Key file not found created at: " + storageLocation + "key.txt");
+
+            return "no-key";
+
         }
     }
 }
