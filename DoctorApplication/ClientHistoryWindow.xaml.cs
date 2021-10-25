@@ -22,8 +22,7 @@ namespace DoctorApplication
         public ClientHistoryWindow(Client client)
         {
             InitializeComponent();
-            labelClientID.Content = client.clientSerial;
-            labelClientName.Content = client.clientName;
+            
         }
 
         private void btnBack_Click(object sender, RoutedEventArgs e)

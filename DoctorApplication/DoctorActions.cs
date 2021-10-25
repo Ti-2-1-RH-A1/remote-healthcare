@@ -1,5 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace DoctorApplication
@@ -34,6 +37,7 @@ namespace DoctorApplication
         public void OpenSelectClientWindow()
         {
             selectClientHistory = new SelectClientHistory(mainWindow);
+            clientManager.RequestHistoryClients();
             selectClientHistory.ShowDialog();
         }
 
@@ -45,13 +49,37 @@ namespace DoctorApplication
             clientHistoryWindow.ShowDialog();
         }
 
+        public void UpdateSelectWindow(Dictionary<string, string> data)
+        {
+            Application.Current.Dispatcher.Invoke((Action)delegate {
+                foreach (KeyValuePair<string, string> entry in data)
+                {
+                    string[] row = { entry.Key, entry.Value };
+                    ListViewItem listViewItem = new ListViewItem();
+                    listViewItem.Content = row;
+                    selectClientHistory.UserGrid.Items.Add(listViewItem);
+                }
+            });
+
+            //foreach (JObject item in dataArray)
+            //{
+            //    string clientId = item["client_id"].ToString();
+            //    string clientName = item["client_name"].ToString();
+            //    string[] row = { clientId, clientName };
+            //    var listViewItem = new ListViewItem();
+            //    listViewItem.Content = row;
+            //    selectClientHistory.UserGrid.Items.Add(listViewItem);
+            //}
+        }
+
         public void UpdateHistoryWindow(JObject data)
         {
             JArray dataArray = data["data"] as JArray;
+            JObject firstItem = (JObject)dataArray[0];
+            clientHistoryWindow.labelClientID.Content = firstItem["client_id"].ToString();
+            clientHistoryWindow.labelClientName.Content = firstItem["client_name"].ToString();
             foreach (JObject item in dataArray)
             {
-                string client_id = item["client_id"].ToString();
-                string client_name = item["client_name"].ToString();
                 string speed = item["speed"].ToString();
                 string time = item["time"].ToString();
                 string distance_traveled = item["distance_traveled"].ToString();

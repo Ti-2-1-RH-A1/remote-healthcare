@@ -10,7 +10,7 @@ namespace DoctorApplication
     /// </summary>
     public partial class MainWindow : Window
     {
-        private DoctorActions doctorActions;
+        public DoctorActions doctorActions;
         public MainWindow()
         {
             doctorActions = new DoctorActions(this);

@@ -36,6 +36,7 @@ namespace ServerClient
                 { "Login", LoginMethode() },
                 { "Disconnect", disconnectCallback() },
                 { "GetClients", GetClients() },
+                { "GetHistoryClients", GetHistoryClient()},
                 { "GetHistory", GetHistoryData() },
                 { "SendToClients", SendToClients() },
                 { "Post", Post() },
@@ -215,6 +216,18 @@ namespace ServerClient
                 if (!manager.dataHandler.ClientData.ContainsKey(UUID))
                     manager.dataHandler.ClientData.Add(this.UUID, new ClientData());
                 manager.Add(this);
+            };
+        }
+
+        private Callback GetHistoryClient()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                SendPacket(header, new Dictionary<string, string>()
+                {
+                    { "Result", "ok" },
+                    { "data", manager.dataHandler.LoadClientHistory() },
+                });
             };
         }
 

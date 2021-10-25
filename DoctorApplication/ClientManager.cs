@@ -28,6 +28,7 @@ namespace DoctorApplication
                 { "GetClients", AddClientsFromString() },
                 { "NewClient", AddConnectedClient() },
                 { "RemoveClient", RemoveDisconnectedClient() },
+                { "GetHistoryClients", ReadHistoryClients()},
                 { "GetHistory",  ReadHistoryData()},
             
                 { "Realtime", ReceiveRealtime() },
@@ -145,16 +146,36 @@ namespace DoctorApplication
             };
         }
 
+        private Callback ReadHistoryClients()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                data.TryGetValue("data", out string Jdata);
+
+                Dictionary<string, string> jo = JsonConvert.DeserializeObject<Dictionary<string, string>>(Jdata);
+
+                MainWindow.doctorActions.UpdateSelectWindow(jo);
+            };
+        }
+
         private Callback ReadHistoryData()
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
-                data.TryGetValue("Data", out string Jdata);
+                data.TryGetValue("data", out string Jdata);
 
                 JObject jo = JObject.Parse(Jdata);
 
-                doctorActions.UpdateHistoryWindow(jo);
+                MainWindow.doctorActions.UpdateHistoryWindow(jo);
             };
+        }
+
+        public void RequestHistoryClients()
+        {
+            client.SendPacket(new Dictionary<string, string>()
+            {
+                { "Method", "GetHistoryClients" }
+            }, new Dictionary<string, string>());
         }
 
         public void RequestHistoryData(string clientID)

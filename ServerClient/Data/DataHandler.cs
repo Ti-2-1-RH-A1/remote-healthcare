@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,6 +35,21 @@ namespace ServerClient.Data
                     ClientData.Add(jo["id"].ToString(), client);
                 }
             }
+        }
+
+        public String LoadClientHistory()
+        {
+            string[] storageFiles = Directory.GetFiles(storageLocation);
+            Dictionary<string, string> client = new Dictionary<string, string>();
+            foreach (string file in storageFiles)
+            {
+                if (file.IndexOf(".json") != -1)
+                {
+                    JObject jo = JObject.Parse(File.ReadAllText(file));
+                    client.Add(jo["id"].ToString(), jo["name"].ToString());
+                }
+            }
+            return JsonConvert.SerializeObject(client); ;
         }
 
         public JObject LoadClientHistoryData(string clientID)
