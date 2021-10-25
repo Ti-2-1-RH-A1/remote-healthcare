@@ -83,7 +83,6 @@ namespace RemoteHealthcare.VR
         {
             byte[] dataBytes = System.Text.Encoding.ASCII.GetBytes(data);
             int dataLength = dataBytes.Length;
-
             networkStream.Write(BitConverter.GetBytes(dataLength));
             networkStream.Write(dataBytes);
             networkStream.Flush();
