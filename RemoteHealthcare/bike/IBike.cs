@@ -3,6 +3,7 @@
     interface IBike
     {
         public void Start(string bikeId = null);
+        public void Stop();
 
         /// <summary>
         /// Sets the resistance of the bike. This value will influence the speed.

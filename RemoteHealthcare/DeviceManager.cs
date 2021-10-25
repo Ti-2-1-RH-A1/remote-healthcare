@@ -11,27 +11,31 @@ namespace RemoteHealthcare
     {
         private readonly IServiceProvider services;
         public event Action<(DataTypes, float)> HandelDataEvents;
-        
+
+        public IBikeManager.BikeType bikeType { get; set; }
+        public string bikeID { get; set; }
+
         public DeviceManager()
         {
             services = BuildServiceProvider();
         }
 
-        public void Start((IBikeManager.BikeType, string) bikeTypeAndId)
+        public void Start()
         {
             services.GetService<IComManager>().Start();
-            services.GetService<IBikeManager>().Start(bikeTypeAndId.Item1, bikeTypeAndId.Item2);
-            services.GetService<IHRMManager>().Start();
         }
 
         public void StartTraining()
         {
+            services.GetService<IBikeManager>().Start(bikeType,bikeID);
             services.GetService<IVRManager>().Start();
+            services.GetService<IHRMManager>().Start();
         }
 
         public void StopTraining()
         {
             services.GetService<IVRManager>().Stop();
+            services.GetService<IBikeManager>().Stop();
         }
 
 

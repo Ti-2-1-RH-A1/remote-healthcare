@@ -6,7 +6,7 @@ namespace ServerClient
 {
     public class Program
     {
-        public static async Task Main(string[] args)
+        public static Task Main(string[] args)
         {
             string certificate = @"Server.pfx";
             var server = new Server(certificate, AuthHandler.Init(), false);
@@ -23,7 +23,8 @@ namespace ServerClient
             // client2.Disconnect();
             // await Task.Delay(-1);
 
-            Console.ReadLine();
+            //Console.ReadLine();
+            return Task.Delay(-1);
         }
     }
 }
