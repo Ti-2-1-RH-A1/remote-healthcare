@@ -52,6 +52,7 @@ namespace NetProtocol
             loggedIn = false;
             this.name = name;
             Console.WriteLine("Client created");
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
         }
 
         public static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
@@ -59,6 +60,11 @@ namespace NetProtocol
             if (sslPolicyErrors == SslPolicyErrors.None) return true;
             Console.WriteLine($"Certificate error: {sslPolicyErrors}");
             return false;
+        }
+
+        void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            Disconnect();
         }
 
         private void OnConnect(IAsyncResult ar)

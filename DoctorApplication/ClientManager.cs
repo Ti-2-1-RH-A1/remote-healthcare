@@ -174,7 +174,7 @@ namespace DoctorApplication
             client.SendPacket(new Dictionary<string, string>()
                 {
                     {"Method", "GetHistoryClients"}
-                }, new Dictionary<string, string>(), ReadHistoryClients() );
+                }, new Dictionary<string, string>(), ReadHistoryClients());
         }
 
         public void RequestHistoryData(string clientID)
