@@ -14,12 +14,11 @@ namespace RemoteHealthcare.ServerCom
         private readonly IServiceProvider iServiceProvider;
 
         private Client client;
-        public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
-        public Dictionary<string, Callback> actions;
+        public Dictionary<string, Client.Callback> actions;
         public NetClient(IServiceProvider iServiceProvider)
         {
             this.iServiceProvider = iServiceProvider;
-            actions = actions = new Dictionary<string, Client.Callback>() {
+            actions = new Dictionary<string, Client.Callback>() {
                 { "Stop", StartClient() },
                 { "Start", StopClient() },
                 { "Message", HandleMessage() },
@@ -99,14 +98,14 @@ namespace RemoteHealthcare.ServerCom
         {
             e.headers.TryGetValue("Method", out string item);
 
-            if (actions.TryGetValue(item, out Callback action))
+            if (actions.TryGetValue(item, out Client.Callback action))
             {
                 action(e.headers, e.data);
                 return;
             }
         }
 
-        private Callback HandleMessage() => delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+        private Client.Callback HandleMessage() => delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
                 if (data.TryGetValue("Message", out string message))
                 {

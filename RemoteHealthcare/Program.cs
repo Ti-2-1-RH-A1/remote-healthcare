@@ -31,6 +31,7 @@ namespace RemoteHealthcare
             if (bikeTypeChoice.Contains("n"))
             {
                 deviceManager.bikeType = IBikeManager.BikeType.SIMULATOR_BIKE;
+                return;
             }
 
             // Ask the user for the bike id to connect to

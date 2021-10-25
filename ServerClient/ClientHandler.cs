@@ -37,6 +37,8 @@ namespace ServerClient
                 { "Login", LoginMethode() },
                 { "Disconnect", disconnectCallback() },
                 { "GetClients", GetClients() },
+                { "GetHistoryClients", GetHistoryClient()},
+                { "GetHistory", GetHistoryData() },
                 { "SendToClients", SendToClients() },
                 { "Post", Post() },
                 { "Get", Get() },
@@ -169,7 +171,7 @@ namespace ServerClient
                 if (!DoesExist)
                 {
                     SendError(header, "Key doesn't exist");
-                    Console.WriteLine("Key doesn't exist");
+                    Console.WriteLine("Key doesn't exist "+key);
                     return;
                 }
 
@@ -218,6 +220,31 @@ namespace ServerClient
                 if (!manager.dataHandler.ClientData.ContainsKey(UUID))
                     manager.dataHandler.ClientData.Add(this.UUID, new ClientData());
                 manager.Add(this);
+            };
+        }
+
+        private Callback GetHistoryClient()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                SendPacket(header, new Dictionary<string, string>()
+                {
+                    { "Result", "ok" },
+                    { "data", manager.dataHandler.LoadClientHistory() },
+                });
+            };
+        }
+
+        private Callback GetHistoryData()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                data.TryGetValue("client_id", out string id);
+                SendPacket(header, new Dictionary<string, string>()
+                {
+                    { "Result", "ok" },
+                    { "data", manager.dataHandler.LoadClientHistoryData(id).ToString() },
+                });
             };
         }
 

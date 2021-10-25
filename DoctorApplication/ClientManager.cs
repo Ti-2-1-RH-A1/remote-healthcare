@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
 using NetProtocol;
+using Newtonsoft.Json.Linq;
 using System.Linq;
 
 namespace DoctorApplication
@@ -19,12 +20,17 @@ namespace DoctorApplication
         public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
         public Dictionary<string, Callback> actions;
         public MainWindow MainWindow;
+        public DoctorActions doctorActions;
+
         public ClientManager(MainWindow mainWindow)
         {
             actions = new Dictionary<string, Callback>() {
                 { "GetClients", AddClientsFromString() },
                 { "NewClient", AddConnectedClient() },
                 { "RemoveClient", RemoveDisconnectedClient() },
+                { "GetHistoryClients", ReadHistoryClients()},
+                { "GetHistory",  ReadHistoryData()},
+            
                 { "Realtime", ReceiveRealtime() },
             };
 
@@ -136,8 +142,51 @@ namespace DoctorApplication
                 clients.TryGetValue(uuid, out Client client);
                 MainWindow.RemovefromList(client);
                 clients.Remove(uuid);
-
+                
             };
+        }
+
+        private Callback ReadHistoryClients()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                data.TryGetValue("data", out string Jdata);
+
+                Dictionary<string, string> jo = JsonConvert.DeserializeObject<Dictionary<string, string>>(Jdata);
+
+                MainWindow.doctorActions.UpdateSelectWindow(jo);
+            };
+        }
+
+        private Callback ReadHistoryData()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                data.TryGetValue("data", out string Jdata);
+
+                JObject jo = JObject.Parse(Jdata);
+
+                MainWindow.doctorActions.UpdateHistoryWindow(jo);
+            };
+        }
+
+        public void RequestHistoryClients()
+        {
+            client.SendPacket(new Dictionary<string, string>()
+            {
+                { "Method", "GetHistoryClients" }
+            }, new Dictionary<string, string>());
+        }
+
+        public void RequestHistoryData(string clientID)
+        {
+            client.SendPacket(new Dictionary<string, string>()
+            {
+                { "Method", "GetHistory" }
+            }, new Dictionary<string, string>()
+            {
+                { "client_id", clientID }
+            });
         }
 
         /// <summary>
@@ -187,5 +236,7 @@ namespace DoctorApplication
                 { "Action", action },
             }, data);
         }
+
+
     }
 }
