@@ -146,7 +146,11 @@ namespace DoctorApplication
         /// <param name="message"></param>
         public void SendMessageToAll(string message)
         {
-            SendToClients(clients.Keys.ToList(), "Message", new Dictionary<string, string>()
+            client.SendPacket(new Dictionary<string, string>()
+            {
+                { "Method", "SendToClients" },
+                { "Action", "Message" },
+            }, new Dictionary<string, string>()
             {
                 { "Message", message },
             });

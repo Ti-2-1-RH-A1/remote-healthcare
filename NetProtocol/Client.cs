@@ -37,7 +37,7 @@ namespace NetProtocol
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
         public event DataReceivedHandler DataReceived;
 
-        public delegate void Callback(Dictionary<string, string> packetData, Dictionary<string, string> headerData);
+        public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
         public Dictionary<int, Callback> serialActions;
 
         public Client(string host = "localhost", bool useSSL = true, string name = "No Name", string authkey = "")
