@@ -236,7 +236,7 @@ namespace NetProtocol
                         {
                             if (serialActions.TryGetValue(serialInt, out Callback action))
                             {
-                                action(data, headers);
+                                action(headers, data);
                                 serialActions.Remove(serialInt);
                             }
                         }
