@@ -89,7 +89,7 @@ namespace DoctorApplication
             Application.Current.Dispatcher.Invoke((Action)delegate {
                 foreach (KeyValuePair<string, string> entry in data)
                 {
-                    string[] row = { entry.Key, entry.Value };
+                    Client row = new Client(){ clientSerial = entry.Key, clientName = entry.Value };
                     ListViewItem listViewItem = new ListViewItem();
                     listViewItem.Content = row;
                     selectClientHistory.UserGrid.Items.Add(listViewItem);
