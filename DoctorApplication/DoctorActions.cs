@@ -1,4 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace DoctorApplication
 {
@@ -6,6 +11,8 @@ namespace DoctorApplication
     {
         private ClientManager clientManager;
         private MainWindow mainWindow;
+        private SelectClientHistory selectClientHistory;
+        private ClientHistoryWindow clientHistoryWindow;
 
         public DoctorActions(MainWindow mainWindow)
         {
@@ -27,28 +34,54 @@ namespace DoctorApplication
             clientManager.SendMessageToAll(message);
         }
 
-        public static void OpenSelectClientWindow()
+        public void OpenSelectClientWindow()
         {
-            SelectClientHistory selectClientHistory = new SelectClientHistory();
+            selectClientHistory = new SelectClientHistory(mainWindow);
+            clientManager.RequestHistoryClients();
             selectClientHistory.ShowDialog();
         }
 
-        public static void OpenHistoryWindow()
+        public void OpenHistoryWindow(Client client)
         {
-            ClientHistoryWindow clientHistoryWindow = new ClientHistoryWindow();
-            clientHistoryWindow.ShowDialog();
-        }
-        public static void OpenHistoryWindow(string clientID)
-        {
-            ClientHistoryWindow clientHistoryWindow = new ClientHistoryWindow(clientID);
+            string clientID = client.clientSerial;
+            clientHistoryWindow = new ClientHistoryWindow(client);
+            clientManager.RequestHistoryData(clientID);
             clientHistoryWindow.ShowDialog();
         }
 
-        //public static void HistoryWindow(Client client)
-        //{
-        //    ClientHistoryWindow clientHistoryWindow = new ClientHistoryWindow(client.clientSerial);
-        //    clientHistoryWindow.ShowDialog();
-        //}
+        public void UpdateSelectWindow(Dictionary<string, string> data)
+        {
+            Application.Current.Dispatcher.Invoke((Action)delegate {
+                foreach (KeyValuePair<string, string> entry in data)
+                {
+                    string[] row = { entry.Key, entry.Value };
+                    ListViewItem listViewItem = new ListViewItem();
+                    listViewItem.Content = row;
+                    selectClientHistory.UserGrid.Items.Add(listViewItem);
+                }
+            });
 
+        }
+
+        public void UpdateHistoryWindow(JObject data)
+        {
+            JArray dataArray = data["data"] as JArray;
+            JObject firstItem = (JObject)dataArray[0];
+            clientHistoryWindow.labelClientID.Content = firstItem["client_id"].ToString();
+            clientHistoryWindow.labelClientName.Content = firstItem["client_name"].ToString();
+            foreach (JObject item in dataArray)
+            {
+                string speed = item["speed"].ToString();
+                string time = item["time"].ToString();
+                string distance_traveled = item["distance_traveled"].ToString();
+                string rpm = item["rpm"].ToString();
+                string heartrate = item["heartrate"].ToString();
+
+                string[] row = { time, speed, distance_traveled, rpm, heartrate };
+                var listViewItem = new ListViewItem();
+                listViewItem.Content = row;
+                clientHistoryWindow.UserGrid.Items.Add(listViewItem);
+            }
+        }
     }
 }

@@ -16,11 +16,11 @@ namespace ServerClient
             //var client = new Client("localhost", "Fiets", true, "name");
 
             await Task.Delay(30000);
-            var client2 = new Client("localhost", false, "Robin 2");
+            //var client2 = new Client("localhost", false, "Robin 2");
 
 
             await Task.Delay(10000);
-            client2.Disconnect();
+            //client2.Disconnect();
             await Task.Delay(-1);
 
             Console.ReadLine();
