@@ -70,7 +70,11 @@ namespace DoctorApplication
         private void btnStartSession_Click(object sender, RoutedEventArgs e)
         {
             ListView list = UserGrid;
-            if (list.SelectedItems.Count < 1) return;
+            if (list.SelectedItems.Count < 1)
+            {
+                MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
             IList lstClients = list.SelectedItems;
 
@@ -80,8 +84,31 @@ namespace DoctorApplication
         private void btnStopSession_Click(object sender, RoutedEventArgs e)
         {
             ListView list = UserGrid;
-            if (list.SelectedItems.Count < 1) return;
+            if (list.SelectedItems.Count < 1)
+            {
+                MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             doctorActions.SendStopSession(list.SelectedItems);
+        }
+
+        private void btnChangeResistance_Click(object sender, RoutedEventArgs e)
+        {
+            ListView list = UserGrid;
+            if (list.SelectedItems.Count < 1)
+            {
+                MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var dialog = new inputBox("Enter resistance %");
+            dialog.Owner = this;
+            if (dialog.ShowDialog() == true)
+            {
+                doctorActions.SendSetResistance(list.SelectedItems, dialog.ResponseText);
+            }
+
+
         }
     }
 }

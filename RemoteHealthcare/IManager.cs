@@ -26,6 +26,8 @@ namespace RemoteHealthcare.Bike
             REAL_BIKE,
             SIMULATOR_BIKE
         }
+
+        public void SetResistance(int resistance);
     }
 
     public interface IVRManager
