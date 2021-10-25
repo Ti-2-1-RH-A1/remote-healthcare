@@ -13,6 +13,12 @@
     <PackageReference Include="System.Collections" Version="4.3.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="MessageAll.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
+
   <Import Project="..\NetProtocol\NetProtocol.projitems" Label="Shared" />
 
 </Project>

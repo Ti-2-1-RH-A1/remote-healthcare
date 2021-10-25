@@ -14,13 +14,13 @@ namespace RemoteHealthcare.VR
         private Connection connection;
         private Dictionary<string, string> nodes;
         private readonly IServiceProvider services;
-        private bool isReady = false;
+        public bool isReady = false;
 
         public VRManager(IServiceProvider serviceProvider)
         {
             // Initialise and connect to the TcpClient
             // On server: 145.48.6.10 and port: 6666
-            TcpClient client = new TcpClient();
+            TcpClient client = new TcpClient(); 
             client.Connect("145.48.6.10", 6666);
 
             // Request the session list from the server
@@ -28,8 +28,6 @@ namespace RemoteHealthcare.VR
             services.GetService<IDeviceManager>().HandelDataEvents += HandleData;
 
             connection = new Connection(client.GetStream(), this);
-
-            userSessions = VRMethod.GetRunningSessions(ref connection);
         }
 
         /// <summary>
@@ -56,12 +54,28 @@ namespace RemoteHealthcare.VR
 
         }
 
+        public void Stop()
+        {
+            VRMethod.ResetScene(ref connection);
+            connection.currentSessionID = null;
+            userSessions = VRMethod.GetRunningSessions(ref connection);
+            VRMethod.bikeId = null;
+        }
+
         /// <summary>Start does <c>The beginning of the VRManager</c> This is the beginning of the program, als 
         /// sometimes called the start of a programs life</summary>
         ///
         public void Start()
         {
-            ConnectToAClient();
+            connection.Start();
+            if (!connection.TestConnection())
+            {
+                return;
+            }
+            else
+            {
+                Reconnect();
+            }
 
             VRMethod.ResetScene(ref connection);
 

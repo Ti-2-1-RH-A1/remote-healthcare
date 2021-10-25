@@ -33,8 +33,14 @@ namespace RemoteHealthcare.VR
             string receivedData;
             connection.ReceiveFromTcp(out receivedData, true);
 
+            if (receivedData == null)
+            {
+                return new Dictionary<string, string>();
+            }
+
             // parse the received data
             dynamic jsonData = JsonConvert.DeserializeObject(receivedData);
+            
             JArray jsonDataArray = jsonData.data;
 
             // add session ids to the sessions list if they have an id, clientinfo and have a tunnel feature
@@ -733,7 +739,7 @@ namespace RemoteHealthcare.VR
             
         }
 
-        private static string bikeId = null;
+        public static string bikeId = null;
         public static string GetBikeID(ref Connection connection)
         {
             if (bikeId == null)

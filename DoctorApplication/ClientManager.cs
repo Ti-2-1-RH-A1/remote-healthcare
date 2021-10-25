@@ -62,7 +62,7 @@ namespace DoctorApplication
         private void HandleData(object Client, DataReceivedArgs e)
         {
             e.headers.TryGetValue("Method", out string item);
-
+        
             if (actions.TryGetValue(item, out Callback action))
             {
                 action(e.headers, e.data);
@@ -199,6 +199,13 @@ namespace DoctorApplication
             {
                 { "Message", message },
             });
+        }
+
+        public void SendToClient(string action, Dictionary<string, string> data, string id)
+        {
+            SendToClients(clients.Keys
+                .Where(p => p.Equals(id))
+                .ToList(), action, data);
         }
 
         /// <summary>

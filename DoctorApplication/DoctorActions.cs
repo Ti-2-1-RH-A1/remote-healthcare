@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -32,6 +33,27 @@ namespace DoctorApplication
         public void SendToAll(string message)
         {
             clientManager.SendMessageToAll(message);
+        }
+
+        public void SendStartSession(IList clients)
+        {
+            List<string> clientIDs = new List<string>();
+            foreach (Client client in clients)
+            {
+                clientIDs.Add(client.clientSerial);
+            }
+
+            clientManager.SendToClients(clientIDs,"Start", new Dictionary<string, string>());
+        }
+        public void SendStopSession(IList clients)
+        {
+            List<string> clientIDs = new List<string>();
+            foreach (Client client in clients)
+            {
+                clientIDs.Add(client.clientSerial);
+            }
+
+            clientManager.SendToClients(clientIDs, "Stop", new Dictionary<string, string>());
         }
 
         public void OpenSelectClientWindow()

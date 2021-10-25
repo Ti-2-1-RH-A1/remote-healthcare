@@ -34,6 +34,12 @@ namespace RemoteHealthcare.Bike
             }
         }
 
+        public void Stop()
+        {
+            bluetooth.Dispose();
+            this.Dispose();
+        }
+
         public void SetResistance(byte resistance)
         {
             bluetooth.SetBikeResistance(resistance);
