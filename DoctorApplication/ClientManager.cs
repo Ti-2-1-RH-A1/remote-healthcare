@@ -28,8 +28,7 @@ namespace DoctorApplication
                 { "GetClients", AddClientsFromString() },
                 { "NewClient", AddConnectedClient() },
                 { "RemoveClient", RemoveDisconnectedClient() },
-                { "GetHistoryClients", ReadHistoryClients()},
-                { "GetHistory",  ReadHistoryData()},
+                // { "GetHistory",  ReadHistoryData()},
             
                 { "Realtime", ReceiveRealtime() },
             };
@@ -146,7 +145,7 @@ namespace DoctorApplication
             };
         }
 
-        private Callback ReadHistoryClients()
+        private NetProtocol.Client.Callback ReadHistoryClients()
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
@@ -173,9 +172,9 @@ namespace DoctorApplication
         public void RequestHistoryClients()
         {
             client.SendPacket(new Dictionary<string, string>()
-            {
-                { "Method", "GetHistoryClients" }
-            }, new Dictionary<string, string>());
+                {
+                    {"Method", "GetHistoryClients"}
+                }, new Dictionary<string, string>(), ReadHistoryClients() );
         }
 
         public void RequestHistoryData(string clientID)
