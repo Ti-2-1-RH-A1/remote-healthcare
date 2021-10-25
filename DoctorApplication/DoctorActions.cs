@@ -56,7 +56,7 @@ namespace DoctorApplication
             clientManager.SendToClients(clientIDs, "Stop", new Dictionary<string, string>());
         }
 
-        public static void OpenSelectClientWindow()
+        public void OpenSelectClientWindow()
         {
             selectClientHistory = new SelectClientHistory(mainWindow);
             clientManager.RequestHistoryClients();
