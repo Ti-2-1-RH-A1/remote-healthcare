@@ -19,9 +19,17 @@ namespace DoctorApplication
     /// </summary>
     public partial class Message : Window
     {
-        public Message()
+        private DoctorActions doctorActions;
+
+        public Message(MainWindow main)
         {
+            doctorActions = main.doctorActions;
             InitializeComponent();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            // not implemented
         }
     }
 }

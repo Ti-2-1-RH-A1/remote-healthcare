@@ -14,18 +14,22 @@ namespace RemoteHealthcare.ServerCom
         private readonly IServiceProvider iServiceProvider;
 
         private Client client;
-        public Dictionary<string, Client.Callback> actions;
+        public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
+        public Dictionary<string, Callback> actions;
         public NetClient(IServiceProvider iServiceProvider)
         {
             this.iServiceProvider = iServiceProvider;
             actions = actions = new Dictionary<string, Client.Callback>() {
                 { "Stop", StartClient() },
                 { "Start", StopClient() },
+                { "Message", HandleMessage() },
             };
         }
 
+
         private Client.Callback StartClient()
         {
+
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
                 iServiceProvider.GetService<IDeviceManager>().StartTraining();
@@ -65,6 +69,7 @@ namespace RemoteHealthcare.ServerCom
             }
             client.DataReceived += HandleData;
 
+            client.DataReceived += HandleDataFromServer;
         }
 
         public void SendRealtime(string name, float data)
@@ -90,5 +95,24 @@ namespace RemoteHealthcare.ServerCom
             });
         }
 
+        private void HandleDataFromServer(object Client, DataReceivedArgs e)
+        {
+            e.headers.TryGetValue("Method", out string item);
+
+            if (actions.TryGetValue(item, out Callback action))
+            {
+                action(e.headers, e.data);
+                return;
+            }
+        }
+
+        private Callback HandleMessage() => delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                if (data.TryGetValue("Message", out string message))
+                {
+                    //                  BgGreen   [CHAT]Reset     FgGreen   {message}Reset    
+                    Console.WriteLine($"\u001b[42m[CHAT]\u001b[0m \u001b[32m{message}\u001b[0m");
+                }
+            };
     }
 }
