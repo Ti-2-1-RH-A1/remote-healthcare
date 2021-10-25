@@ -58,7 +58,7 @@ namespace DoctorApplication
 
         private void BtnHistory_Click(object sender, RoutedEventArgs e)
         {
-            DoctorActions.OpenSelectClientWindow();
+            doctorActions.OpenSelectClientWindow();
         }
 
         private void BtnMessage_Click(object sender, RoutedEventArgs e)

@@ -13,8 +13,8 @@
                     <GridViewColumn Header="Time" DisplayMemberBinding="{Binding Time}"  Width="Auto" />
                     <GridViewColumn Header="Speed" DisplayMemberBinding="{Binding Speed}"  Width="Auto" />
                     <GridViewColumn Header="Distance" DisplayMemberBinding="{Binding Distance_Traveled}"  Width="Auto" />
-                    <GridViewColumn Header="RPM" DisplayMemberBinding="{Binding Distance_Traveled}"  Width="Auto" />
-                    <GridViewColumn Header="Heartrate" DisplayMemberBinding="{Binding Distance_Traveled}"  Width="Auto" />
+                    <GridViewColumn Header="RPM" DisplayMemberBinding="{Binding RPM}"  Width="Auto" />
+                    <GridViewColumn Header="Heartrate" DisplayMemberBinding="{Binding Heartrate}"  Width="Auto" />
 
                 </GridView>
             </ListView.View>
