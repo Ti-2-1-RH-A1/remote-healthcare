@@ -12,6 +12,12 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="MessageAll.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
+
   <Import Project="..\NetProtocol\NetProtocol.projitems" Label="Shared" />
 
 </Project>
