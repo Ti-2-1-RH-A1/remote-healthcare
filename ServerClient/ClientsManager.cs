@@ -15,7 +15,7 @@ namespace ServerClient
         {
             PATIENT,
             DOCTOR,
-            ALL
+            ALL,
         }
 
         public ClientsManager()
@@ -63,7 +63,6 @@ namespace ServerClient
             Console.WriteLine("Client disconnected");
         }
 
-
         /// <summary>
         /// Gets all logged in patient clients
         /// </summary>
@@ -78,6 +77,7 @@ namespace ServerClient
 
             return new List<ClientHandler>(dic.Values);
         }
+
         /// <summary>
         /// send a header and data to a list of clients
         /// </summary>
