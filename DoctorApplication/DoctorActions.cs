@@ -61,15 +61,6 @@ namespace DoctorApplication
                 }
             });
 
-            //foreach (JObject item in dataArray)
-            //{
-            //    string clientId = item["client_id"].ToString();
-            //    string clientName = item["client_name"].ToString();
-            //    string[] row = { clientId, clientName };
-            //    var listViewItem = new ListViewItem();
-            //    listViewItem.Content = row;
-            //    selectClientHistory.UserGrid.Items.Add(listViewItem);
-            //}
         }
 
         public void UpdateHistoryWindow(JObject data)
