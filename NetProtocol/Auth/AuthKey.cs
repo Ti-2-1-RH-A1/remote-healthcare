@@ -13,11 +13,11 @@ namespace NetProtocol.Auth
         {
             if (Directory.Exists(storageLocation))
             {
-                if (File.Exists(storageLocation + "key.txt"))
+                if (File.Exists(storageLocation + "/key.txt"))
                 {
-                    return File.ReadAllText(storageLocation + "key.txt");
+                    return File.ReadAllText(storageLocation + "/key.txt");
                 }
-                File.Create(storageLocation + "key.txt");
+                File.Create(storageLocation + "/key.txt");
             }
             else
             {
@@ -25,7 +25,7 @@ namespace NetProtocol.Auth
             }
 
             Console.WriteLine
-            ("Key file not found created at: " + storageLocation + "key.txt");
+            ("Key file not found created at: " + storageLocation + "/key.txt");
 
             return "no-key";
 

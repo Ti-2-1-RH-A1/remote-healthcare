@@ -6,6 +6,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace ServerClient
 {
@@ -43,7 +44,7 @@ namespace ServerClient
             };
             this.stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
-
+        
         private Callback Get()
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
