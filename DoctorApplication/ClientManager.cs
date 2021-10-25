@@ -25,6 +25,7 @@ namespace DoctorApplication
                 { "GetClients", AddClientsFromString() },
                 { "NewClient", AddConnectedClient() },
                 { "RemoveClient", RemoveDisconnectedClient() },
+                { "Realtime", ReceiveRealtime() },
             };
 
             this.MainWindow = mainWindow;
@@ -32,7 +33,7 @@ namespace DoctorApplication
 
         public async Task Start()
         {
-            client = new NetProtocol.Client("localhost", "EchteDokter", false);
+            client = new NetProtocol.Client("145.49.23.174",  false);
 
             while (!client.loggedIn)
             {
@@ -47,7 +48,6 @@ namespace DoctorApplication
             }, new Dictionary<string, string>());
         }
 
-        
         /// <summary>
         /// Subscription for messages from the server
         /// </summary>
@@ -62,6 +62,17 @@ namespace DoctorApplication
                 action(e.headers, e.data);
                 return;
             }
+        }
+
+        /// <summary>
+        /// receives realtime data from client
+        /// </summary>
+        private Callback ReceiveRealtime()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                Console.WriteLine(data.Values);
+            };
         }
 
         /// <summary>
@@ -91,7 +102,7 @@ namespace DoctorApplication
                     MainWindow.AddToList(client);
                 }
             };
-            
+
         }
 
         /// <summary>
@@ -100,7 +111,7 @@ namespace DoctorApplication
         /// <returns></returns>
         private Callback AddConnectedClient()
         {
-            return delegate(Dictionary<string, string> header, Dictionary<string, string> data)
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
                 string[] split = data["Data"][0..^1].Split("|");
 
@@ -125,7 +136,7 @@ namespace DoctorApplication
                 clients.TryGetValue(uuid, out Client client);
                 MainWindow.RemovefromList(client);
                 clients.Remove(uuid);
-                
+
             };
         }
 
@@ -139,6 +150,13 @@ namespace DoctorApplication
             {
                 { "Message", message },
             });
+        }
+
+        public void SendToClient(string action, Dictionary<string, string> data, string id)
+        {
+            SendToClients(clients.Keys
+                .Where(p => p.Equals(id))
+                .ToList(), action, data);
         }
 
         /// <summary>

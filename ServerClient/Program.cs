@@ -15,6 +15,7 @@ namespace ServerClient
 
             //var client = new Client("localhost", "Fiets", true, "name");
 
+
             // await Task.Delay(30000);
             // var client2 = new Client("localhost", "Fiets", false, "Robin 2");
             //
