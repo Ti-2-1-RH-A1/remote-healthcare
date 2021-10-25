@@ -33,7 +33,7 @@ namespace DoctorApplication
 
         public async Task Start()
         {
-            client = new NetProtocol.Client("localhost",  false);
+            client = new NetProtocol.Client("145.49.23.174",  false);
 
             while (!client.loggedIn)
             {
@@ -150,6 +150,13 @@ namespace DoctorApplication
             {
                 { "Message", message },
             });
+        }
+
+        public void SendToClient(string action, Dictionary<string, string> data, string id)
+        {
+            SendToClients(clients.Keys
+                .Where(p => p.Equals(id))
+                .ToList(), action, data);
         }
 
         /// <summary>
