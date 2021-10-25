@@ -60,7 +60,7 @@ namespace DoctorApplication
 
         private void BtnMessage_Click(object sender, RoutedEventArgs e)
         {
-            Message message = new(this);
+            MessageAll message = new(this);
             message.ShowDialog();
         }
     }

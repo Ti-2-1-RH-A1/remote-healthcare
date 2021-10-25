@@ -29,7 +29,7 @@ namespace DoctorApplication
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            doctorActions.SendToAll("test");
+            // not implemented
         }
     }
 }
