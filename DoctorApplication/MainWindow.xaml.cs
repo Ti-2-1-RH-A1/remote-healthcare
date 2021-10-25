@@ -10,7 +10,8 @@ namespace DoctorApplication
     /// </summary>
     public partial class MainWindow : Window
     {
-        private DoctorActions doctorActions;
+        public DoctorActions doctorActions;
+
         public MainWindow()
         {
             doctorActions = new DoctorActions(this);
@@ -59,7 +60,8 @@ namespace DoctorApplication
 
         private void BtnMessage_Click(object sender, RoutedEventArgs e)
         {
-            doctorActions.SendToAll("test");
+            MessageAll message = new(this);
+            message.ShowDialog();
         }
     }
 }

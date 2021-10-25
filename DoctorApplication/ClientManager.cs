@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using NetProtocol;
+using System.Linq;
 
 namespace DoctorApplication
 {
@@ -146,7 +146,7 @@ namespace DoctorApplication
         /// <param name="message"></param>
         public void SendMessageToAll(string message)
         {
-            SendToClients(clients.Keys.ToList(), "Message", new Dictionary<string, string>()
+            SendToClients(clients.Values.Select(v => v.clientSerial).ToList(), "Message", new Dictionary<string, string>()
             {
                 { "Message", message },
             });
