@@ -103,6 +103,9 @@ namespace ServerClient
                                 property.SetValue(clientData, value);
                             }
                         }
+
+                        manager.dataHandler.StoreData(id, data);
+
                         SendPacket(header, new Dictionary<string, string>(){
                             { "Result", "Ok" },
                         });

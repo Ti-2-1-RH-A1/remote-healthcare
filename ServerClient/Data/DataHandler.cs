@@ -91,7 +91,7 @@ namespace ServerClient.Data
             JObject jo = JObject.Parse(File.ReadAllText(FilePath(id)));
             JArray data = jo["data"] as JArray;
             JObject main = new();
-            foreach (var (key, value) in healthData)
+            foreach ((string key, string value) in healthData)
             {
                 main.Add(key, value);
             }
