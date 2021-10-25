@@ -2,12 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ServerClient.Data;
 
 namespace ServerClient
 {
     public class ClientsManager
     {
         private readonly Dictionary<string, ClientHandler> clients;
+        public readonly DataHandler dataHandler;
 
         public enum ClientType
         {
@@ -19,6 +21,8 @@ namespace ServerClient
         public ClientsManager()
         {
             clients = new Dictionary<string, ClientHandler>();
+            dataHandler = new DataHandler();
+            dataHandler.LoadAllData();
         }
 
         public void Add(ClientHandler clientHandler)

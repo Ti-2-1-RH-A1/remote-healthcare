@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 
 namespace DoctorApplication
 {
@@ -60,6 +63,24 @@ namespace DoctorApplication
         private void BtnMessage_Click(object sender, RoutedEventArgs e)
         {
             doctorActions.SendToAll("test");
+        }
+
+        private void btnStartSession_Click(object sender, RoutedEventArgs e)
+        {
+            ListView list = UserGrid;
+            if (list.SelectedItems.Count < 1) return;
+
+            IList lstClients = list.SelectedItems;
+
+            doctorActions.SendStartSession(lstClients);
+        }
+
+        private void btnStopSession_Click(object sender, RoutedEventArgs e)
+        {
+            ListView list = UserGrid;
+            if (list.SelectedItems.Count > 1 || list.SelectedItems.Count < 1) return;
+            Client selClient = (Client)list.SelectedItem;
+            doctorActions.SendStopSession(selClient.clientSerial);
         }
     }
 }
