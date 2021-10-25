@@ -53,18 +53,18 @@ namespace DoctorApplication
 
         private void BtnBroadcast_Click(object sender, RoutedEventArgs e)
         {
-
+            MessageAll message = new(this);
+            message.ShowDialog();
         }
 
         private void BtnHistory_Click(object sender, RoutedEventArgs e)
         {
-            DoctorActions.OpenSelectClientWindow();
+            doctorActions.OpenSelectClientWindow();
         }
 
         private void BtnMessage_Click(object sender, RoutedEventArgs e)
         {
-            MessageAll message = new(this);
-            message.ShowDialog();
+            
         }
 
         private void btnStartSession_Click(object sender, RoutedEventArgs e)

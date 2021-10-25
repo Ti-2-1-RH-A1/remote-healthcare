@@ -48,6 +48,7 @@ namespace ServerClient.Tests
             Assert.IsTrue(client.loggedIn);
             client.SendPacket(new Dictionary<string, string>() {
                 { "Method", "Get" },
+                { "GetKeys", "speed" },
             }, new Dictionary<string, string>(), (e1, e2) =>
             {
                 Assert.IsTrue(true);

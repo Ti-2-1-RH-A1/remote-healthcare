@@ -20,14 +20,11 @@ namespace DoctorApplication
     /// </summary>
     public partial class SelectClientHistory : Window
     {
-        public SelectClientHistory()
+        DoctorActions doctorActions;
+        public SelectClientHistory(MainWindow main)
         {
+            doctorActions = new DoctorActions(main);
             InitializeComponent();
-            Client client = new Client();
-            client.clientAuthKey = "aweq1312";
-            client.clientName = "Naam van client";
-            client.clientSerial = "12are";
-            UserGrid.Items.Add(client);
 
         }
 
@@ -37,7 +34,7 @@ namespace DoctorApplication
             if(UserGrid.SelectedItems.Count > 0)
             {
                 Client client = (Client)UserGrid.SelectedItem;
-                DoctorActions.OpenHistoryWindow(client.clientSerial);
+                doctorActions.OpenHistoryWindow(client);
                 Close();
             }
         }

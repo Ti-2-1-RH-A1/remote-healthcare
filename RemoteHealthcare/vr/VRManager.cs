@@ -28,8 +28,6 @@ namespace RemoteHealthcare.VR
             services.GetService<IDeviceManager>().HandelDataEvents += HandleData;
 
             connection = new Connection(client.GetStream(), this);
-
-            userSessions = VRMethod.GetRunningSessions(ref connection);
         }
 
         /// <summary>
@@ -69,7 +67,15 @@ namespace RemoteHealthcare.VR
         ///
         public void Start()
         {
-            ConnectToAClient();
+            connection.Start();
+            if (!connection.TestConnection())
+            {
+                return;
+            }
+            else
+            {
+                Reconnect();
+            }
 
             VRMethod.ResetScene(ref connection);
 

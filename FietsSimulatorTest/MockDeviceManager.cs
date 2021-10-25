@@ -42,7 +42,15 @@ namespace RemoteHealthcare.Tests
             BIKE_DISTANCE = 4,
             BIKE_RPM = 8,
         }
-        
+
+        public void Start()
+        {
+            
+        }
+
+        public IBikeManager.BikeType bikeType { get; set; }
+        public string bikeID { get; set; }
+
         public void HandleData((DataTypes, float) data)
         {
             switch(data.Item1)
@@ -67,6 +75,15 @@ namespace RemoteHealthcare.Tests
         }
 
         public event Action<(DataTypes, float)> HandelDataEvents;
+        public void StartTraining()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StopTraining()
+        {
+            throw new NotImplementedException();
+        }
 
         private IServiceProvider BuildServiceProvider()
         {
