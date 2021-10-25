@@ -25,6 +25,8 @@
                     <RowDefinition Height="2*"/>
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="2*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="2*"/>
                     <RowDefinition Height="2*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -43,6 +45,7 @@
                 <Button Content="History" Grid.Row="3" Grid.Column="3" Name="btnHistory" Click="BtnHistory_Click"/>
                 <Button Content="Start session" Grid.Row="5" Grid.Column="1" Name="btnStartSession" Click="btnStartSession_Click"/>
                 <Button Content="Stop session" Grid.Row="5" Grid.Column="3" Name="btnStopSession" Click="btnStopSession_Click"/>
+                <Button Content="Change Resistance" Grid.Row="7" Grid.Column="1" Name="btnChangeResistance" Click="btnChangeResistance_Click" />
             </Grid>
             <ListView Name="UserGrid" Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Client, Mode=TwoWay}" SelectedItem="{Binding SelectedClient}"  >
                 <ListView.View>

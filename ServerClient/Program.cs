@@ -9,18 +9,18 @@ namespace ServerClient
         public static Task Main(string[] args)
         {
             string certificate = @"Server.pfx";
-            var server = new Server(certificate, AuthHandler.Init(), false);
+            var server = new Server(certificate, AuthHandler.Init());
 
             //var client = new Client("localhost", "Fiets", false, "Robin 1");
+           
+            // var client = new Client("localhost", true, "name", "e5OczxmOprhbpDVUtF4JmeM7gVdqrFDl");
 
-            //var client = new Client("localhost", "Fiets", true, "name");
 
-
-            // await Task.Delay(30000);
-            // var client2 = new Client("localhost", "Fiets", false, "Robin 2");
-            //
-            //
-            // await Task.Delay(10000);
+            //Task.Delay(30000).Wait();
+            var client2 = new Client("localhost", true, "Robin", "e5OczxmOprhbpDVUtF4JmeM7gVdqrFDl");
+            
+            
+            //  Task.Delay(10000).Wait();
             // client2.Disconnect();
             // await Task.Delay(-1);
 
