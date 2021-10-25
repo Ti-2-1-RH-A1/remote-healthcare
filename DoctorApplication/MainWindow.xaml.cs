@@ -78,9 +78,8 @@ namespace DoctorApplication
         private void btnStopSession_Click(object sender, RoutedEventArgs e)
         {
             ListView list = UserGrid;
-            if (list.SelectedItems.Count > 1 || list.SelectedItems.Count < 1) return;
-            Client selClient = (Client)list.SelectedItem;
-            doctorActions.SendStopSession(selClient.clientSerial);
+            if (list.SelectedItems.Count < 1) return;
+            doctorActions.SendStopSession(list.SelectedItems);
         }
     }
 }
