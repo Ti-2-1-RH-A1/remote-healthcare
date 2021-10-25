@@ -58,7 +58,7 @@ namespace DoctorApplication
         private void HandleData(object Client, DataReceivedArgs e)
         {
             e.headers.TryGetValue("Method", out string item);
-
+        
             if (actions.TryGetValue(item, out NetProtocol.Client.Callback action))
             {
                 action(e.headers, e.data);
@@ -138,7 +138,7 @@ namespace DoctorApplication
                 clients.TryGetValue(uuid, out Client client);
                 MainWindow.RemovefromList(client);
                 clients.Remove(uuid);
-
+                
             };
         }
 
@@ -146,7 +146,7 @@ namespace DoctorApplication
         {
             client.SendPacket(new Dictionary<string, string>()
                 {
-                    {"Method", "GetHistoryClients"}
+                    {"Method", "GetHistoryClients"},
                 }, new Dictionary<string, string>(),
                 (Dictionary<string, string> header, Dictionary<string, string> data) =>
                 {
@@ -162,10 +162,10 @@ namespace DoctorApplication
         {
             client.SendPacket(new Dictionary<string, string>()
             {
-                { "Method", "GetHistory" }
+                { "Method", "GetHistory" },
             }, new Dictionary<string, string>()
             {
-                { "client_id", clientID }
+                { "client_id", clientID },
             }, (Dictionary<string, string> header, Dictionary<string, string> data) =>
             {
                 data.TryGetValue("data", out string Jdata);
