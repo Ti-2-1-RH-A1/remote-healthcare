@@ -49,6 +49,11 @@ namespace RemoteHealthcare.Bike
             activeBike.Stop();
         }
 
+        public void SetResistance(int resistance)
+        {
+            this.activeBike.SetResistance((byte) ((resistance / 100) * byte.MaxValue));
+        }
+
         public Thread GetSimThread() => (this.simulatorBike as SimulatorBike).GetSimThread();
         public bool SimIsRunning() => (this.simulatorBike as SimulatorBike).IsRunning();
         public void SimSetRunning(bool running) => (this.simulatorBike as SimulatorBike).SetRunning(running);

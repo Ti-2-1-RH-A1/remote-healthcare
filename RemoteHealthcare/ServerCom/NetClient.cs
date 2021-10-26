@@ -22,9 +22,21 @@ namespace RemoteHealthcare.ServerCom
                 { "Stop", StartClient() },
                 { "Start", StopClient() },
                 { "Message", HandleMessage() },
+                { "SetResistance", SetResistance() }
             };
         }
 
+        private Client.Callback SetResistance()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                data.TryGetValue("Resistance", out string resistance);
+                int resist = int.Parse(resistance);
+
+                iServiceProvider.GetService<IBikeManager>().SetResistance(resist);
+
+            };
+        }
 
         private Client.Callback StartClient()
         {
