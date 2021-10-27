@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -31,11 +32,21 @@ namespace DoctorApplication
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Trace.WriteLine("Select pressed");
-            if(UserGrid.SelectedItems.Count > 0)
+            ListView list = UserGrid;
+
+            if (list.SelectedItems.Count < 1)
             {
-                Client client = (Client)UserGrid.SelectedItem;
-                doctorActions.OpenHistoryWindow(client);
-                Close();
+                MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            } else if (list.SelectedItems.Count > 1)
+            {
+                MessageBox.Show("You can't select more than one client.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            else
+            {
+                var selectedClient = list.SelectedItems[0] as Client;                
+                doctorActions.OpenHistoryWindow(selectedClient);
             }
         }
     }
