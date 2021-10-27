@@ -35,7 +35,7 @@ namespace DoctorApplication
 
         public async Task Start()
         {
-            client = new NetProtocol.Client("localhost");
+            client = new NetProtocol.Client("localhost",false);
 
             while (!client.loggedIn)
             {

@@ -79,8 +79,7 @@ namespace DoctorApplication
 
         private void btnStartSession_Click(object sender, RoutedEventArgs e)
         {
-
-            ListView list = UserGrid;
+            ListView list = ClientListView;
             if (list.SelectedItems.Count < 1)
             {
                 MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -95,7 +94,7 @@ namespace DoctorApplication
         private void btnStopSession_Click(object sender, RoutedEventArgs e)
         {
 
-            ListView list = UserGrid;
+            ListView list = ClientListView;
             if (list.SelectedItems.Count < 1)
             {
                 MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -106,7 +105,7 @@ namespace DoctorApplication
 
         private void btnChangeResistance_Click(object sender, RoutedEventArgs e)
         {
-            ListView list = UserGrid;
+            ListView list = ClientListView;
             if (list.SelectedItems.Count < 1)
             {
                 MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
