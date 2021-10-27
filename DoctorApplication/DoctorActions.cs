@@ -44,7 +44,7 @@ namespace DoctorApplication
         public void OpenHistoryWindow(Client client)
         {
             string clientID = client.clientSerial;
-            clientHistoryWindow = new ClientHistoryWindow(client);
+            clientHistoryWindow = new ClientHistoryWindow();
             clientManager.RequestHistoryData(clientID);
             clientHistoryWindow.ShowDialog();
         }
@@ -54,6 +54,7 @@ namespace DoctorApplication
             Application.Current.Dispatcher.Invoke((Action)delegate {
                 foreach (KeyValuePair<string, string> entry in data)
                 {
+                    Client client = new Client();
                     string[] row = { entry.Key, entry.Value };
                     ListViewItem listViewItem = new ListViewItem();
                     listViewItem.Content = row;
