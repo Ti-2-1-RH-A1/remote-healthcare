@@ -88,8 +88,8 @@ namespace RemoteHealthcare.ServerCom
             client.SendPacket(new Dictionary<string, string>()
             {
                 { "Method", "PostRT" },
-                { "Id", client.UUID },
             }, new Dictionary<string, string>() {
+                { "Id", client.UUID },
                 { name, data.ToString() },
             });
         }

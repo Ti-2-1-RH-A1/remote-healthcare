@@ -73,7 +73,18 @@ namespace DoctorApplication
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
-                Console.WriteLine(data.Values);
+                if (data.TryGetValue("Id", out string id))
+                {
+                    if (clients.TryGetValue(id, out Client editClient))
+                    {
+                        if (data.TryGetValue("speed", out string speed)) editClient.speed = speed;
+                        if (data.TryGetValue("time", out string time)) editClient.time = time;
+                        if (data.TryGetValue("distance_traveled", out string distance_traveled)) editClient.distance_traveled = distance_traveled;
+                        if (data.TryGetValue("rpm", out string rpm)) editClient.rpm = rpm;
+                        if (data.TryGetValue("heartrate", out string heartrate)) editClient.heartrate = heartrate;
+                        clients[id] = editClient;
+                    }
+                }
             };
         }
 
