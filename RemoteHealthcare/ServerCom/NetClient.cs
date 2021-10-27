@@ -19,8 +19,8 @@ namespace RemoteHealthcare.ServerCom
         {
             this.iServiceProvider = iServiceProvider;
             actions = new Dictionary<string, Client.Callback>() {
-                { "Stop", StartClient() },
-                { "Start", StopClient() },
+                { "Stop", StopClient() },
+                { "Start", StartClient() },
                 { "Message", HandleMessage() },
                 { "SetResistance", SetResistance() }
             };

@@ -13,7 +13,7 @@ namespace DoctorApplication
     {
         private readonly Dictionary<string, Client> clients = new();
         private NetProtocol.Client client;
-
+        
 
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
 
@@ -77,11 +77,11 @@ namespace DoctorApplication
                 {
                     if (clients.TryGetValue(id, out Client editClient))
                     {
-                        if (data.TryGetValue("speed", out string speed)) editClient.speed = speed;
-                        if (data.TryGetValue("time", out string time)) editClient.time = time;
-                        if (data.TryGetValue("distance_traveled", out string distance_traveled)) editClient.distance_traveled = distance_traveled;
-                        if (data.TryGetValue("rpm", out string rpm)) editClient.rpm = rpm;
-                        if (data.TryGetValue("heartrate", out string heartrate)) editClient.heartrate = heartrate;
+                        if (data.TryGetValue("speed", out string speed)) editClient.Speed = speed;
+                        if (data.TryGetValue("time", out string time)) editClient.Time = time;
+                        if (data.TryGetValue("distance_traveled", out string distance_traveled)) editClient.DistanceTraveled = distance_traveled;
+                        if (data.TryGetValue("rpm", out string rpm)) editClient.Rpm = rpm;
+                        if (data.TryGetValue("heartrate", out string heartrate)) editClient.Heartrate = heartrate;
                         clients[id] = editClient;
                     }
                 }
