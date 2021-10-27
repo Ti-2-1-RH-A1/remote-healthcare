@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 
 namespace DoctorApplication
 {
@@ -50,7 +53,8 @@ namespace DoctorApplication
 
         private void BtnBroadcast_Click(object sender, RoutedEventArgs e)
         {
-
+            MessageAll message = new(this);
+            message.ShowDialog();
         }
 
         private void BtnHistory_Click(object sender, RoutedEventArgs e)
@@ -60,8 +64,51 @@ namespace DoctorApplication
 
         private void BtnMessage_Click(object sender, RoutedEventArgs e)
         {
-            MessageAll message = new(this);
-            message.ShowDialog();
+            
+        }
+
+        private void btnStartSession_Click(object sender, RoutedEventArgs e)
+        {
+            ListView list = UserGrid;
+            if (list.SelectedItems.Count < 1)
+            {
+                MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            IList lstClients = list.SelectedItems;
+
+            doctorActions.SendStartSession(lstClients);
+        }
+
+        private void btnStopSession_Click(object sender, RoutedEventArgs e)
+        {
+            ListView list = UserGrid;
+            if (list.SelectedItems.Count < 1)
+            {
+                MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            doctorActions.SendStopSession(list.SelectedItems);
+        }
+
+        private void btnChangeResistance_Click(object sender, RoutedEventArgs e)
+        {
+            ListView list = UserGrid;
+            if (list.SelectedItems.Count < 1)
+            {
+                MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var dialog = new inputBox("Enter resistance %");
+            dialog.Owner = this;
+            if (dialog.ShowDialog() == true)
+            {
+                doctorActions.SendSetResistance(list.SelectedItems, dialog.ResponseText);
+            }
+
+
         }
     }
 }

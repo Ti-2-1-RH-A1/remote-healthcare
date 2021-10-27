@@ -2,25 +2,75 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using NetProtocol;
+using RemoteHealthcare.Bike;
 
 namespace RemoteHealthcare.ServerCom
 {
 
     class NetClient
     {
-        private Client client;
-        public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
-        public Dictionary<string, Callback> actions;
+        private readonly IServiceProvider iServiceProvider;
 
-        public NetClient()
+        private Client client;
+        public Dictionary<string, Client.Callback> actions;
+        public NetClient(IServiceProvider iServiceProvider)
         {
-            actions = new Dictionary<string, Callback>()
-            {
+            this.iServiceProvider = iServiceProvider;
+            actions = new Dictionary<string, Client.Callback>() {
+                { "Stop", StartClient() },
+                { "Start", StopClient() },
                 { "Message", HandleMessage() },
+                { "SetResistance", SetResistance() }
             };
         }
 
+        private Client.Callback SetResistance()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                data.TryGetValue("Resistance", out string resistance);
+                int resist = int.Parse(resistance);
+
+                iServiceProvider.GetService<IBikeManager>().SetResistance(resist);
+
+            };
+        }
+
+        private Client.Callback StartClient()
+        {
+
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                iServiceProvider.GetService<IDeviceManager>().StartTraining();
+            };
+        }
+
+        private Client.Callback StopClient()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                iServiceProvider.GetService<IDeviceManager>().StopTraining();
+            };
+        }
+
+        /// <summary>
+        /// Subscription for messages from the server
+        /// </summary>
+        /// <param name="Client"></param>
+        /// <param name="e">DataReceivedArgs</param>
+        private void HandleData(object Client, DataReceivedArgs e)
+        {
+            e.headers.TryGetValue("Method", out string item);
+
+            if (actions.TryGetValue(item, out Client.Callback action))
+            {
+                action(e.headers, e.data);
+                return;
+            }
+        }
+        
         public async Task Start()
         {
             client = new Client("localhost", false, "Henk");
@@ -28,6 +78,7 @@ namespace RemoteHealthcare.ServerCom
             {
                 Thread.Sleep(10);
             }
+            client.DataReceived += HandleData;
 
             client.DataReceived += HandleDataFromServer;
         }
@@ -37,8 +88,8 @@ namespace RemoteHealthcare.ServerCom
             client.SendPacket(new Dictionary<string, string>()
             {
                 { "Method", "PostRT" },
-                { "Id", client.UUID },
             }, new Dictionary<string, string>() {
+                { "Id", client.UUID },
                 { name, data.ToString() },
             });
         }
@@ -59,14 +110,14 @@ namespace RemoteHealthcare.ServerCom
         {
             e.headers.TryGetValue("Method", out string item);
 
-            if (actions.TryGetValue(item, out Callback action))
+            if (actions.TryGetValue(item, out Client.Callback action))
             {
                 action(e.headers, e.data);
                 return;
             }
         }
 
-        private Callback HandleMessage() => delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+        private Client.Callback HandleMessage() => delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
                 if (data.TryGetValue("Message", out string message))
                 {

@@ -4,29 +4,61 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using RemoteHealthcare.Bike;
 
 namespace RemoteHealthcare.VR
 {
     public class Connection
     {
         private readonly NetworkStream networkStream;
+        private readonly VRManager vrManager;
         public string currentSessionID { get; set; }
 
-        private delegate void Reconnect();
-
-        private readonly Reconnect reconnect;
-
         private static readonly Random random = new Random();
+
+        private Thread recieveThread;
+        private bool isAlive;
 
         public Connection(NetworkStream networkStream, VRManager vrManager)
         {
             this.networkStream = networkStream;
+            this.vrManager = vrManager;
             currentSessionID = "";
             //Sets a timeout if this time is hit a timeout exception will be thrown
             networkStream.ReadTimeout = 10000;
-            reconnect = vrManager.Reconnect;
-            Thread t = new Thread(Run);
-            t.Start();
+        }
+
+        public bool TestConnection()
+        {
+            byte[] dataBytes = System.Text.Encoding.ASCII.GetBytes("test");
+            try
+            {
+                networkStream.Write(BitConverter.GetBytes(dataBytes.Length));
+                networkStream.Write(dataBytes);
+                networkStream.Flush();
+                return true;
+            }
+            catch (System.IO.IOException e)
+            {
+                Stop();
+                Console.WriteLine(e);
+                return false;
+            }
+        }
+
+
+        public void Start()
+        {
+            recieveThread = new Thread(Run);
+            recieveThread.Start();
+            isAlive = true;
+        }
+
+        public void Stop()
+        {
+            networkStream.Close();
+            recieveThread.Abort();
+            isAlive = true;
         }
 
 
@@ -72,10 +104,10 @@ namespace RemoteHealthcare.VR
             }
             else
             {
-                receivedData = String.Empty;
-                reconnect();
+                receivedData = string.Empty;
             }
         }
+
 
         /// <summary>SendToTcp does <c>Sending a String over Tcp</c> using ASCII encoding</summary>
         ///
@@ -83,10 +115,20 @@ namespace RemoteHealthcare.VR
         {
             byte[] dataBytes = System.Text.Encoding.ASCII.GetBytes(data);
             int dataLength = dataBytes.Length;
-
-            networkStream.Write(BitConverter.GetBytes(dataLength));
-            networkStream.Write(dataBytes);
-            networkStream.Flush();
+            if (isAlive)
+            {
+                try
+                {
+                    networkStream.Write(BitConverter.GetBytes(dataLength));
+                    networkStream.Write(dataBytes);
+                    networkStream.Flush();
+                }
+                catch (System.IO.IOException e)
+                {
+                    Stop();
+                    Console.WriteLine(e);
+                }
+            }
         }
 
         private async Task waitForConnection()
@@ -144,8 +186,8 @@ namespace RemoteHealthcare.VR
                     //Console.WriteLine(receivedData);
 
                     JObject tunnel = JObject.Parse(receivedData);
-                    JObject idObject = (JObject)tunnel.GetValue("data");
-                    JObject dataObject = (JObject)idObject.GetValue("data");
+                    JObject idObject = (JObject) tunnel.GetValue("data");
+                    JObject dataObject = (JObject) idObject.GetValue("data");
                     if (dataObject.ContainsKey("serial"))
                     {
                         JToken jToken = dataObject.GetValue("serial");

@@ -7,12 +7,12 @@ namespace RemoteHealthcare.ServerCom
     class ComManager : IComManager
     {
         private readonly NetClient netClient;
-        private readonly IServiceProvider services;
+        public readonly IServiceProvider services;
 
         public ComManager(IServiceProvider services)
         {
             this.services = services;
-            netClient = new NetClient();
+            netClient = new NetClient(this.services);
         }
 
         public void Start()

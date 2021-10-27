@@ -17,20 +17,16 @@ namespace DoctorApplication
 
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
 
-        public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
-        public Dictionary<string, Callback> actions;
+        public Dictionary<string, NetProtocol.Client.Callback> actions;
         public MainWindow MainWindow;
         public DoctorActions doctorActions;
 
         public ClientManager(MainWindow mainWindow)
         {
-            actions = new Dictionary<string, Callback>() {
+            actions = new Dictionary<string, NetProtocol.Client.Callback>() {
                 { "GetClients", AddClientsFromString() },
                 { "NewClient", AddConnectedClient() },
                 { "RemoveClient", RemoveDisconnectedClient() },
-                { "GetHistoryClients", ReadHistoryClients()},
-                { "GetHistory",  ReadHistoryData()},
-            
                 { "Realtime", ReceiveRealtime() },
             };
 
@@ -39,7 +35,7 @@ namespace DoctorApplication
 
         public async Task Start()
         {
-            client = new NetProtocol.Client("localhost",  false);
+            client = new NetProtocol.Client("localhost");
 
             while (!client.loggedIn)
             {
@@ -62,8 +58,8 @@ namespace DoctorApplication
         private void HandleData(object Client, DataReceivedArgs e)
         {
             e.headers.TryGetValue("Method", out string item);
-
-            if (actions.TryGetValue(item, out Callback action))
+        
+            if (actions.TryGetValue(item, out NetProtocol.Client.Callback action))
             {
                 action(e.headers, e.data);
                 return;
@@ -73,11 +69,22 @@ namespace DoctorApplication
         /// <summary>
         /// receives realtime data from client
         /// </summary>
-        private Callback ReceiveRealtime()
+        private NetProtocol.Client.Callback ReceiveRealtime()
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
-                Console.WriteLine(data.Values);
+                if (data.TryGetValue("Id", out string id))
+                {
+                    if (clients.TryGetValue(id, out Client editClient))
+                    {
+                        if (data.TryGetValue("speed", out string speed)) editClient.speed = speed;
+                        if (data.TryGetValue("time", out string time)) editClient.time = time;
+                        if (data.TryGetValue("distance_traveled", out string distance_traveled)) editClient.distance_traveled = distance_traveled;
+                        if (data.TryGetValue("rpm", out string rpm)) editClient.rpm = rpm;
+                        if (data.TryGetValue("heartrate", out string heartrate)) editClient.heartrate = heartrate;
+                        clients[id] = editClient;
+                    }
+                }
             };
         }
 
@@ -85,7 +92,7 @@ namespace DoctorApplication
         /// generate a list of active clients based on a string
         /// </summary>
         /// <param name="clientsString"></param>
-        private Callback AddClientsFromString()
+        private NetProtocol.Client.Callback AddClientsFromString()
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
@@ -115,7 +122,7 @@ namespace DoctorApplication
         /// Handles the callback when a new client connects to the server
         /// </summary>
         /// <returns></returns>
-        private Callback AddConnectedClient()
+        private NetProtocol.Client.Callback AddConnectedClient()
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
@@ -134,7 +141,7 @@ namespace DoctorApplication
         /// <summary>
         /// Handles the disconnect callback
         /// </summary>
-        private Callback RemoveDisconnectedClient()
+        private NetProtocol.Client.Callback RemoveDisconnectedClient()
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
@@ -145,46 +152,37 @@ namespace DoctorApplication
             };
         }
 
-        private Callback ReadHistoryClients()
-        {
-            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
-            {
-                data.TryGetValue("data", out string Jdata);
-
-                Dictionary<string, string> jo = JsonConvert.DeserializeObject<Dictionary<string, string>>(Jdata);
-
-                MainWindow.doctorActions.UpdateSelectWindow(jo);
-            };
-        }
-
-        private Callback ReadHistoryData()
-        {
-            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
-            {
-                data.TryGetValue("data", out string Jdata);
-
-                JObject jo = JObject.Parse(Jdata);
-
-                MainWindow.doctorActions.UpdateHistoryWindow(jo);
-            };
-        }
-
         public void RequestHistoryClients()
         {
             client.SendPacket(new Dictionary<string, string>()
-            {
-                { "Method", "GetHistoryClients" }
-            }, new Dictionary<string, string>());
+                {
+                    {"Method", "GetHistoryClients"},
+                }, new Dictionary<string, string>(),
+                (Dictionary<string, string> header, Dictionary<string, string> data) =>
+                {
+                    data.TryGetValue("data", out string Jdata);
+
+                    Dictionary<string, string> jo = JsonConvert.DeserializeObject<Dictionary<string, string>>(Jdata);
+
+                    MainWindow.doctorActions.UpdateSelectWindow(jo);
+                });
         }
 
         public void RequestHistoryData(string clientID)
         {
             client.SendPacket(new Dictionary<string, string>()
             {
-                { "Method", "GetHistory" }
+                { "Method", "GetHistory" },
             }, new Dictionary<string, string>()
             {
-                { "client_id", clientID }
+                { "client_id", clientID },
+            }, (Dictionary<string, string> header, Dictionary<string, string> data) =>
+            {
+                data.TryGetValue("data", out string Jdata);
+
+                JObject jo = JObject.Parse(Jdata);
+
+                MainWindow.doctorActions.UpdateHistoryWindow(jo);
             });
         }
 
@@ -198,6 +196,13 @@ namespace DoctorApplication
             {
                 { "Message", message },
             });
+        }
+
+        public void SendToClient(string action, Dictionary<string, string> data, string id)
+        {
+            SendToClients(clients.Keys
+                .Where(p => p.Equals(id))
+                .ToList(), action, data);
         }
 
         /// <summary>

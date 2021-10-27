@@ -6,24 +6,26 @@ namespace ServerClient
 {
     public class Program
     {
-        public static async Task Main(string[] args)
+        public static Task Main(string[] args)
         {
             string certificate = @"Server.pfx";
-            new Server(certificate, AuthHandler.Init(), false);
+            //var server = new Server(certificate, AuthHandler.Init());
 
             //var client = new Client("localhost", "Fiets", false, "Robin 1");
-
-            //var client = new Client("localhost", "Fiets", true, "name");
-
-            await Task.Delay(30000);
-            //var client2 = new Client("localhost", false, "Robin 2");
+           
+            // var client = new Client("localhost", true, "name", "e5OczxmOprhbpDVUtF4JmeM7gVdqrFDl");
 
 
-            await Task.Delay(10000);
-            //client2.Disconnect();
-            await Task.Delay(-1);
+            //Task.Delay(30000).Wait();
+            var client2 = new Client("145.49.42.127", false, "Robin", "e5OczxmOprhbpDVUtF4JmeM7gVdqrFDl");
+            
+            
+            //  Task.Delay(10000).Wait();
+            // client2.Disconnect();
+            // await Task.Delay(-1);
 
-            Console.ReadLine();
+            //Console.ReadLine();
+            return Task.Delay(-1);
         }
     }
 }
