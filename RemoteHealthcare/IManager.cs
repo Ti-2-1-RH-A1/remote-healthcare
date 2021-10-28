@@ -33,7 +33,7 @@ namespace RemoteHealthcare.Bike
     public interface IVRManager
     {
         public void Start();
-        public void HandleData(Dictionary<DataTypes, float> data);;
+        public void HandleData(Dictionary<DataTypes, float> data);
         public void HandleDoctorMessage(string message);
         public void Stop();
     }
