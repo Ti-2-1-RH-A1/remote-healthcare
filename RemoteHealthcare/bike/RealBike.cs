@@ -27,11 +27,10 @@ namespace RemoteHealthcare.Bike
 
         private void Ble_DataReceived(object sender, BLESubscriptionValueChangedEventArgs e)
         {
-            List<(DataTypes, float)> dataReceived = BikeDataParser.ParseBikeData(e.Data);
-            foreach ((DataTypes, float) dataItem in dataReceived)
-            {
-                DataReceived(dataItem);
-            }
+            Dictionary<DataTypes, float> dataReceived = BikeDataParser.ParseBikeData(e.Data);
+
+                DataReceived(dataReceived);
+            
         }
 
         public void Stop()
@@ -52,7 +51,7 @@ namespace RemoteHealthcare.Bike
             bluetooth.Start(bikeTypeName + " " + bikeId, bikeServiceName, bikeSubscribtionCharacteristic);
         }
 
-        public void DataReceived((DataTypes, float) data)
+        public void DataReceived(Dictionary<DataTypes, float> data)
         {
             services.GetService<DeviceManager>().HandleData(data);
         }

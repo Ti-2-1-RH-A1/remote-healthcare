@@ -31,9 +31,9 @@ namespace RemoteHealthcare.VR
         }
 
         /// <summary>
-        /// Reconnect does <c>reconnects to a new client</c> reconnects to a new client and resets all necessary fields
+        /// Connect does <c>reconnects to a new client</c> reconnects to a new client and resets all necessary fields
         /// </summary>
-        public void Reconnect()
+        public void Connect()
         {
             userSessions = VRMethod.GetRunningSessions(ref connection);
             ConnectToAClient();
@@ -45,13 +45,10 @@ namespace RemoteHealthcare.VR
             nodes = VRMethod.GetScene(ref connection);
         }
 
-        public void HandleData((DataTypes, float) data)
+        public void HandleData(Dictionary<DataTypes, float> data)
         {
-            if (data.Item1 == DataTypes.BIKE_SPEED)
-            {
-                UpdateBikeSpeed(data.Item2);
-            }
 
+                UpdateBikeData(data);
         }
 
         public void HandleDoctorMessage(string message)
@@ -73,7 +70,7 @@ namespace RemoteHealthcare.VR
         public void Start()
         {
             connection.Start();
-            Reconnect();
+            Connect();
 
             VRMethod.ResetScene(ref connection);
 
@@ -217,12 +214,12 @@ namespace RemoteHealthcare.VR
             }
         }
 
-        public void UpdateBikeSpeed(float speed)
+        public void UpdateBikeData(Dictionary<DataTypes, float> data)
         {
             if (isReady)
             {
                 string bikeId = VRMethod.GetBikeID(ref connection);
-                VRMethod.ChangeSpeed(ref connection, bikeId, speed);
+                if (data != null && data.ContainsKey(DataTypes.BIKE_SPEED)) VRMethod.ChangeSpeed(ref connection, bikeId, data[DataTypes.BIKE_SPEED]);
             }
         }
 

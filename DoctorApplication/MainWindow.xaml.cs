@@ -74,7 +74,19 @@ namespace DoctorApplication
 
         private void BtnMessage_Click(object sender, RoutedEventArgs e)
         {
-            
+            ListView list = ClientListView;
+            if (list.SelectedItems.Count < 1)
+            {
+                MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var dialog = new inputBox("Type your message below:l");
+            dialog.Owner = this;
+            if (dialog.ShowDialog() == true)
+            {
+                doctorActions.SendMessage(list.SelectedItems, dialog.ResponseText);
+            }
         }
 
         private void btnStartSession_Click(object sender, RoutedEventArgs e)

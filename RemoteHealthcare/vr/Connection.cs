@@ -28,24 +28,6 @@ namespace RemoteHealthcare.VR
             networkStream.ReadTimeout = 10000;
         }
 
-        public bool TestConnection()
-        {
-            byte[] dataBytes = System.Text.Encoding.ASCII.GetBytes("test");
-            try
-            {
-                networkStream.Write(BitConverter.GetBytes(dataBytes.Length));
-                networkStream.Write(dataBytes);
-                networkStream.Flush();
-                return true;
-            }
-            catch (System.IO.IOException e)
-            {
-                Stop();
-                Console.WriteLine(e);
-                return false;
-            }
-        }
-
 
         public void Start()
         {

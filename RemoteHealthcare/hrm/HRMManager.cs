@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using RemoteHealthcare.Bike;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace RemoteHealthcare.Hrm
@@ -28,7 +29,7 @@ namespace RemoteHealthcare.Hrm
             DataReceived(HRMDataParser.ParseHRMData(e.Data));
         }
 
-        public void DataReceived((DataTypes, float) data)
+        public void DataReceived(Dictionary<DataTypes, float> data)
         {
             services.GetService<DeviceManager>().HandleData(data);
         }

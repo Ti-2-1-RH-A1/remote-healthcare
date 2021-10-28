@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
@@ -48,8 +49,7 @@ namespace RemoteHealthcare.Bike
         public void Stop()
         {
             this.isRunning = false;
-            //just to be save
-            GetSimThread().Abort();
+           
         }
 
         private void RunSimulation()
@@ -66,17 +66,20 @@ namespace RemoteHealthcare.Bike
                 GenerateDistanceTravled(stopwatch.ElapsedMilliseconds, prevMilis, ref totalDistanceTravled, speed);
                 float rpm = GenerateRPM(speed);
 
-                this.DataReceived((DataTypes.BIKE_SPEED, speed));
-                this.DataReceived((DataTypes.BIKE_DISTANCE, totalDistanceTravled));
-                this.DataReceived((DataTypes.BIKE_RPM, rpm));
-                this.DataReceived((DataTypes.BIKE_ELAPSED_TIME, stopwatch.ElapsedMilliseconds / 1000));
+                Dictionary<DataTypes, float> bikeDataRecieved = new Dictionary<DataTypes, float>();
+
+                bikeDataRecieved.Add(DataTypes.BIKE_SPEED, speed);
+                bikeDataRecieved.Add(DataTypes.BIKE_DISTANCE, totalDistanceTravled);
+                bikeDataRecieved.Add(DataTypes.BIKE_RPM, rpm);
+                bikeDataRecieved.Add(DataTypes.BIKE_ELAPSED_TIME, stopwatch.ElapsedMilliseconds / 1000);
+                DataReceived(bikeDataRecieved);
 
                 prevMilis = stopwatch.ElapsedMilliseconds;
                 Thread.Sleep(500); // Let the simulator wait until simulating the next dataset.
             }
         }
 
-        public void DataReceived((DataTypes, float) data)
+        public void DataReceived(Dictionary<DataTypes, float> data)
         {
             services.GetService<IDeviceManager>().HandleData(data);
         }

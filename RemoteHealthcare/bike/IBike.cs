@@ -1,4 +1,6 @@
-﻿namespace RemoteHealthcare.Bike
+﻿using System.Collections.Generic;
+
+namespace RemoteHealthcare.Bike
 {
     interface IBike
     {
@@ -19,6 +21,6 @@
         /// <param name="data">Is a Tuple containing a 
         /// <see cref="DataTypes"/> indicating the type of received data, and a
         /// float containing the value of the data.</param>
-        public void DataReceived((DataTypes, float) data);
+        public void DataReceived(Dictionary<DataTypes, float> data);
     }
 }

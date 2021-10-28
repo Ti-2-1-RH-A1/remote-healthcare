@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RemoteHealthcare.Bike;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace RemoteHealthcare.ServerCom
 {
@@ -21,26 +23,53 @@ namespace RemoteHealthcare.ServerCom
             services.GetService<IDeviceManager>().HandelDataEvents += HandleData;
         }
 
-        private void HandleData((DataTypes, float) data)
+        private void HandleData(Dictionary<DataTypes, float> data)
         {
-            switch (data.Item1)
+
+            Dictionary<string, string> dictionary = new Dictionary<string, string>();
+            foreach (var keyValuePair in data)
             {
-                case DataTypes.BIKE_SPEED:
-                    netClient.SendPost("speed", data.Item2);
-                    break;
-                case DataTypes.BIKE_ELAPSED_TIME:
-                    netClient.SendPost("time", data.Item2);
-                    break;
-                case DataTypes.BIKE_DISTANCE:
-                    netClient.SendPost("distance_traveled", data.Item2);
-                    break;
-                case DataTypes.BIKE_RPM:
-                    netClient.SendPost("rpm", data.Item2);
-                    break;
-                case DataTypes.HRM_HEARTRATE:
-                    netClient.SendPost("heartrate", data.Item2);
-                    break;
+                switch (keyValuePair.Key)
+                {
+                    case DataTypes.BIKE_SPEED:
+                        dictionary.Add("speed", keyValuePair.Value.ToString());
+                        break;
+                    case DataTypes.BIKE_ELAPSED_TIME:
+                        dictionary.Add("time", keyValuePair.Value.ToString());
+                        break;
+                    case DataTypes.BIKE_DISTANCE:
+                        dictionary.Add("distance_traveled", keyValuePair.Value.ToString());
+                        break;
+                    case DataTypes.BIKE_RPM:
+                        dictionary.Add("rpm", keyValuePair.Value.ToString());
+                        break;
+                    case DataTypes.HRM_HEARTRATE:
+                        dictionary.Add("heartrate", keyValuePair.Value.ToString());
+                        break;
+                }
             }
+
+            netClient.SendPost(dictionary);
+
+
+            // switch (data.Item1)
+            // {
+            //     case DataTypes.BIKE_SPEED:
+            //         netClient.SendPost("speed", data.Item2);
+            //         break;
+            //     case DataTypes.BIKE_ELAPSED_TIME:
+            //         netClient.SendPost("time", data.Item2);
+            //         break;
+            //     case DataTypes.BIKE_DISTANCE:
+            //         netClient.SendPost("distance_traveled", data.Item2);
+            //         break;
+            //     case DataTypes.BIKE_RPM:
+            //         netClient.SendPost("rpm", data.Item2);
+            //         break;
+            //     case DataTypes.HRM_HEARTRATE:
+            //         netClient.SendPost("heartrate", data.Item2);
+            //         break;
+            // }
         }
     }
 }
