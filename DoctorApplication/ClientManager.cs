@@ -47,7 +47,9 @@ namespace DoctorApplication
             client.SendPacket(new Dictionary<string, string>()
             {
                 { "Method", "GetClients" },
-            }, new Dictionary<string, string>());
+            }, new Dictionary<string, string>() {
+                { "Empty", "Empty" },
+            });
         }
 
         /// <summary>
@@ -157,7 +159,9 @@ namespace DoctorApplication
             client.SendPacket(new Dictionary<string, string>()
                 {
                     {"Method", "GetHistoryClients"},
-                }, new Dictionary<string, string>(),
+                }, new Dictionary<string, string>() {
+                    { "Empty", "Empty" },
+                },
                 (Dictionary<string, string> header, Dictionary<string, string> data) =>
                 {
                     data.TryGetValue("data", out string Jdata);

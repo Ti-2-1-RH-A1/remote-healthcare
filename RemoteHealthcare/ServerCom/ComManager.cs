@@ -25,7 +25,6 @@ namespace RemoteHealthcare.ServerCom
 
         private void HandleData(Dictionary<DataTypes, float> data)
         {
-
             Dictionary<string, string> dictionary = new Dictionary<string, string>();
             foreach (var keyValuePair in data)
             {
@@ -50,26 +49,6 @@ namespace RemoteHealthcare.ServerCom
             }
 
             netClient.SendPost(dictionary);
-
-
-            // switch (data.Item1)
-            // {
-            //     case DataTypes.BIKE_SPEED:
-            //         netClient.SendPost("speed", data.Item2);
-            //         break;
-            //     case DataTypes.BIKE_ELAPSED_TIME:
-            //         netClient.SendPost("time", data.Item2);
-            //         break;
-            //     case DataTypes.BIKE_DISTANCE:
-            //         netClient.SendPost("distance_traveled", data.Item2);
-            //         break;
-            //     case DataTypes.BIKE_RPM:
-            //         netClient.SendPost("rpm", data.Item2);
-            //         break;
-            //     case DataTypes.HRM_HEARTRATE:
-            //         netClient.SendPost("heartrate", data.Item2);
-            //         break;
-            // }
         }
     }
 }

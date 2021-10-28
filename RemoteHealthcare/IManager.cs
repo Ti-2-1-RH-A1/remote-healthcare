@@ -22,19 +22,18 @@ namespace RemoteHealthcare.Bike
     {
         public Task Start(IBikeManager.BikeType bikeType = BikeType.SIMULATOR_BIKE, string bikeId = null);
         public void Stop();
+        public void SetResistance(int resistance);
         public enum BikeType
         {
             REAL_BIKE,
             SIMULATOR_BIKE
         }
-
-        public void SetResistance(int resistance);
     }
 
     public interface IVRManager
     {
         public void Start();
-        public void HandleData(Dictionary<DataTypes, float> data);;
+        public void HandleData(Dictionary<DataTypes, float> data);
         public void HandleDoctorMessage(string message);
         public void Stop();
     }
