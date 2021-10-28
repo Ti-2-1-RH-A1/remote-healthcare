@@ -55,8 +55,6 @@ namespace RemoteHealthcare.VR
             if (isReady) { VRMethod.DrawChatMessage(ref connection, message); }
         }
 
-
-
         public void Stop()
         {
             VRMethod.ResetScene(ref connection);
@@ -92,6 +90,7 @@ namespace RemoteHealthcare.VR
             VRMethod.DrawOnBikePanel(ref connection, "Loading...");
 
             UpdateSceneList();
+            VRMethod.DrawChatMessage(ref this.connection, "");
 
             Random rnd = new Random();
             for (int i = 0; i < 20; i++)
