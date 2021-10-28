@@ -149,7 +149,6 @@ namespace DoctorApplication
                 clients.TryGetValue(uuid, out Client client);
                 MainWindow.RemovefromList(client);
                 clients.Remove(uuid);
-                
             };
         }
 

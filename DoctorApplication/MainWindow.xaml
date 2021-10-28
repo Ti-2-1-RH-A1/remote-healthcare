@@ -42,7 +42,7 @@
                 <Button Content="Message selected client" Grid.Row="1" Grid.Column="1" Name="btnMessage" Click="BtnMessage_Click"/>
                 <Button Content="Message all clients" Grid.Row="1"  Grid.Column="3" Name="btnBroadcast" Click="BtnBroadcast_Click"/>
                 <Button Content="Emergency stop client" Grid.Row="3" Grid.Column="1" Name="btnEmergency"/>
-                <Button Content="History" Grid.Row="3" Grid.Column="3" Name="btnHistory" Click="BtnHistory_Click"/>
+                <Button Content="Geschiedenis" Grid.Row="3" Grid.Column="3" Name="btnHistory" Click="BtnHistory_Click"/>
                 <Button Content="Start session" Grid.Row="5" Grid.Column="1" Name="btnStartSession" Click="btnStartSession_Click"/>
                 <Button Content="Stop session" Grid.Row="5" Grid.Column="3" Name="btnStopSession" Click="btnStopSession_Click"/>
                 <Button Content="Change Resistance" Grid.Row="7" Grid.Column="1" Name="btnChangeResistance" Click="btnChangeResistance_Click" />

@@ -51,6 +51,11 @@ namespace RemoteHealthcare.VR
                 UpdateBikeData(data);
         }
 
+        public void HandleDoctorMessage(string message)
+        {
+            VRMethod.DrawChatMessage(ref connection, message);
+        }
+
         public void Stop()
         {
             VRMethod.ResetScene(ref connection);
@@ -66,7 +71,6 @@ namespace RemoteHealthcare.VR
         {
             connection.Start();
             Connect();
-
 
             VRMethod.ResetScene(ref connection);
 
