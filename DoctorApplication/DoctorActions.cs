@@ -55,6 +55,19 @@ namespace DoctorApplication
 
             clientManager.SendToClients(clientIDs, "Stop", new Dictionary<string, string>());
         }
+        public void SendMessage(IList clients, string message)
+        {
+            List<string> clientIDs = new List<string>();
+            foreach (Client client in clients)
+            {
+                clientIDs.Add(client.clientSerial);
+            }
+
+            clientManager.SendToClients(clientIDs, "Message", new Dictionary<string, string>()
+            {
+                {"Message", message}
+            });
+        }
         public void SendSetResistance(IList clients, string resistance)
         {
             List<string> clientIDs = new List<string>();

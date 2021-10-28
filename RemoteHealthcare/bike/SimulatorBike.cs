@@ -48,8 +48,7 @@ namespace RemoteHealthcare.Bike
         public void Stop()
         {
             this.isRunning = false;
-            //just to be save
-            GetSimThread().Abort();
+           
         }
 
         private void RunSimulation()
