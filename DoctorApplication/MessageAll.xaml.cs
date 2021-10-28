@@ -17,7 +17,9 @@ namespace DoctorApplication
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+
             doctorActions.SendToAll(TBMessageToSend.Text);
+            TBMessageToSend.Clear();
         }
     }
 }
