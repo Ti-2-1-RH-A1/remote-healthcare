@@ -73,24 +73,13 @@ namespace RemoteHealthcare.ServerCom
         
         public async Task Start()
         {
-            client = new Client("localhost", false, "Henk");
+            client = new Client("remotehealthcare.local", false, "Henk");
             while (!client.loggedIn)
             {
                 Thread.Sleep(10);
             }
             client.DataReceived += HandleDataFromServer;
         }
-
-        // public void SendRealtime(string name, float data)
-        // {
-        //     client.SendPacket(new Dictionary<string, string>()
-        //     {
-        //         { "Method", "PostRT" },
-        //     }, new Dictionary<string, string>() {
-        //         { "Id", client.UUID },
-        //         { name, data.ToString() },
-        //     });
-        // }
 
         public void SendPost(Dictionary<string, string> data)
         {
