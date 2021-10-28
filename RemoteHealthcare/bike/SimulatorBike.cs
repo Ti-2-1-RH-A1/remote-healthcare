@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace RemoteHealthcare.Bike
 {
@@ -34,7 +35,7 @@ namespace RemoteHealthcare.Bike
         /// The simulator can be stopped by calling the the <see cref="Stop"/> method.
         /// </summary>
         /// <param name="bikeId">Is not needed and can be left at the default value for this implementation.</param>
-        public void Start(string bikeId = null)
+        public async Task Start(string bikeId = null)
         {
             this.isRunning = true;
             this.simThread = new Thread(new ThreadStart(this.RunSimulation));
