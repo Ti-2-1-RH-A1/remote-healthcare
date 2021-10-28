@@ -11,7 +11,7 @@ namespace RemoteHealthcare
     {
         private readonly IServiceProvider services;
         public event Action<(DataTypes, float)> HandelDataEvents;
-
+        bool vrWorking = false;
         public IBikeManager.BikeType bikeType { get; set; }
         public string bikeID { get; set; }
 
@@ -28,13 +28,21 @@ namespace RemoteHealthcare
         public void StartTraining()
         {
             services.GetService<IBikeManager>().Start(bikeType,bikeID);
-            services.GetService<IVRManager>().Start();
+            
+            if (vrWorking)
+            {
+                services.GetService<IVRManager>().Start();
+            }
+            
             services.GetService<IHRMManager>().Start();
         }
 
         public void StopTraining()
         {
-            services.GetService<IVRManager>().Stop();
+            if (vrWorking)
+            {
+                services.GetService<IVRManager>().Stop();
+            }
             services.GetService<IBikeManager>().Stop();
         }
 

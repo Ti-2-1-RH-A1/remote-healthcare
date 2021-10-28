@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Media.Imaging;
 
 namespace DoctorApplication
 {
@@ -15,13 +17,18 @@ namespace DoctorApplication
     {
         public DoctorActions doctorActions;
 
+        public ObservableCollection<Client> Clients { get; } = new ObservableCollection<Client>();
+
+
         public MainWindow()
         {
             doctorActions = new DoctorActions(this);
             Task start = doctorActions.Start();
             start.Wait();
-            InitializeComponent();      
+            InitializeComponent();
+            this.DataContext = this;
         }
+
 
 
         /// <summary>
@@ -32,8 +39,10 @@ namespace DoctorApplication
         {
             Dispatcher.BeginInvoke(new Action(delegate ()
             {
-                ListView list = UserGrid;
-                list.Items.Add(client);
+                if (!Clients.Contains(client))
+                {
+                    Clients.Add(client);
+                }
             }));
         }
 
@@ -45,9 +54,10 @@ namespace DoctorApplication
         {
             Dispatcher.BeginInvoke(new Action(delegate ()
             {
-                ListView list = UserGrid;
-                int index = list.Items.IndexOf(client);
-                list.Items.RemoveAt(index);
+                if (Clients.Contains(client))
+                {
+                    Clients.Remove(client);
+                }
             }));
         }
 
@@ -69,7 +79,7 @@ namespace DoctorApplication
 
         private void btnStartSession_Click(object sender, RoutedEventArgs e)
         {
-            ListView list = UserGrid;
+            ListView list = ClientListView;
             if (list.SelectedItems.Count < 1)
             {
                 MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -83,7 +93,8 @@ namespace DoctorApplication
 
         private void btnStopSession_Click(object sender, RoutedEventArgs e)
         {
-            ListView list = UserGrid;
+
+            ListView list = ClientListView;
             if (list.SelectedItems.Count < 1)
             {
                 MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -94,7 +105,7 @@ namespace DoctorApplication
 
         private void btnChangeResistance_Click(object sender, RoutedEventArgs e)
         {
-            ListView list = UserGrid;
+            ListView list = ClientListView;
             if (list.SelectedItems.Count < 1)
             {
                 MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);

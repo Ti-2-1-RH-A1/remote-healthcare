@@ -46,7 +46,10 @@ namespace RemoteHealthcare.Bike
 
         public void Stop()
         {
-            activeBike.Stop();
+            if (activeBike != null)
+            {
+                activeBike.Stop();
+            }
         }
 
         public void SetResistance(int resistance)
