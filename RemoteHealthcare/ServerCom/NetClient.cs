@@ -83,27 +83,24 @@ namespace RemoteHealthcare.ServerCom
             client.DataReceived += HandleDataFromServer;
         }
 
-        public void SendRealtime(string name, float data)
-        {
-            client.SendPacket(new Dictionary<string, string>()
-            {
-                { "Method", "PostRT" },
-            }, new Dictionary<string, string>() {
-                { "Id", client.UUID },
-                { name, data.ToString() },
-            });
-        }
+        // public void SendRealtime(string name, float data)
+        // {
+        //     client.SendPacket(new Dictionary<string, string>()
+        //     {
+        //         { "Method", "PostRT" },
+        //     }, new Dictionary<string, string>() {
+        //         { "Id", client.UUID },
+        //         { name, data.ToString() },
+        //     });
+        // }
 
-        public void SendPost(string name, float data)
+        public void SendPost(Dictionary<string, string> data)
         {
-            SendRealtime(name, data);
             client.SendPacket(new Dictionary<string, string>()
             {
                 { "Method", "Post" },
                 { "Id", client.UUID },
-            }, new Dictionary<string, string>() {
-                { name, data.ToString() },
-            });
+            }, data);
         }
 
         private void HandleDataFromServer(object Client, DataReceivedArgs e)

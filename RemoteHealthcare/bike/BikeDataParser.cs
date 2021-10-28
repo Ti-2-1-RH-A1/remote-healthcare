@@ -5,7 +5,7 @@ namespace RemoteHealthcare.Bike
 {
     public class BikeDataParser
     {
-        public static List<(DataTypes, float)> ParseBikeData(byte[] data)
+        public static Dictionary<DataTypes, float> ParseBikeData(byte[] data)
         {
             return ParseBikeMessageData(ParseBikeByteArrayData(data));
         }
@@ -25,7 +25,7 @@ namespace RemoteHealthcare.Bike
             return msg;
         }
 
-        private static List<(DataTypes, float)> ParseBikeMessageData(byte[] data)
+        private static Dictionary<DataTypes, float> ParseBikeMessageData(byte[] data)
         {
             switch (data[0])
             {
@@ -35,26 +35,25 @@ namespace RemoteHealthcare.Bike
                     return ParseBikeDataPage25(data);
                 default:
                     // return an empty list if there's no data
-                    return new List<(DataTypes, float)>();
+                    return new Dictionary<DataTypes, float>();
             }
         }
 
-        private static List<(DataTypes, float)> ParseBikeDataPage16(byte[] data)
+        private static Dictionary<DataTypes,float> ParseBikeDataPage16(byte[] data)
         {
-            List<(DataTypes, float)> convertedData = new List<(DataTypes, float)>();
-            convertedData.Add(((DataTypes.BIKE_ELAPSED_TIME, ParseElapsedTime(data))));
-            convertedData.Add(((DataTypes.BIKE_DISTANCE, ParseDistance(data))));
+            Dictionary<DataTypes, float> convertedData = new Dictionary<DataTypes, float>();
+            convertedData.Add(DataTypes.BIKE_ELAPSED_TIME, ParseElapsedTime(data));
+            convertedData.Add(DataTypes.BIKE_DISTANCE, ParseDistance(data));
             // For the speed convert it from km/h to m/s
-            convertedData.Add(((DataTypes.BIKE_SPEED, (ParseSpeed(data) * 0.0036f))));
+            convertedData.Add(DataTypes.BIKE_SPEED, (ParseSpeed(data) * 0.0036f));
             return convertedData;
         }
 
-        private static List<(DataTypes, float)> ParseBikeDataPage25(byte[] data)
+        private static Dictionary<DataTypes, float> ParseBikeDataPage25(byte[] data)
         {
-            List<(DataTypes, float)> convertedData = new List<(DataTypes, float)>
-            {
-                ((DataTypes.BIKE_RPM, ParseRPM(data)))
-            };
+            Dictionary<DataTypes, float> convertedData = new Dictionary<DataTypes, float>();
+            convertedData.Add(DataTypes.BIKE_RPM, ParseRPM(data));
+
             return convertedData;
         }
 
