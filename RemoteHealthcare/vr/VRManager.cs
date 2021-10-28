@@ -73,14 +73,7 @@ namespace RemoteHealthcare.VR
         public void Start()
         {
             connection.Start();
-            if (!connection.TestConnection())
-            {
-                return;
-            }
-            else
-            {
-                Reconnect();
-            }
+            Reconnect();
 
             VRMethod.ResetScene(ref connection);
 
