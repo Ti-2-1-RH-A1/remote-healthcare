@@ -21,13 +21,12 @@ namespace RemoteHealthcare.Bike
     {
         public void Start(IBikeManager.BikeType bikeType = BikeType.SIMULATOR_BIKE, string bikeId = null);
         public void Stop();
+        public void SetResistance(int resistance);
         public enum BikeType
         {
             REAL_BIKE,
             SIMULATOR_BIKE
         }
-
-        public void SetResistance(int resistance);
     }
 
     public interface IVRManager

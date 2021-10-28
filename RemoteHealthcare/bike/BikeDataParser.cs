@@ -12,14 +12,14 @@ namespace RemoteHealthcare.Bike
 
         private static byte[] ParseBikeByteArrayData(byte[] data)
         {
-            var sync = data[0];
+            //var sync = data[0];
             int msgLength = data[1];
-            var msgID = data[2];
-            int channelNumber = data[3];
-            var cs = data[msgLength + 3];
+            //var msgID = data[2];
+            //int channelNumber = data[3];
+            //var cs = data[msgLength + 3];
             byte[] msg = new byte[msgLength];
             Array.Copy(data, 4, msg, 0, msgLength);
-            int dataPageNumber = msg[0];
+            //int dataPageNumber = msg[0];
 
             // return the msg part of the data
             return msg;

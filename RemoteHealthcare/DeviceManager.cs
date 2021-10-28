@@ -47,10 +47,26 @@ namespace RemoteHealthcare
             services.GetService<IBikeManager>().Stop();
         }
 
-
         public void HandleData(Dictionary<DataTypes, float> data)
         {
-            HandelDataEvents?.Invoke(data);
+            Dictionary<DataTypes, float> roundedData = new Dictionary<DataTypes, float>();
+
+            if (data.ContainsKey(DataTypes.HRM_HEARTRATE))
+            {
+                roundedData.Add(DataTypes.HRM_HEARTRATE, (float)Math.Round(data[DataTypes.HRM_HEARTRATE]));
+            }
+            else
+            {
+                foreach (KeyValuePair<DataTypes, float> pair in data)
+                {
+                    if (pair.Key == DataTypes.BIKE_SPEED) { continue; }
+                    roundedData.Add(pair.Key, (float)Math.Round(pair.Value));
+                }
+
+                roundedData.Add(DataTypes.BIKE_SPEED, (float)Math.Round(data[DataTypes.BIKE_SPEED] * 10) / 10);
+            }
+
+            HandelDataEvents?.Invoke(roundedData);
         }
 
         private IServiceProvider BuildServiceProvider()
