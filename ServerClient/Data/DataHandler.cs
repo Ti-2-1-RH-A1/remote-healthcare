@@ -97,7 +97,15 @@ namespace ServerClient.Data
             }
             data.Add(main);
             jo["data"] = data;
-            File.WriteAllText(FilePath(id), jo.ToString());
+            try
+            {
+                File.WriteAllText(FilePath(id), jo.ToString());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Data not saved exception found. But still going strong");
+            }
+            
             return true;
         }
     }
