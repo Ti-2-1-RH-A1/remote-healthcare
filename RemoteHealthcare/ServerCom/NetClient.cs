@@ -60,7 +60,7 @@ namespace RemoteHealthcare.ServerCom
         /// </summary>
         /// <param name="Client"></param>
         /// <param name="e">DataReceivedArgs</param>
-        private void HandleData(object Client, DataReceivedArgs e)
+        private void HandleDataFromServer(object Client, DataReceivedArgs e)
         {
             e.headers.TryGetValue("Method", out string item);
 
@@ -78,8 +78,6 @@ namespace RemoteHealthcare.ServerCom
             {
                 Thread.Sleep(10);
             }
-            client.DataReceived += HandleData;
-
             client.DataReceived += HandleDataFromServer;
         }
 
@@ -101,17 +99,6 @@ namespace RemoteHealthcare.ServerCom
                 { "Method", "Post" },
                 { "Id", client.UUID },
             }, data);
-        }
-
-        private void HandleDataFromServer(object Client, DataReceivedArgs e)
-        {
-            e.headers.TryGetValue("Method", out string item);
-
-            if (actions.TryGetValue(item, out Client.Callback action))
-            {
-                action(e.headers, e.data);
-                return;
-            }
         }
 
         private Client.Callback HandleMessage() => delegate (Dictionary<string, string> header, Dictionary<string, string> data)
