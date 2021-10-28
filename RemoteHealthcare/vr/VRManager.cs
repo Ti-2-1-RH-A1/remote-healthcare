@@ -53,7 +53,7 @@ namespace RemoteHealthcare.VR
 
         public void HandleDoctorMessage(string message)
         {
-            VRMethod.DrawChatMessage(ref connection, message);
+            if (isReady) { VRMethod.DrawChatMessage(ref connection, message); }
         }
 
         public void Stop()
