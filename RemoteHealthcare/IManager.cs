@@ -34,6 +34,7 @@ namespace RemoteHealthcare.Bike
     {
         public void Start();
         public void HandleData((DataTypes, float) data);
+        public void HandleDoctorMessage(string message);
         public void Stop();
     }
 
