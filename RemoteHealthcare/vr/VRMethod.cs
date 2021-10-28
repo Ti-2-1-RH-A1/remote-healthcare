@@ -33,7 +33,7 @@ namespace RemoteHealthcare.VR
             string receivedData;
             connection.ReceiveFromTcp(out receivedData, true);
 
-            if (receivedData == null)
+            if (receivedData == null || receivedData == "")
             {
                 return new Dictionary<string, string>();
             }

@@ -19,7 +19,7 @@ namespace DoctorApplication
     /// </summary>
     public partial class ClientHistoryWindow : Window
     {
-        public ClientHistoryWindow(Client client)
+        public ClientHistoryWindow()
         {
             InitializeComponent();
             

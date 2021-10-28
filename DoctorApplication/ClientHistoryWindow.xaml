@@ -19,10 +19,10 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button Content="Back" HorizontalAlignment="Left" Margin="328,385,0,0" VerticalAlignment="Top" Height="39" Width="162" Click="btnBack_Click"/>
+        <Button Content="Terug" HorizontalAlignment="Left" Margin="328,385,0,0" VerticalAlignment="Top" Height="39" Width="162" Click="btnBack_Click"/>
         <Label Content="Client ID:" HorizontalAlignment="Left" Margin="324,15,0,0" VerticalAlignment="Top"/>
         <Label x:Name="labelClientID" Content="ID Placeholder" HorizontalAlignment="Left" Margin="328,40,0,0" VerticalAlignment="Top"/>
-        <Label Content="Client Name:" HorizontalAlignment="Left" Margin="324,66,0,0" VerticalAlignment="Top"/>
+        <Label Content="Client Naam:" HorizontalAlignment="Left" Margin="324,66,0,0" VerticalAlignment="Top"/>
         <Label x:Name="labelClientName" Content="Name Placeholder" HorizontalAlignment="Left" Margin="328,97,0,0" VerticalAlignment="Top"/>
 
     </Grid>

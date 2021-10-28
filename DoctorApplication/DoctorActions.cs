@@ -92,7 +92,7 @@ namespace DoctorApplication
         public void OpenHistoryWindow(Client client)
         {
             string clientID = client.clientSerial;
-            clientHistoryWindow = new ClientHistoryWindow(client);
+            clientHistoryWindow = new ClientHistoryWindow();
             clientManager.RequestHistoryData(clientID);
             clientHistoryWindow.ShowDialog();
         }
