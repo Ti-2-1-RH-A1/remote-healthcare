@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Avans.TI.BLE;
@@ -37,13 +38,25 @@ namespace RemoteHealthcare
             // Wait for half a second in case time is needed to recognise bluetooth devices
             Thread.Sleep(500);
 
+            List<string> lstdev = ble.ListDevices();
+
+            lstdev.ForEach(Console.WriteLine);
+
             int errorCode = 0; // set default to 0;
-            errorCode += await ble.OpenDevice(deviceId);
-            errorCode += await ble.SetService(serviceName);
-            ble.SubscriptionValueChanged += DataReceived;
-            errorCode += await ble.SubscribeToCharacteristic(subscribtionCharacteristic);
+            do
+            {
+                Console.WriteLine("Connecting to: " + deviceId);
+                errorCode += await ble.OpenDevice(deviceId);
+                errorCode += await ble.SetService(serviceName);
+                ble.SubscriptionValueChanged += DataReceived;
+                errorCode += await ble.SubscribeToCharacteristic(subscribtionCharacteristic);
+                Thread.Sleep(500);
+
+            } while (errorCode != 0);
+
             // if errorcode > 0 then connection wasn't made properly
             // TODO [Martijn] Implement using errorcode to detect if connection was made
+            Console.WriteLine("Connected to: "+ deviceId);
             return errorCode;
         }
 

@@ -5,6 +5,7 @@ using RemoteHealthcare.ServerCom;
 using RemoteHealthcare.VR;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RemoteHealthcare
 {
@@ -12,7 +13,7 @@ namespace RemoteHealthcare
     {
         private readonly IServiceProvider services;
         public event Action<Dictionary<DataTypes, float>> HandelDataEvents;
-        bool vrWorking = true;
+        bool vrWorking = false;
         public IBikeManager.BikeType bikeType { get; set; }
         public string bikeID { get; set; }
 
@@ -26,16 +27,17 @@ namespace RemoteHealthcare
             services.GetService<IComManager>().Start();
         }
 
-        public void StartTraining()
+        public async Task StartTraining()
         {
-            services.GetService<IBikeManager>().Start(bikeType,bikeID);
+            await services.GetService<IBikeManager>().Start(bikeType, bikeID);
+            
             
             if (vrWorking)
             {
                 services.GetService<IVRManager>().Start();
             }
             
-            services.GetService<IHRMManager>().Start();
+            await services.GetService<IHRMManager>().Start();
         }
 
         public void StopTraining()

@@ -46,18 +46,22 @@ namespace ServerClient
         /// <param name="client"></param>
         public void Disconnect(ClientHandler client)
         {
-            SendToClients(ClientType.DOCTOR,
-                "RemoveClient",
-                new Dictionary<string, string>(){
-                    { "Data", client.UUID },
-                });
-            if (client.UUID != null && clients.ContainsKey(client.UUID))
+            if (!client.UUID.Contains("DOCTOR-"))
             {
-                clients.Remove(client.UUID);
-            }
-            else
-            {
-                Console.WriteLine(client.ToString() + " not found");
+                SendToClients(ClientType.DOCTOR,
+                    "RemoveClient",
+                    new Dictionary<string, string>()
+                    {
+                        {"Data", client.UUID},
+                    });
+                if (client.UUID != null && clients.ContainsKey(client.UUID))
+                {
+                    clients.Remove(client.UUID);
+                }
+                else
+                {
+                    Console.WriteLine(client.ToString() + " not found");
+                }
             }
 
             Console.WriteLine("Client disconnected");

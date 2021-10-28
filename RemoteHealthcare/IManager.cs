@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using static RemoteHealthcare.Bike.BikeManager;
 
 namespace RemoteHealthcare.Bike
@@ -13,13 +14,13 @@ namespace RemoteHealthcare.Bike
 
         public void HandleData(Dictionary<DataTypes, float> data);
         public event Action<Dictionary<DataTypes, float>> HandelDataEvents;
-        public void StartTraining();
+        public Task StartTraining();
         public void StopTraining();
     }
 
     public interface IBikeManager
     {
-        public void Start(IBikeManager.BikeType bikeType = BikeType.SIMULATOR_BIKE, string bikeId = null);
+        public Task Start(IBikeManager.BikeType bikeType = BikeType.SIMULATOR_BIKE, string bikeId = null);
         public void Stop();
         public void SetResistance(int resistance);
         public enum BikeType
@@ -40,7 +41,7 @@ namespace RemoteHealthcare.Bike
     public interface IHRMManager
     {
         public void DataReceived(Dictionary<DataTypes, float> data);
-        public void Start();
+        public Task Start();
     }
 
     public interface IComManager

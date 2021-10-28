@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RemoteHealthcare.Bike
 {
     interface IBike
     {
-        public void Start(string bikeId = null);
+        public Task Start(string bikeId = null);
         public void Stop();
 
         /// <summary>
