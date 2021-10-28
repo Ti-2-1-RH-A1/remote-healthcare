@@ -1,10 +1,10 @@
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RemoteHealthcare.Bike;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using Microsoft.Extensions.DependencyInjection;
-using RemoteHealthcare.Bike;
 
 namespace RemoteHealthcare.VR
 {
@@ -20,7 +20,7 @@ namespace RemoteHealthcare.VR
         {
             // Initialise and connect to the TcpClient
             // On server: 145.48.6.10 and port: 6666
-            TcpClient client = new TcpClient(); 
+            TcpClient client = new TcpClient();
             client.Connect("145.48.6.10", 6666);
 
             // Request the session list from the server
@@ -31,9 +31,9 @@ namespace RemoteHealthcare.VR
         }
 
         /// <summary>
-        /// Reconnect does <c>reconnects to a new client</c> reconnects to a new client and resets all necessary fields
+        /// Connect does <c>reconnects to a new client</c> reconnects to a new client and resets all necessary fields
         /// </summary>
-        public void Reconnect()
+        public void Connect()
         {
             userSessions = VRMethod.GetRunningSessions(ref connection);
             ConnectToAClient();
@@ -45,19 +45,18 @@ namespace RemoteHealthcare.VR
             nodes = VRMethod.GetScene(ref connection);
         }
 
-        public void HandleData((DataTypes, float) data)
+        public void HandleData(Dictionary<DataTypes, float> data)
         {
-            if (data.Item1 == DataTypes.BIKE_SPEED)
-            {
-                UpdateBikeSpeed(data.Item2);
-            }
 
+            UpdateBikeData(data);
         }
 
         public void HandleDoctorMessage(string message)
         {
-            VRMethod.DrawChatMessage(ref connection, message);
+            if (isReady) { VRMethod.DrawChatMessage(ref connection, message); }
         }
+
+
 
         public void Stop()
         {
@@ -73,14 +72,7 @@ namespace RemoteHealthcare.VR
         public void Start()
         {
             connection.Start();
-            if (!connection.TestConnection())
-            {
-                return;
-            }
-            else
-            {
-                Reconnect();
-            }
+            Connect();
 
             VRMethod.ResetScene(ref connection);
 
@@ -93,7 +85,7 @@ namespace RemoteHealthcare.VR
             JArray position = new JArray { 20, 0, 20 };
             JArray rotation = new JArray { 0, 0, 0 };
             string bikename1 = "Bike";
-            
+
             string bikeUUID = VRMethod.AddModelBike(ref connection, bikename1, position, rotation);
 
             VRMethod.CreateBikePanel(ref connection);
@@ -215,12 +207,15 @@ namespace RemoteHealthcare.VR
             }
         }
 
-        public void UpdateBikeSpeed(float speed)
+        public void UpdateBikeData(Dictionary<DataTypes, float> data)
         {
-            if (isReady)
+            if (!isReady || data == null) { return; }
+
+            string bikeId = VRMethod.GetBikeID(ref connection);
+            if (data.ContainsKey(DataTypes.BIKE_SPEED) && data.ContainsKey(DataTypes.BIKE_DISTANCE))
             {
-                string bikeId = VRMethod.GetBikeID(ref connection);
-                VRMethod.ChangeSpeed(ref connection, bikeId, speed);
+                VRMethod.ChangeSpeed(ref connection, bikeId, data[DataTypes.BIKE_SPEED]);
+                VRMethod.DrawBikeData(ref connection, data[DataTypes.BIKE_SPEED], data[DataTypes.BIKE_DISTANCE]);
             }
         }
 
