@@ -47,7 +47,6 @@ namespace RemoteHealthcare.VR
 
         public void HandleData(Dictionary<DataTypes, float> data)
         {
-
             UpdateBikeData(data);
         }
 

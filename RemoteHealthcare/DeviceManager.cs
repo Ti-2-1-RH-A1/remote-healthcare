@@ -61,11 +61,11 @@ namespace RemoteHealthcare
             {
                 foreach (KeyValuePair<DataTypes, float> pair in data)
                 {
-                    if (pair.Key == DataTypes.BIKE_SPEED) { continue; }
+                   // if (pair.Key == DataTypes.BIKE_SPEED) { continue; }
                     roundedData.Add(pair.Key, (float)Math.Round(pair.Value));
                 }
 
-                roundedData.Add(DataTypes.BIKE_SPEED, (float)Math.Round(data[DataTypes.BIKE_SPEED] * 10) / 10);
+               // roundedData.Add(DataTypes.BIKE_SPEED, (float)Math.Round(data[DataTypes.BIKE_SPEED] * 10) / 10);
             }
 
             HandelDataEvents?.Invoke(roundedData);
