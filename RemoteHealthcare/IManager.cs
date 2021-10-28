@@ -11,8 +11,8 @@ namespace RemoteHealthcare.Bike
         public IBikeManager.BikeType bikeType { get; set; }
         public string bikeID { get; set; }
 
-        public void HandleData((DataTypes, float) data);
-        public event Action<(DataTypes, float)> HandelDataEvents;
+        public void HandleData(Dictionary<DataTypes, float> data);
+        public event Action<Dictionary<DataTypes, float>> HandelDataEvents;
         public void StartTraining();
         public void StopTraining();
     }
@@ -33,13 +33,13 @@ namespace RemoteHealthcare.Bike
     public interface IVRManager
     {
         public void Start();
-        public void HandleData((DataTypes, float) data);
+        public void HandleData(Dictionary<DataTypes, float> data);
         public void Stop();
     }
 
     public interface IHRMManager
     {
-        public void DataReceived((DataTypes, float) data);
+        public void DataReceived(Dictionary<DataTypes, float> data);
         public void Start();
     }
 

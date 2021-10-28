@@ -4,14 +4,15 @@ using RemoteHealthcare.Hrm;
 using RemoteHealthcare.ServerCom;
 using RemoteHealthcare.VR;
 using System;
+using System.Collections.Generic;
 
 namespace RemoteHealthcare
 {
     public class DeviceManager : IDeviceManager
     {
         private readonly IServiceProvider services;
-        public event Action<(DataTypes, float)> HandelDataEvents;
-        bool vrWorking = false;
+        public event Action<Dictionary<DataTypes, float>> HandelDataEvents;
+        bool vrWorking = true;
         public IBikeManager.BikeType bikeType { get; set; }
         public string bikeID { get; set; }
 
@@ -47,7 +48,7 @@ namespace RemoteHealthcare
         }
 
 
-        public void HandleData((DataTypes, float) data)
+        public void HandleData(Dictionary<DataTypes, float> data)
         {
             HandelDataEvents?.Invoke(data);
         }
