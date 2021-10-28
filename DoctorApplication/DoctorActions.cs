@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace DoctorApplication
 {
@@ -103,9 +104,7 @@ namespace DoctorApplication
                 foreach (KeyValuePair<string, string> entry in data)
                 {
                     Client row = new Client(){ clientSerial = entry.Key, clientName = entry.Value };
-                    ListViewItem listViewItem = new ListViewItem();
-                    listViewItem.Content = row;
-                    selectClientHistory.UserGrid.Items.Add(listViewItem);
+                    selectClientHistory.UserGrid.Items.Add(row);
                 }
             });
 
@@ -114,22 +113,26 @@ namespace DoctorApplication
         public void UpdateHistoryWindow(JObject data)
         {
             JArray dataArray = data["data"] as JArray;
-            JObject firstItem = (JObject)dataArray[0];
-            clientHistoryWindow.labelClientID.Content = firstItem["client_id"].ToString();
-            clientHistoryWindow.labelClientName.Content = firstItem["client_name"].ToString();
+            //JObject firstItem = (JObject)dataArray[0];
+            clientHistoryWindow.Dispatcher.BeginInvoke((Action)(() =>
+            {
+                clientHistoryWindow.labelClientID.Content = data["id"].ToString();
+                clientHistoryWindow.labelClientName.Content = data["name"].ToString();
+            }));
+
+            List<ClientData> clientDatas = new List<ClientData>();
+
             foreach (JObject item in dataArray)
             {
                 string speed = item["speed"].ToString();
                 string time = item["time"].ToString();
                 string distance_traveled = item["distance_traveled"].ToString();
                 string rpm = item["rpm"].ToString();
-                string heartrate = item["heartrate"].ToString();
-
-                string[] row = { time, speed, distance_traveled, rpm, heartrate };
-                var listViewItem = new ListViewItem();
-                listViewItem.Content = row;
-                clientHistoryWindow.UserGrid.Items.Add(listViewItem);
+                //string heartrate = item["heartrate"].ToString();
+                string heartrate = "not found";
+                clientDatas.Add(new ClientData(speed,time,distance_traveled,rpm,heartrate));
             }
+            clientHistoryWindow.AddClientDatas(clientDatas);
         }
     }
 }

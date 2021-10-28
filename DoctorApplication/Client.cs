@@ -8,40 +8,65 @@ namespace DoctorApplication
         public string clientName { get; set; }
         public string clientSerial { get; set; }
 
-        private string speed;
-        public string Speed
+        public ClientData ClientData = new ClientData();
+
+
+        public string speed
         {
-            get => speed;
-            set => SetProperty(ref speed, value);
+            get => ClientData.speed;
+            set => SetProperty(ref ClientData.Speed, value);
         }
 
-        private string time;
-        public string Time
+
+        public string time
         {
-            get => time; 
-            set => SetProperty(ref time,value);
+            get => ClientData.time;
+            set => SetProperty(ref ClientData.Time, value);
         }
 
-        private string distanceTraveled;
-        public string DistanceTraveled
+
+        public string distanceTraveled
         {
-            get => distanceTraveled; 
-            set => SetProperty(ref distanceTraveled,value);
+            get => ClientData.distanceTraveled;
+            set => SetProperty(ref ClientData.DistanceTraveled, value);
         }
 
-        private string rpm;
 
-        public string Rpm
-        {    
-            get => rpm; 
-            set => SetProperty(ref rpm, value);
-        }
-
-        private string heartrate;
-        public string Heartrate
+        public string rpm
         {
-            get => heartrate; 
-            set => SetProperty(ref heartrate,value);
+            get => ClientData.rpm;
+            set => SetProperty(ref ClientData.Rpm, value);
         }
+
+
+        public string heartRate
+        {
+            get => ClientData.heartRate;
+            set => SetProperty(ref ClientData.HeartRate, value);
+        }
+    }
+
+    public struct ClientData
+    {
+        public ClientData(string speed, string time, string distanceTraveled, string rpm, string heartRate)
+        {
+            Speed = speed;
+            Time = time;
+            DistanceTraveled = distanceTraveled;
+            Rpm = rpm;
+            HeartRate = heartRate;
+        }
+
+        internal string Rpm;
+        internal string Time;
+        internal string DistanceTraveled;
+        internal string Speed;
+        internal string HeartRate;
+
+        public string rpm => Rpm;
+        public string time => Time;
+        public string distanceTraveled => DistanceTraveled;
+        public string speed => Speed;
+        public string heartRate => HeartRate;
     }
 }

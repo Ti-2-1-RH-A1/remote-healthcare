@@ -21,12 +21,14 @@ namespace DoctorApplication
     /// </summary>
     public partial class SelectClientHistory : Window
     {
-        DoctorActions doctorActions;
+        // DoctorActions doctorActions;
+        private DoctorActions DoctorActions;
         public SelectClientHistory(MainWindow main)
         {
-            doctorActions = new DoctorActions(main);
+            // doctorActions = new DoctorActions(main);
+            DoctorActions = main.DoctorActions;
+            this.DataContext = this;
             InitializeComponent();
-
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -36,17 +38,19 @@ namespace DoctorApplication
 
             if (list.SelectedItems.Count < 1)
             {
-                MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("You need to have at least one client selected.", "Selection error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
-            } else if (list.SelectedItems.Count > 1)
+            }
+            else if (list.SelectedItems.Count > 1)
             {
-                MessageBox.Show("You can't select more than one client.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("You can't select more than one client.", "Selection error", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
                 return;
             }
             else
             {
-                var selectedClient = list.SelectedItems[0] as Client;                
-                doctorActions.OpenHistoryWindow(selectedClient);
+                DoctorActions.OpenHistoryWindow(list.SelectedItems[0] as Client);
             }
         }
     }

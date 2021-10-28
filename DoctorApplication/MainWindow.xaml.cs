@@ -15,15 +15,15 @@ namespace DoctorApplication
     /// </summary>
     public partial class MainWindow : Window
     {
-        public DoctorActions doctorActions;
+        public DoctorActions DoctorActions;
 
         public ObservableCollection<Client> Clients { get; } = new ObservableCollection<Client>();
 
 
         public MainWindow()
         {
-            doctorActions = new DoctorActions(this);
-            Task start = doctorActions.Start();
+            DoctorActions = new DoctorActions(this);
+            Task start = DoctorActions.Start();
             start.Wait();
             InitializeComponent();
             this.DataContext = this;
@@ -69,7 +69,7 @@ namespace DoctorApplication
 
         private void BtnHistory_Click(object sender, RoutedEventArgs e)
         {
-            doctorActions.OpenSelectClientWindow();
+            DoctorActions.OpenSelectClientWindow();
         }
 
         private void BtnMessage_Click(object sender, RoutedEventArgs e)
@@ -85,7 +85,7 @@ namespace DoctorApplication
             dialog.Owner = this;
             if (dialog.ShowDialog() == true)
             {
-                doctorActions.SendMessage(list.SelectedItems, dialog.ResponseText);
+                DoctorActions.SendMessage(list.SelectedItems, dialog.ResponseText);
             }
         }
 
@@ -100,7 +100,7 @@ namespace DoctorApplication
 
             IList lstClients = list.SelectedItems;
 
-            doctorActions.SendStartSession(lstClients);
+            DoctorActions.SendStartSession(lstClients);
         }
 
         private void btnStopSession_Click(object sender, RoutedEventArgs e)
@@ -112,7 +112,7 @@ namespace DoctorApplication
                 MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            doctorActions.SendStopSession(list.SelectedItems);
+            DoctorActions.SendStopSession(list.SelectedItems);
         }
 
         private void btnChangeResistance_Click(object sender, RoutedEventArgs e)
@@ -128,7 +128,7 @@ namespace DoctorApplication
             dialog.Owner = this;
             if (dialog.ShowDialog() == true)
             {
-                doctorActions.SendSetResistance(list.SelectedItems, dialog.ResponseText);
+                DoctorActions.SendSetResistance(list.SelectedItems, dialog.ResponseText);
             }
 
 

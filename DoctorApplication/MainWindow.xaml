@@ -71,7 +71,7 @@
             <Label Content="{Binding DistanceTraveled}" HorizontalContentAlignment="Center" Margin="10,37,10,117" Height="80" Width="180" FontSize="40" FontWeight="Bold" Grid.Column="2"/>
             <Label Content="DistanceTraveled" HorizontalContentAlignment="Center" Margin="10,122,10,32" Height="80" Width="180" FontSize="36" Grid.Column="2"/>
             <Label Content="{Binding Heartrate}" HorizontalContentAlignment="Center" Margin="10,37,10,117" Height="80" Width="180" FontSize="40" FontWeight="Bold" Grid.Column="3"/>
-            <Label Content="Heartrate" HorizontalContentAlignment="Center" Margin="10,122,10,32" Height="80" Width="180" FontSize="36" Grid.Column="3"/>
+            <Label Content="HeartRate" HorizontalContentAlignment="Center" Margin="10,122,10,32" Height="80" Width="180" FontSize="36" Grid.Column="3"/>
         </Grid>
     </Grid>
 </Window>

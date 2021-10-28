@@ -11,7 +11,7 @@ namespace DoctorApplication
 
         public MessageAll(MainWindow main)
         {
-            doctorActions = main.doctorActions;
+            doctorActions = main.DoctorActions;
             InitializeComponent();
         }
 
