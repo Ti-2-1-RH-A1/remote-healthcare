@@ -23,7 +23,7 @@ namespace RemoteHealthcare.Hrm
         {
             this.services = services;
 
-            this.bluetooth = services.GetServices<Bluetooth>().Where(b => b.BLEInstance == BLEInstance.BIKE).FirstOrDefault();
+            this.bluetooth = services.GetServices<Bluetooth>().Where(b => b.BLEInstance == BLEInstance.HEARTRATE).FirstOrDefault();
             bluetooth.DataReceived += Ble_DataReceived;
         }
 

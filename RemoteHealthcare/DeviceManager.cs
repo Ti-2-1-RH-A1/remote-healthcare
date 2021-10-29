@@ -13,7 +13,7 @@ namespace RemoteHealthcare
     {
         private readonly IServiceProvider services;
         public event Action<Dictionary<DataTypes, float>> HandelDataEvents;
-        bool vrWorking = false;
+        bool vrWorking = true;
         public IBikeManager.BikeType bikeType { get; set; }
         public string bikeID { get; set; }
 
@@ -30,12 +30,13 @@ namespace RemoteHealthcare
         public async Task StartTraining()
         {
             await services.GetService<IBikeManager>().Start(bikeType, bikeID);
-            
-            
+
+
             if (vrWorking)
             {
                 services.GetService<IVRManager>().Start();
             }
+
 
             Console.WriteLine("Wil je een HR meter gebruiken? [y|n]");
             string hrmChoice = Console.ReadLine().ToLower();
@@ -44,6 +45,8 @@ namespace RemoteHealthcare
 
                 await services.GetService<IHRMManager>().Start();
             }
+            await services.GetService<IHRMManager>().Start();
+
         }
 
         public void StopTraining()
@@ -59,7 +62,7 @@ namespace RemoteHealthcare
         {
             Dictionary<DataTypes, float> roundedData = new Dictionary<DataTypes, float>();
 
-            if (data.ContainsKey(DataTypes.HRM_HEARTRATE))
+            foreach (KeyValuePair<DataTypes, float> pair in data)
             {
                 roundedData.Add(DataTypes.HRM_HEARTRATE, (float)Math.Round(data[DataTypes.HRM_HEARTRATE]));
             }
@@ -75,6 +78,8 @@ namespace RemoteHealthcare
                 {
                     roundedData.Add(DataTypes.BIKE_SPEED, (float) Math.Round(data[DataTypes.BIKE_SPEED] * 10) / 10);
                 }
+
+                roundedData.Add(pair.Key, (float)Math.Round(pair.Value));
             }
 
             HandelDataEvents?.Invoke(roundedData);
