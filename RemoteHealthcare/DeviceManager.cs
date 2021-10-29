@@ -37,15 +37,15 @@ namespace RemoteHealthcare
                 services.GetService<IVRManager>().Start();
             }
 
-
-            Console.WriteLine("Wil je een HR meter gebruiken? [y|n]");
-            string hrmChoice = Console.ReadLine().ToLower();
-            if (hrmChoice.Contains("y"))
+            if (bikeType == IBikeManager.BikeType.REAL_BIKE)
             {
-
-                await services.GetService<IHRMManager>().Start();
+                Console.WriteLine("Wil je een HR meter gebruiken? [y|n]");
+                string hrmChoice = Console.ReadLine().ToLower();
+                if (hrmChoice.Contains("y"))
+                {
+                    await services.GetService<IHRMManager>().Start();
+                }
             }
-            await services.GetService<IHRMManager>().Start();
 
         }
 
