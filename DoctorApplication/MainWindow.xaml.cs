@@ -67,12 +67,23 @@ namespace DoctorApplication
             
         }
 
+        private bool SelectionAmountCheck(ListView list, int amount)
+        {
+            if (list.SelectedItems.Count < amount)
+            {
+                MessageBox.Show("Je moet minstens 1 client geselecteerd hebben.", "Selectie fout", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            return true;
+        }
+
         private void btnStartSession_Click(object sender, RoutedEventArgs e)
         {
             ListView list = UserGrid;
             if (list.SelectedItems.Count < 1)
             {
-                MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Je moet minstens 1 client geselecteerd hebben.", "Selectie fout", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -86,7 +97,7 @@ namespace DoctorApplication
             ListView list = UserGrid;
             if (list.SelectedItems.Count < 1)
             {
-                MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Je moet minstens 1 client geselecteerd hebben.", "Selectie fout", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             doctorActions.SendStopSession(list.SelectedItems);
@@ -97,11 +108,11 @@ namespace DoctorApplication
             ListView list = UserGrid;
             if (list.SelectedItems.Count < 1)
             {
-                MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Je moet minstens 1 client geselecteerd hebben.", "Selectie fout", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            var dialog = new inputBox("Enter resistance %");
+            var dialog = new inputBox("Vul het nieuwe weerstand % in");
             dialog.Owner = this;
             if (dialog.ShowDialog() == true)
             {
