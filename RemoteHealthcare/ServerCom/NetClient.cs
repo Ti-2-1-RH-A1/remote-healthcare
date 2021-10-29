@@ -73,7 +73,8 @@ namespace RemoteHealthcare.ServerCom
         
         public async Task Start()
         {
-            client = new Client("remotehealthcare.local", false, "Henk");
+            Console.WriteLine("Wat is je naam? Deze sturen we naar de dokter zodat hij weet wie je bent.");
+            client = new Client("remotehealthcare.local", false, Console.ReadLine());
             while (!client.loggedIn)
             {
                 Thread.Sleep(10);
