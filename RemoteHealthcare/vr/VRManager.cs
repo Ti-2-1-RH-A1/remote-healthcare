@@ -47,7 +47,6 @@ namespace RemoteHealthcare.VR
 
         public void HandleData(Dictionary<DataTypes, float> data)
         {
-
             UpdateBikeData(data);
         }
 
@@ -55,8 +54,6 @@ namespace RemoteHealthcare.VR
         {
             if (isReady) { VRMethod.DrawChatMessage(ref connection, message); }
         }
-
-
 
         public void Stop()
         {
@@ -90,18 +87,10 @@ namespace RemoteHealthcare.VR
 
             VRMethod.CreateBikePanel(ref connection);
             VRMethod.CreateMessagePanel(ref connection);
-            VRMethod.DrawOnBikePanel(ref connection, "hoegaboega");
-            VRMethod.DrawChatMessage(ref connection, "PLACEHOLDER[Ontvangen messages van doktor applicatie]", "messagePanel");
             VRMethod.DrawOnBikePanel(ref connection, "Loading...");
-            VRMethod.DrawChatMessage(ref connection, "PLACEHOLDER[Ontvangen messages van doktor applicatie]");
-
-            /// Note: This will eventually probably be replaced with an update method that calls on to DrawBikeData to update with the received data.
-            /*double speedData = 5.2;
-            double resistanceData = 1.2;
-            double heartrateData = 92;
-            VRMethod.DrawBikeData(ref connection, speedData, resistanceData, heartrateData);*/
 
             UpdateSceneList();
+            VRMethod.DrawChatMessage(ref this.connection, "");
 
             Random rnd = new Random();
             for (int i = 0; i < 20; i++)

@@ -165,9 +165,9 @@ namespace RemoteHealthcare.VR
                 if (currentSessionID.Length > 1)
                 {
                     ReceiveFromTcp(out var receivedData, false);
-                    Console.WriteLine(receivedData);
+                    //Console.WriteLine(receivedData);
 
-                    //if (receivedData == "") { return; }
+                    //if (receivedData == "") { continue; }
                     JObject tunnel = JObject.Parse(receivedData);
                     JObject idObject = (JObject) tunnel.GetValue("data");
                     JObject dataObject = (JObject) idObject.GetValue("data");
