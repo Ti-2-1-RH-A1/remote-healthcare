@@ -23,12 +23,12 @@ namespace RemoteHealthcare.Tests
         {
             add
             {
-                throw new NotImplementedException();
+                // Not Implemented 
             }
 
             remove
             {
-                throw new NotImplementedException();
+                // Not Implemented 
             }
         }
 
@@ -92,12 +92,12 @@ namespace RemoteHealthcare.Tests
         public event Action<(DataTypes, float)> HandelDataEvents;
         public void StartTraining()
         {
-            throw new NotImplementedException();
+            // Not Implemented 
         }
 
         public void StopTraining()
         {
-            throw new NotImplementedException();
+            // Not Implemented 
         }
 
         private IServiceProvider BuildServiceProvider()
@@ -112,12 +112,13 @@ namespace RemoteHealthcare.Tests
 
         public void HandleData(Dictionary<DataTypes, float> data)
         {
-            throw new NotImplementedException();
+            // Not Implemented 
         }
 
         Task IDeviceManager.StartTraining()
         {
-            throw new NotImplementedException();
+            // Not Implemented 
+            return Task.Delay(2);
         }
     }
 }
