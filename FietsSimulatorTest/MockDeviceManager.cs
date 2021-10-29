@@ -2,7 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RemoteHealthcare.Bike;
 using System;
+using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace RemoteHealthcare.Tests
 {
@@ -15,6 +17,19 @@ namespace RemoteHealthcare.Tests
         {
             services = this.BuildServiceProvider();
             CheckedTypes = CheckedDataTypes.NONE;
+        }
+
+        event Action<Dictionary<DataTypes, float>> IDeviceManager.HandelDataEvents
+        {
+            add
+            {
+                throw new NotImplementedException();
+            }
+
+            remove
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public void Start((IBikeManager.BikeType, string) bikeTypeAndId)
@@ -93,6 +108,16 @@ namespace RemoteHealthcare.Tests
                 .AddSingleton<IBikeManager, BikeManager>()
                 .AddSingleton<IDeviceManager>(this)
                 .BuildServiceProvider();
+        }
+
+        public void HandleData(Dictionary<DataTypes, float> data)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IDeviceManager.StartTraining()
+        {
+            throw new NotImplementedException();
         }
     }
 }
