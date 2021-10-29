@@ -66,8 +66,6 @@ namespace RemoteHealthcare
             {
                 roundedData.Add(DataTypes.HRM_HEARTRATE, (float)Math.Round(data[DataTypes.HRM_HEARTRATE]));
             }
-            else
-            {
                 foreach (KeyValuePair<DataTypes, float> pair in data)
                 {
                     if (pair.Key == DataTypes.BIKE_SPEED) { continue; }
@@ -78,9 +76,8 @@ namespace RemoteHealthcare
                 {
                     roundedData.Add(DataTypes.BIKE_SPEED, (float) Math.Round(data[DataTypes.BIKE_SPEED] * 10) / 10);
                 }
-
-                roundedData.Add(pair.Key, (float)Math.Round(pair.Value));
-            }
+                
+            
 
             HandelDataEvents?.Invoke(roundedData);
         }
