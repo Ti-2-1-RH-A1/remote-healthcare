@@ -2,7 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using RemoteHealthcare.Bike;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace RemoteHealthcare.Hrm
 {
@@ -28,14 +30,14 @@ namespace RemoteHealthcare.Hrm
             DataReceived(HRMDataParser.ParseHRMData(e.Data));
         }
 
-        public void DataReceived((DataTypes, float) data)
+        public void DataReceived(Dictionary<DataTypes, float> data)
         {
             services.GetService<DeviceManager>().HandleData(data);
         }
 
-        public void Start()
+        public async Task Start()
         {
-            bluetooth.Start(hrmTypeName, heartRateServiceName, heartSubscribtionCharacteristic);
+            await bluetooth.Start(hrmTypeName, heartRateServiceName, heartSubscribtionCharacteristic);
         }
     }
 }

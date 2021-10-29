@@ -4,14 +4,16 @@ using RemoteHealthcare.Hrm;
 using RemoteHealthcare.ServerCom;
 using RemoteHealthcare.VR;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RemoteHealthcare
 {
     public class DeviceManager : IDeviceManager
     {
         private readonly IServiceProvider services;
-        public event Action<(DataTypes, float)> HandelDataEvents;
-
+        public event Action<Dictionary<DataTypes, float>> HandelDataEvents;
+        bool vrWorking = false;
         public IBikeManager.BikeType bikeType { get; set; }
         public string bikeID { get; set; }
 
@@ -25,23 +27,48 @@ namespace RemoteHealthcare
             services.GetService<IComManager>().Start();
         }
 
-        public void StartTraining()
+        public async Task StartTraining()
         {
-            services.GetService<IBikeManager>().Start(bikeType,bikeID);
-            services.GetService<IVRManager>().Start();
-            services.GetService<IHRMManager>().Start();
+            await services.GetService<IBikeManager>().Start(bikeType, bikeID);
+            
+            
+            if (vrWorking)
+            {
+                services.GetService<IVRManager>().Start();
+            }
+            
+            await services.GetService<IHRMManager>().Start();
         }
 
         public void StopTraining()
         {
-            services.GetService<IVRManager>().Stop();
+            if (vrWorking)
+            {
+                services.GetService<IVRManager>().Stop();
+            }
             services.GetService<IBikeManager>().Stop();
         }
 
-
-        public void HandleData((DataTypes, float) data)
+        public void HandleData(Dictionary<DataTypes, float> data)
         {
-            HandelDataEvents?.Invoke(data);
+            Dictionary<DataTypes, float> roundedData = new Dictionary<DataTypes, float>();
+
+            if (data.ContainsKey(DataTypes.HRM_HEARTRATE))
+            {
+                roundedData.Add(DataTypes.HRM_HEARTRATE, (float)Math.Round(data[DataTypes.HRM_HEARTRATE]));
+            }
+            else
+            {
+                foreach (KeyValuePair<DataTypes, float> pair in data)
+                {
+                    if (pair.Key == DataTypes.BIKE_SPEED) { continue; }
+                    roundedData.Add(pair.Key, (float)Math.Round(pair.Value));
+                }
+
+                roundedData.Add(DataTypes.BIKE_SPEED, (float)Math.Round(data[DataTypes.BIKE_SPEED] * 10) / 10);
+            }
+
+            HandelDataEvents?.Invoke(roundedData);
         }
 
         private IServiceProvider BuildServiceProvider()

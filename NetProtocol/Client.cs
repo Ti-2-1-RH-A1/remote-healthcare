@@ -204,6 +204,11 @@ namespace NetProtocol
 
         private void HandleData(string packetData)
         {
+            if (packetData == "\r\n\r\nOk" || packetData == "e0197ca\r\n\u0001Result\r\n\r\nOk")
+            {
+                return;
+            }
+
             (Dictionary<string, string> headers, Dictionary<string, string> data) = Protocol.ParsePacket(packetData);
             data.TryGetValue("message", out string messageValue);
             if (headers.TryGetValue("Method", out string methodValue))

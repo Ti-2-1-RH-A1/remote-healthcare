@@ -19,8 +19,8 @@ namespace RemoteHealthcare.ServerCom
         {
             this.iServiceProvider = iServiceProvider;
             actions = new Dictionary<string, Client.Callback>() {
-                { "Stop", StartClient() },
-                { "Start", StopClient() },
+                { "Stop", StopClient() },
+                { "Start", StartClient() },
                 { "Message", HandleMessage() },
                 { "SetResistance", SetResistance() }
             };
@@ -73,7 +73,8 @@ namespace RemoteHealthcare.ServerCom
         
         public async Task Start()
         {
-            client = new Client("localhost", false, "Henk");
+            Console.WriteLine("Wat is je naam? Deze sturen we naar de dokter zodat hij weet wie je bent.");
+            client = new Client("localhost", false, Console.ReadLine());
             while (!client.loggedIn)
             {
                 Thread.Sleep(10);
@@ -81,27 +82,24 @@ namespace RemoteHealthcare.ServerCom
             client.DataReceived += HandleDataFromServer;
         }
 
-        public void SendRealtime(string name, float data)
-        {
-            client.SendPacket(new Dictionary<string, string>()
-            {
-                { "Method", "PostRT" },
-            }, new Dictionary<string, string>() {
-                { "Id", client.UUID },
-                { name, data.ToString() },
-            });
-        }
+        // public void SendRealtime(string name, float data)
+        // {
+        //     client.SendPacket(new Dictionary<string, string>()
+        //     {
+        //         { "Method", "PostRT" },
+        //     }, new Dictionary<string, string>() {
+        //         { "Id", client.UUID },
+        //         { name, data.ToString() },
+        //     });
+        // }
 
-        public void SendPost(string name, float data)
+        public void SendPost(Dictionary<string, string> data)
         {
-            SendRealtime(name, data);
             client.SendPacket(new Dictionary<string, string>()
             {
                 { "Method", "Post" },
                 { "Id", client.UUID },
-            }, new Dictionary<string, string>() {
-                { name, data.ToString() },
-            });
+            }, data);
         }
 
         private Client.Callback HandleMessage() => delegate (Dictionary<string, string> header, Dictionary<string, string> data)
@@ -110,6 +108,8 @@ namespace RemoteHealthcare.ServerCom
                 {
                     //                  BgGreen   [CHAT]Reset     FgGreen   {message}Reset    
                     Console.WriteLine($"\u001b[42m[CHAT]\u001b[0m \u001b[32m{message}\u001b[0m");
+                    IVRManager vrManager = iServiceProvider.GetService<IVRManager>();
+                    vrManager.HandleDoctorMessage(message);
                 }
             };
     }
