@@ -63,8 +63,12 @@ namespace DoctorApplication
 
         private void BtnBroadcast_Click(object sender, RoutedEventArgs e)
         {
-            MessageAll message = new(this);
-            message.ShowDialog();
+            var dialog = new inputBox("Type hierond je bericht naar alle clients");
+            dialog.Owner = this;
+            if (dialog.ShowDialog() == true)
+            {
+                doctorActions.SendToAll(dialog.ResponseText);
+            }
         }
 
         private void BtnHistory_Click(object sender, RoutedEventArgs e)
