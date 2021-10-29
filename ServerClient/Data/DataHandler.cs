@@ -107,15 +107,7 @@ namespace ServerClient.Data
             {
                 if (loadedData.TryGetValue(id, out JObject jo))
                 {
-                    JArray data = jo["data"] as JArray;
-                    JObject main = new();
-                    foreach ((string key, string value) in healthData)
-                    {
-                        main.Add(key, value);
-                    }
-                    data.Add(main);
-                    jo["data"] = data;
-                    loadedData[id] = jo;
+                    loadedData[id] = UpdateJObject(healthData, jo);
                     changed[id] = true;
                     changes = true;
                 }
@@ -123,14 +115,7 @@ namespace ServerClient.Data
             else
             {
                 JObject jo = JObject.Parse(File.ReadAllText(FilePath(id)));
-                JArray data = jo["data"] as JArray;
-                JObject main = new();
-                foreach ((string key, string value) in healthData)
-                {
-                    main.Add(key, value);
-                }
-                data.Add(main);
-                jo["data"] = data;
+                jo = UpdateJObject(healthData, jo);
                 loadedData.Add(id, jo);
                 changed.Add(id, false);
                 try
@@ -143,6 +128,19 @@ namespace ServerClient.Data
                 }
             }
             return true;
+        }
+
+        private static JObject UpdateJObject(Dictionary<string, string> healthData, JObject jo)
+        {
+            JArray data = jo["data"] as JArray;
+            JObject main = new();
+            foreach ((string key, string value) in healthData)
+            {
+                main.Add(key, value);
+            }
+            data.Add(main);
+            jo["data"] = data;
+            return jo;
         }
 
         private void Update()
