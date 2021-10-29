@@ -6,7 +6,6 @@ using System.IO;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
-using Newtonsoft.Json;
 
 namespace ServerClient
 {

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -147,6 +148,21 @@ namespace DoctorApplication
             }
 
 
+        }
+
+        private void btnNoodstop(object sender, RoutedEventArgs e)
+        {
+            ListView list = ClientListView;
+            if (list.SelectedItems.Count < 1)
+            {
+                MessageBox.Show("Je moet minstens 1 client geselecteerd hebben.", "Selectie fout", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            doctorActions.SendSetResistance(list.SelectedItems, "0");
+            Thread.Sleep(10);
+            doctorActions.SendMessage(list.SelectedItems, "NOODSTOP!");
+            Thread.Sleep(10);
+            doctorActions.SendStopSession(list.SelectedItems);
         }
     }
 }

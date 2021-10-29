@@ -97,8 +97,8 @@ namespace RemoteHealthcare.ServerCom
                 {
                     //                  BgGreen   [CHAT]Reset     FgGreen   {message}Reset    
                     Console.WriteLine($"\u001b[42m[CHAT]\u001b[0m \u001b[32m{message}\u001b[0m");
-                    IVRManager vrManager = iServiceProvider.GetService<IVRManager>();
-                    vrManager.HandleDoctorMessage(message);
+                    //IVRManager vrManager = iServiceProvider.GetService<IVRManager>();
+                    //vrManager.HandleDoctorMessage(message);
                 }
             };
     }
