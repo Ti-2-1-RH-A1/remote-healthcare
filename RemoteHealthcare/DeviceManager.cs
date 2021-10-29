@@ -64,7 +64,10 @@ namespace RemoteHealthcare
 
             foreach (KeyValuePair<DataTypes, float> pair in data)
             {
-                roundedData.Add(DataTypes.HRM_HEARTRATE, (float)Math.Round(data[DataTypes.HRM_HEARTRATE]));
+                if (data.ContainsKey(DataTypes.HRM_HEARTRATE))
+                {
+                    roundedData.Add(DataTypes.HRM_HEARTRATE, (float) Math.Round(data[DataTypes.HRM_HEARTRATE]));
+                }
             }
                 foreach (KeyValuePair<DataTypes, float> pair in data)
                 {
