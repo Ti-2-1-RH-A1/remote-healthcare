@@ -17,6 +17,8 @@ namespace RemoteHealthcare.Hrm
         private readonly IServiceProvider services;
         private readonly Bluetooth bluetooth;
 
+        private int HRConnectionGood;
+
         public HRMManager(IServiceProvider services)
         {
             this.services = services;
@@ -37,7 +39,11 @@ namespace RemoteHealthcare.Hrm
 
         public async Task Start()
         {
-            await bluetooth.Start(hrmTypeName, heartRateServiceName, heartSubscribtionCharacteristic);
+            this.HRConnectionGood = await bluetooth.Start(hrmTypeName, heartRateServiceName, heartSubscribtionCharacteristic);
+            if (HRConnectionGood != 0)
+            {
+                Console.WriteLine("Connectie naar HRM niet mogelijk sessie wordt zonder voortgezet.");
+            }
         }
     }
 }

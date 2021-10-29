@@ -36,8 +36,14 @@ namespace RemoteHealthcare
             {
                 services.GetService<IVRManager>().Start();
             }
-            
-            await services.GetService<IHRMManager>().Start();
+
+            Console.WriteLine("Wil je een HR meter gebruiken? [y|n]");
+            string hrmChoice = Console.ReadLine().ToLower();
+            if (hrmChoice.Contains("y"))
+            {
+
+                await services.GetService<IHRMManager>().Start();
+            }
         }
 
         public void StopTraining()
@@ -65,7 +71,10 @@ namespace RemoteHealthcare
                     roundedData.Add(pair.Key, (float)Math.Round(pair.Value));
                 }
 
-                roundedData.Add(DataTypes.BIKE_SPEED, (float)Math.Round(data[DataTypes.BIKE_SPEED] * 10) / 10);
+                if (data.ContainsKey(DataTypes.BIKE_SPEED))
+                {
+                    roundedData.Add(DataTypes.BIKE_SPEED, (float) Math.Round(data[DataTypes.BIKE_SPEED] * 10) / 10);
+                }
             }
 
             HandelDataEvents?.Invoke(roundedData);

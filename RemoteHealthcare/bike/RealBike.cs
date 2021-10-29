@@ -19,6 +19,8 @@ namespace RemoteHealthcare.Bike
         private readonly IServiceProvider services;
         private readonly Bluetooth bluetooth;
 
+        private int BikeConnectionGood;
+
         public RealBike(IServiceProvider serviceProvider)
         {
             this.services = serviceProvider;
@@ -28,7 +30,9 @@ namespace RemoteHealthcare.Bike
 
         private void Ble_DataReceived(object sender, BLESubscriptionValueChangedEventArgs e)
         {
-            Dictionary<DataTypes, float> dataReceived = BikeDataParser.ParseBikeData(e.Data);
+
+            
+                Dictionary<DataTypes, float> dataReceived = BikeDataParser.ParseBikeData(e.Data);
 
                 DataReceived(dataReceived);
             
@@ -49,7 +53,13 @@ namespace RemoteHealthcare.Bike
         {
             // bikeId shouldn't be null, as handled before Start is called upon
             this.bikeId = bikeId;
-            await bluetooth.Start(bikeTypeName + " " + bikeId, bikeServiceName, bikeSubscribtionCharacteristic);
+            this.BikeConnectionGood = await bluetooth.Start(bikeTypeName + " " + bikeId, bikeServiceName, bikeSubscribtionCharacteristic);
+            Console.WriteLine(BikeConnectionGood);
+            if (BikeConnectionGood != 0)
+            {
+                Console.WriteLine("Connectie naar fiets niet mogelijk sessie wordt gestopt.");
+                services.GetService<DeviceManager>().StopTraining();
+            }
         }
 
         public void DataReceived(Dictionary<DataTypes, float> data)

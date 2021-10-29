@@ -41,7 +41,7 @@ namespace RemoteHealthcare
             while (running)
             {
                 bikeIdInput = Console.ReadLine();
-                if (Regex.IsMatch(bikeIdInput, "[/d{5}]"))
+                if (Regex.IsMatch(bikeIdInput, @"\d{5}"))
                 {
                     // if the input consists of 5 digits stop the loop, else ask for input again
                     running = false;
