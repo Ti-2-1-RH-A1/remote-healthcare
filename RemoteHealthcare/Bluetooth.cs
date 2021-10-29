@@ -41,22 +41,24 @@ namespace RemoteHealthcare
             List<string> lstdev = ble.ListDevices();
 
             lstdev.ForEach(Console.WriteLine);
-
+            int timesTried = 0;
             int errorCode = 0; // set default to 0;
             do
             {
+                errorCode = 0;
                 Console.WriteLine("Connecting to: " + deviceId);
                 errorCode += await ble.OpenDevice(deviceId);
+                timesTried++;
+            } while (errorCode != 0 && timesTried < 5);
+
+            if (timesTried != 5 && errorCode == 0)
+            {
                 errorCode += await ble.SetService(serviceName);
-                ble.SubscriptionValueChanged += DataReceived;
                 errorCode += await ble.SubscribeToCharacteristic(subscribtionCharacteristic);
-                Thread.Sleep(500);
+                ble.SubscriptionValueChanged += DataReceived;
+                Console.WriteLine("Connected to: "+ deviceId);
 
-            } while (errorCode != 0);
-
-            // if errorcode > 0 then connection wasn't made properly
-            // TODO [Martijn] Implement using errorcode to detect if connection was made
-            Console.WriteLine("Connected to: "+ deviceId);
+            }
             return errorCode;
         }
 

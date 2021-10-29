@@ -37,7 +37,16 @@ namespace RemoteHealthcare
                 services.GetService<IVRManager>().Start();
             }
 
+
+            Console.WriteLine("Wil je een HR meter gebruiken? [y|n]");
+            string hrmChoice = Console.ReadLine().ToLower();
+            if (hrmChoice.Contains("y"))
+            {
+
+                await services.GetService<IHRMManager>().Start();
+            }
             await services.GetService<IHRMManager>().Start();
+
         }
 
         public void StopTraining()
@@ -55,8 +64,20 @@ namespace RemoteHealthcare
 
             foreach (KeyValuePair<DataTypes, float> pair in data)
             {
-                roundedData.Add(pair.Key, (float)Math.Round(pair.Value));
+                roundedData.Add(DataTypes.HRM_HEARTRATE, (float)Math.Round(data[DataTypes.HRM_HEARTRATE]));
             }
+                foreach (KeyValuePair<DataTypes, float> pair in data)
+                {
+                    if (pair.Key == DataTypes.BIKE_SPEED) { continue; }
+                    roundedData.Add(pair.Key, (float)Math.Round(pair.Value));
+                }
+
+                if (data.ContainsKey(DataTypes.BIKE_SPEED))
+                {
+                    roundedData.Add(DataTypes.BIKE_SPEED, (float) Math.Round(data[DataTypes.BIKE_SPEED] * 10) / 10);
+                }
+                
+            
 
             HandelDataEvents?.Invoke(roundedData);
         }
