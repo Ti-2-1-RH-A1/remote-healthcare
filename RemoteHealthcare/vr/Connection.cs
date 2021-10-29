@@ -28,24 +28,6 @@ namespace RemoteHealthcare.VR
             networkStream.ReadTimeout = 10000;
         }
 
-        public bool TestConnection()
-        {
-            byte[] dataBytes = System.Text.Encoding.ASCII.GetBytes("test");
-            try
-            {
-                networkStream.Write(BitConverter.GetBytes(dataBytes.Length));
-                networkStream.Write(dataBytes);
-                networkStream.Flush();
-                return true;
-            }
-            catch (System.IO.IOException e)
-            {
-                Stop();
-                Console.WriteLine(e);
-                return false;
-            }
-        }
-
 
         public void Start()
         {
@@ -183,8 +165,9 @@ namespace RemoteHealthcare.VR
                 if (currentSessionID.Length > 1)
                 {
                     ReceiveFromTcp(out var receivedData, false);
-                    //Console.WriteLine(receivedData);
+                    Console.WriteLine(receivedData);
 
+                    //if (receivedData == "") { return; }
                     JObject tunnel = JObject.Parse(receivedData);
                     JObject idObject = (JObject) tunnel.GetValue("data");
                     JObject dataObject = (JObject) idObject.GetValue("data");

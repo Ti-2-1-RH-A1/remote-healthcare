@@ -13,7 +13,7 @@ namespace DoctorApplication
     {
         private readonly Dictionary<string, Client> clients = new();
         private NetProtocol.Client client;
-
+        
 
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
 
@@ -35,7 +35,7 @@ namespace DoctorApplication
 
         public async Task Start()
         {
-            client = new NetProtocol.Client("localhost");
+            client = new NetProtocol.Client("localhost",false);
 
             while (!client.loggedIn)
             {
@@ -47,7 +47,9 @@ namespace DoctorApplication
             client.SendPacket(new Dictionary<string, string>()
             {
                 { "Method", "GetClients" },
-            }, new Dictionary<string, string>());
+            }, new Dictionary<string, string>() {
+                { "Empty", "Empty" },
+            });
         }
 
         /// <summary>
@@ -73,7 +75,18 @@ namespace DoctorApplication
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
-                Console.WriteLine(data.Values);
+                if (data.TryGetValue("Id", out string id))
+                {
+                    if (clients.TryGetValue(id, out Client editClient))
+                    {
+                        if (data.TryGetValue("speed", out string speed)) editClient.Speed = speed;
+                        if (data.TryGetValue("time", out string time)) editClient.Time = time;
+                        if (data.TryGetValue("distance_traveled", out string distance_traveled)) editClient.DistanceTraveled = distance_traveled;
+                        if (data.TryGetValue("rpm", out string rpm)) editClient.Rpm = rpm;
+                        if (data.TryGetValue("heartrate", out string heartrate)) editClient.Heartrate = heartrate;
+                        clients[id] = editClient;
+                    }
+                }
             };
         }
 
@@ -138,7 +151,6 @@ namespace DoctorApplication
                 clients.TryGetValue(uuid, out Client client);
                 MainWindow.RemovefromList(client);
                 clients.Remove(uuid);
-                
             };
         }
 
@@ -147,7 +159,9 @@ namespace DoctorApplication
             client.SendPacket(new Dictionary<string, string>()
                 {
                     {"Method", "GetHistoryClients"},
-                }, new Dictionary<string, string>(),
+                }, new Dictionary<string, string>() {
+                    { "Empty", "Empty" },
+                },
                 (Dictionary<string, string> header, Dictionary<string, string> data) =>
                 {
                     data.TryGetValue("data", out string Jdata);

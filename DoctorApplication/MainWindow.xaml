@@ -42,12 +42,12 @@
                 <Button Content="Message selected client" Grid.Row="1" Grid.Column="1" Name="btnMessage" Click="BtnMessage_Click"/>
                 <Button Content="Message all clients" Grid.Row="1"  Grid.Column="3" Name="btnBroadcast" Click="BtnBroadcast_Click"/>
                 <Button Content="Emergency stop client" Grid.Row="3" Grid.Column="1" Name="btnEmergency"/>
-                <Button Content="History" Grid.Row="3" Grid.Column="3" Name="btnHistory" Click="BtnHistory_Click"/>
+                <Button Content="Geschiedenis" Grid.Row="3" Grid.Column="3" Name="btnHistory" Click="BtnHistory_Click"/>
                 <Button Content="Start session" Grid.Row="5" Grid.Column="1" Name="btnStartSession" Click="btnStartSession_Click"/>
                 <Button Content="Stop session" Grid.Row="5" Grid.Column="3" Name="btnStopSession" Click="btnStopSession_Click"/>
                 <Button Content="Change Resistance" Grid.Row="7" Grid.Column="1" Name="btnChangeResistance" Click="btnChangeResistance_Click" />
             </Grid>
-            <ListView Name="UserGrid" Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Client, Mode=TwoWay}" SelectedItem="{Binding SelectedClient}"  >
+            <ListView Name="ClientListView" Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Clients }"  >
                 <ListView.View>
                     <GridView x:Name="grdClients">
                         <GridViewColumn Header="Client ID" DisplayMemberBinding="{Binding clientSerial}"  Width="Auto"/>
@@ -57,21 +57,21 @@
                 </ListView.View>
             </ListView>
         </Grid>
-        <Grid Row="1">
+        <Grid Row="1" DataContext="{Binding  SelectedItem,ElementName=ClientListView}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Label Content="No client" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,37,0,117" Height="80" Width="180" FontSize="40" FontWeight="Bold"/>
+            <Label Content="{Binding Speed}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,37,0,117" Height="80" Width="180" FontSize="40" FontWeight="Bold"/>
             <Label Content="Speed" HorizontalContentAlignment="Center" Margin="10,122,10,32" Height="80" Width="180" FontSize="36"/>
-            <Label Content="No client" HorizontalContentAlignment="Center" Margin="10,37,10,117" Height="80" Width="180" FontSize="40" FontWeight="Bold" Grid.Column="1"/>
-            <Label Content="Resistance" HorizontalContentAlignment="Center" Margin="10,122,10,32" Height="80" Width="180" FontSize="36" Grid.Column="1"/>
-            <Label Content="No client" HorizontalContentAlignment="Center" Margin="10,37,10,117" Height="80" Width="180" FontSize="40" FontWeight="Bold" Grid.Column="2"/>
-            <Label Content="BPM" HorizontalContentAlignment="Center" Margin="10,122,10,32" Height="80" Width="180" FontSize="36" Grid.Column="2"/>
-            <Label Content="No client" HorizontalContentAlignment="Center" Margin="10,37,10,117" Height="80" Width="180" FontSize="40" FontWeight="Bold" Grid.Column="3"/>
-            <Label Content="Travelled" HorizontalContentAlignment="Center" Margin="10,122,10,32" Height="80" Width="180" FontSize="36" Grid.Column="3"/>
+            <Label Content="{Binding Rpm}" HorizontalContentAlignment="Center" Margin="10,37,10,117" Height="80" Width="180" FontSize="40" FontWeight="Bold" Grid.Column="1"/>
+            <Label Content="Rpm" HorizontalContentAlignment="Center" Margin="10,122,10,32" Height="80" Width="180" FontSize="36" Grid.Column="1"/>
+            <Label Content="{Binding DistanceTraveled}" HorizontalContentAlignment="Center" Margin="10,37,10,117" Height="80" Width="180" FontSize="40" FontWeight="Bold" Grid.Column="2"/>
+            <Label Content="DistanceTraveled" HorizontalContentAlignment="Center" Margin="10,122,10,32" Height="80" Width="180" FontSize="36" Grid.Column="2"/>
+            <Label Content="{Binding Heartrate}" HorizontalContentAlignment="Center" Margin="10,37,10,117" Height="80" Width="180" FontSize="40" FontWeight="Bold" Grid.Column="3"/>
+            <Label Content="Heartrate" HorizontalContentAlignment="Center" Margin="10,122,10,32" Height="80" Width="180" FontSize="36" Grid.Column="3"/>
         </Grid>
     </Grid>
 </Window>

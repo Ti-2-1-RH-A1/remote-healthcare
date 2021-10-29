@@ -9,7 +9,7 @@ namespace ServerClient
         public static Task Main(string[] args)
         {
             string certificate = @"Server.pfx";
-            //var server = new Server(certificate, AuthHandler.Init());
+            var server = new Server(certificate, AuthHandler.Init(),false);
 
             //var client = new Client("localhost", "Fiets", false, "Robin 1");
            
@@ -17,7 +17,7 @@ namespace ServerClient
 
 
             //Task.Delay(30000).Wait();
-            var client2 = new Client("145.49.42.127", false, "Robin", "e5OczxmOprhbpDVUtF4JmeM7gVdqrFDl");
+            //var client2 = new Client("localhost", false, "Robin", "e5OczxmOprhbpDVUtF4JmeM7gVdqrFDl");
             
             
             //  Task.Delay(10000).Wait();

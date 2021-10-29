@@ -42,7 +42,7 @@ namespace ServerClient
                 { "SendToClients", SendToClients() },
                 { "Post", Post() },
                 { "Get", Get() },
-                { "PostRT", PostRT() }, // post realtime to doctor.
+                //{ "PostRT", PostRT() }, // post realtime to doctor.
             };
             this.stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
@@ -92,8 +92,11 @@ namespace ServerClient
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
+                
                 if (header.TryGetValue("Id", out string id))
                 {
+                    data.Add("Id", id);
+                    manager.SendToClients(ClientsManager.ClientType.DOCTOR, "Realtime", data);
                     if (manager.dataHandler.ClientData.TryGetValue(id, out ClientData clientData))
                     {
                         PropertyInfo[] properties = typeof(ClientData).GetProperties();
@@ -119,13 +122,13 @@ namespace ServerClient
             };
         }
 
-        private Callback PostRT()
-        {
-            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
-            {
-                manager.SendToClients(ClientsManager.ClientType.DOCTOR, "Realtime", data);
-            };
-        }
+        // private Callback PostRT()
+        // {
+        //     return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+        //     {
+        //         manager.SendToClients(ClientsManager.ClientType.DOCTOR, "Realtime", data);
+        //     };
+        // }
 
         private Callback SendToClients()
         {
