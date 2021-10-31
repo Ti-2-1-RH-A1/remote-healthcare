@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Reflection.Metadata;
 
 namespace NetProtocol
 {
@@ -26,7 +27,8 @@ namespace NetProtocol
                 rawData = rawData.Contains(separator) ? rawData[(rawData.IndexOf(separator) + separator.Length)..] : rawData;
                 string dataValue = rawData.Contains(separator) ? rawData.Substring(0, rawData.IndexOf(separator)) : rawData;
                 rawData = rawData.Contains(separator) ? rawData[(rawData.IndexOf(separator) + separator.Length)..] : rawData;
-                resultData.Add(dataKey, dataValue);
+                if (!resultData.ContainsKey(dataKey))
+                    resultData.Add(dataKey, dataValue);
             }
             return (resultData, rawData);
         }

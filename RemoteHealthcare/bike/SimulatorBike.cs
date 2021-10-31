@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -39,6 +40,7 @@ namespace RemoteHealthcare.Bike
         {
             this.isRunning = true;
             this.simThread = new Thread(new ThreadStart(this.RunSimulation));
+            this.simThread.Name = "simThread";
             this.simThread.Start();
         }
 
@@ -50,7 +52,6 @@ namespace RemoteHealthcare.Bike
         public void Stop()
         {
             this.isRunning = false;
-           
         }
 
         private void RunSimulation()
@@ -82,7 +83,7 @@ namespace RemoteHealthcare.Bike
 
         public void DataReceived(Dictionary<DataTypes, float> data)
         {
-            services.GetService<IDeviceManager>().HandleData(data);
+            services.GetService<IDeviceManager>()?.HandleData(data);
         }
 
         public void SetResistance(byte resistance)

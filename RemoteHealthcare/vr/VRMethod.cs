@@ -599,6 +599,7 @@ namespace RemoteHealthcare.VR
 
         }
 
+        private static string idMesagePanel = null;
         /// <summary>
         /// Draws a message from the doctor on a panel
         /// </summary>
@@ -607,12 +608,18 @@ namespace RemoteHealthcare.VR
         /// <param name="panelName"></param>
         public static void DrawChatMessage(ref Connection connection, string message, string panelName = "messagePanel")
         {
-            ClearPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
+
+            if (idMesagePanel == null)
+            {
+                idMesagePanel = GetIdFromNodeName(ref connection, panelName);
+            }
+
+            ClearPanel(ref connection, idMesagePanel);
             int[] headerPosition = { 90, 30 };
             int[] position = { 5, 70 };
             int[] color = { 100, 0, 0, 1 };
 
-            Drawtext(ref connection, panelName, "Bericht van de dokter", headerPosition, 42, color, "segoeui");
+            Drawtext(ref connection, panelName, "Bericht van de dokters", headerPosition, 42, color, "segoeui");
 
             color[0] = 0;
             int maximum = 45;
@@ -639,7 +646,7 @@ namespace RemoteHealthcare.VR
                 position[1] = position[1] + 30;
             }
 
-            SwapPanel(ref connection, GetIdFromNodeName(ref connection, panelName));
+            SwapPanel(ref connection, idMesagePanel);
         }
 
         /// <summary>
@@ -820,6 +827,7 @@ namespace RemoteHealthcare.VR
             return message;
         }
 
+        private static Dictionary<string, string> idsDictionary = new Dictionary<string, string>();
 
         /// <summary>
         /// GetIdFromNodeName does <c></c>
@@ -827,6 +835,12 @@ namespace RemoteHealthcare.VR
         /// <returns>a string with the bikes current id</returns>
         public static string GetIdFromNodeName(ref Connection connection, string nodeName)
         {
+
+            if (idsDictionary.ContainsKey(nodeName))
+            {
+                return idsDictionary[nodeName];
+            }
+
             JObject message = new JObject { { "id", JsonID.SCENE_NODE_FIND } };
             JObject data = new JObject { { "name", nodeName } };
             message.Add("data", data);
@@ -846,6 +860,9 @@ namespace RemoteHealthcare.VR
             {
                 string s = responseData.GetValue("uuid")?.ToString();
                 //Console.WriteLine(s);
+
+                idsDictionary.Add(nodeName,s);
+
                 return s;
             }
 
