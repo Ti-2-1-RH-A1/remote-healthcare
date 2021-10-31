@@ -64,13 +64,13 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Label Content="{Binding Speed}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,37,0,117" Height="80" Width="180" FontSize="40" FontWeight="Bold"/>
+            <Label Content="{Binding speed}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Margin="0,37,0,117" Height="80" Width="180" FontSize="40" FontWeight="Bold"/>
             <Label Content="SNELHEID" HorizontalContentAlignment="Center" Margin="10,122,10,32" Height="80" Width="180" FontSize="36"/>
-            <Label Content="{Binding Rpm}" HorizontalContentAlignment="Center" Margin="10,37,10,117" Height="80" Width="180" FontSize="40" FontWeight="Bold" Grid.Column="1"/>
+            <Label Content="{Binding rpm}" HorizontalContentAlignment="Center" Margin="10,37,10,117" Height="80" Width="180" FontSize="40" FontWeight="Bold" Grid.Column="1"/>
             <Label Content="RPM" HorizontalContentAlignment="Center" Margin="10,122,10,32" Height="80" Width="180" FontSize="36" Grid.Column="1"/>
-            <Label Content="{Binding DistanceTraveled}" HorizontalContentAlignment="Center" Margin="10,37,10,117" Height="80" Width="180" FontSize="40" FontWeight="Bold" Grid.Column="2"/>
+            <Label Content="{Binding distanceTraveled}" HorizontalContentAlignment="Center" Margin="10,37,10,117" Height="80" Width="180" FontSize="40" FontWeight="Bold" Grid.Column="2"/>
             <Label Content="AFSTAND" HorizontalContentAlignment="Center" Margin="10,122,10,32" Height="80" Width="180" FontSize="36" Grid.Column="2"/>
-            <Label Content="{Binding Heartrate}" HorizontalContentAlignment="Center" Margin="10,37,10,117" Height="80" Width="180" FontSize="40" FontWeight="Bold" Grid.Column="3"/>
+            <Label Content="{Binding heartRate}" HorizontalContentAlignment="Center" Margin="10,37,10,117" Height="80" Width="180" FontSize="40" FontWeight="Bold" Grid.Column="3"/>
 
             <Label Content="HARTSLAG" HorizontalContentAlignment="Center" Margin="10,122,10,32" Height="80" Width="180" FontSize="36" Grid.Column="3"/>
 

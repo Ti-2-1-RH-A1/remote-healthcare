@@ -13,7 +13,7 @@ namespace RemoteHealthcare
     {
         private readonly IServiceProvider services;
         public event Action<Dictionary<DataTypes, float>> HandelDataEvents;
-        bool vrWorking = true;
+        bool vrWorking = false;
         public IBikeManager.BikeType bikeType { get; set; }
         public string bikeID { get; set; }
 
