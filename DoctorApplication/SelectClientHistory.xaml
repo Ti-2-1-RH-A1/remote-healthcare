@@ -1,0 +1,21 @@
+﻿<Window x:Class="DoctorApplication.SelectClientHistory"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DoctorApplication"
+        mc:Ignorable="d"
+        Title="Selecteer client geschiedenis" Height="500" Width="500">
+    <Grid>
+        <ListView x:Name="UserGrid" Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Clients, Mode=OneWay}" SelectedItem="{Binding SelectedClient}" Margin="0,0,0,75">
+            <ListView.View>
+                <GridView x:Name="grdClientsHistory">
+                    <GridViewColumn Header="ClientID" DisplayMemberBinding="{Binding clientSerial}"  Width="Auto" />
+                    <GridViewColumn Header="Client Naam" DisplayMemberBinding="{Binding clientName}"  Width="Auto" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Button Content="Selecteer Client" HorizontalAlignment="Center" Margin="0,409,0,0" VerticalAlignment="Top" Height="60" Width="200" Click="Button_Click"/>
+
+    </Grid>
+</Window>

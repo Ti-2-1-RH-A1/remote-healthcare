@@ -1,0 +1,34 @@
+﻿<Window x:Class="DoctorApplication.inputBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DoctorApplication"
+        mc:Ignorable="d"
+        Title="inputBox" Height="200" Width="500">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <Label Content="Message" Name="lblMessage" Margin="0,0,0,1"/>
+            <TextBox Grid.Row="1" Name="ValueResponseBox" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" TextWrapping="Wrap" Margin="0,0,0,41" Grid.RowSpan="2"/>
+            <Button Content="Stuur" Name="SendBtn" Grid.Row="2" Click="SendBtn_Click" />
+
+
+        </Grid>
+    </Grid>
+</Window>

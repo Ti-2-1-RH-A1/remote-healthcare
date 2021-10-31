@@ -4,30 +4,43 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using RemoteHealthcare.Bike;
 
 namespace RemoteHealthcare.VR
 {
     public class Connection
     {
         private readonly NetworkStream networkStream;
+        private readonly VRManager vrManager;
         public string currentSessionID { get; set; }
 
-        private delegate void Reconnect();
-
-        private readonly Reconnect reconnect;
-
         private static readonly Random random = new Random();
+
+        private Thread recieveThread;
+        private bool isAlive;
 
         public Connection(NetworkStream networkStream, VRManager vrManager)
         {
             this.networkStream = networkStream;
+            this.vrManager = vrManager;
             currentSessionID = "";
             //Sets a timeout if this time is hit a timeout exception will be thrown
             networkStream.ReadTimeout = 10000;
-            reconnect = vrManager.Reconnect;
-            Thread t = new Thread(Run);
-            t.Start();
+        }
+
+
+        public void Start()
+        {
+            recieveThread = new Thread(Run);
+            recieveThread.Start();
+            isAlive = true;
+        }
+
+        public void Stop()
+        {
+            networkStream.Close();
+            //recieveThread.Abort();
+            isAlive = false;
         }
 
 
@@ -73,10 +86,10 @@ namespace RemoteHealthcare.VR
             }
             else
             {
-                receivedData = String.Empty;
-                reconnect();
+                receivedData = string.Empty;
             }
         }
+
 
         /// <summary>SendToTcp does <c>Sending a String over Tcp</c> using ASCII encoding</summary>
         ///
@@ -84,15 +97,25 @@ namespace RemoteHealthcare.VR
         {
             byte[] dataBytes = System.Text.Encoding.ASCII.GetBytes(data);
             int dataLength = dataBytes.Length;
-
-            networkStream.Write(BitConverter.GetBytes(dataLength));
-            networkStream.Write(dataBytes);
-            networkStream.Flush();
+            if (isAlive)
+            {
+                try
+                {
+                    networkStream.Write(BitConverter.GetBytes(dataLength));
+                    networkStream.Write(dataBytes);
+                    networkStream.Flush();
+                }
+                catch (System.IO.IOException e)
+                {
+                    Stop();
+                    Console.WriteLine(e);
+                }
+            }
         }
 
         private async Task waitForConnection()
         {
-            while (currentSessionID.Length == 0)
+            while (currentSessionID == null || currentSessionID.Length == 0)
             {
                 await Task.Delay(10);
             }
@@ -102,7 +125,7 @@ namespace RemoteHealthcare.VR
         /// Returns a string with the response
         public void SendViaTunnel(JObject jObject, Callback callback = null)
         {
-            if (currentSessionID.Length == 0)
+            if (currentSessionID == null || currentSessionID.Length == 0)
             {
                 Console.WriteLine("not connected");
                 waitForConnection().Wait();
@@ -139,25 +162,34 @@ namespace RemoteHealthcare.VR
             bool running = true;
             while (running)
             {
+                if (currentSessionID == null) { break; }
                 if (currentSessionID.Length > 1)
                 {
-                    ReceiveFromTcp(out var receivedData, false);
-                    Console.WriteLine(receivedData);
-
-                    JObject tunnel = JObject.Parse(receivedData);
-                    JObject idObject = (JObject)tunnel.GetValue("data");
-                    JObject dataObject = (JObject)idObject.GetValue("data");
-                    if (dataObject.ContainsKey("serial"))
+                    try
                     {
-                        JToken jToken = dataObject.GetValue("serial");
-                        string serial = jToken.ToString();
-                        Console.WriteLine(serial);
+                        ReceiveFromTcp(out var receivedData, false);
+                        //Console.WriteLine(receivedData);
 
-                        if (callbacks.ContainsKey(serial))
+                        if (receivedData == "") { continue; }
+                        JObject tunnel = JObject.Parse(receivedData);
+                        JObject idObject = (JObject)tunnel.GetValue("data");
+                        JObject dataObject = (JObject)idObject.GetValue("data");
+                        if (dataObject.ContainsKey("serial"))
                         {
-                            callbacks[serial](dataObject.ToString());
-                            callbacks.Remove(serial);
+                            JToken jToken = dataObject.GetValue("serial");
+                            string serial = jToken.ToString();
+                            //Console.WriteLine(serial);
+
+                            if (callbacks.ContainsKey(serial))
+                            {
+                                callbacks[serial](dataObject.ToString());
+                                callbacks.Remove(serial);
+                            }
                         }
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Error in vr");
                     }
                 }
             }

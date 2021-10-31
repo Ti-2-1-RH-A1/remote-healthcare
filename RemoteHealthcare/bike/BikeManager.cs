@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace RemoteHealthcare.Bike
 {
@@ -15,12 +16,6 @@ namespace RemoteHealthcare.Bike
             this.simulatorBike = new SimulatorBike(serviceProvider);
         }
 
-        public enum BikeType
-        {
-            REAL_BIKE,
-            SIMULATOR_BIKE
-        }
-
         /// <summary>
         /// This method starts the selected bike type. 
         /// <see cref="RealBike.Start(string)">For more information on the Realbike start method.</see> and 
@@ -31,7 +26,7 @@ namespace RemoteHealthcare.Bike
         ///                      be given if BikeType.REAL_BIKE is selected.</param>
         /// <exception cref="ArgumentNullException">Is thrown when the bikeType is set to REAL_BIKE but the 
         ///                                         bikeId is null or not given.</exception>
-        public void StartBike(IBikeManager.BikeType bikeType, string bikeId = null)
+        public async Task Start(IBikeManager.BikeType bikeType = IBikeManager.BikeType.SIMULATOR_BIKE,string bikeId = null)  
         {
             if (bikeType == IBikeManager.BikeType.REAL_BIKE && bikeId == null)
             {
@@ -41,13 +36,26 @@ namespace RemoteHealthcare.Bike
             if (bikeType == IBikeManager.BikeType.REAL_BIKE)
             {
                 this.activeBike = this.realBike;
-                this.activeBike.Start(bikeId);
+                await this.activeBike.Start(bikeId);
             }
             else // Simulator bike.
             {
                 this.activeBike = this.simulatorBike;
-                this.activeBike.Start();
+                await this.activeBike.Start();
             }
+        }
+
+        public void Stop()
+        {
+            if (activeBike != null)
+            {
+                activeBike.Stop();
+            }
+        }
+
+        public void SetResistance(int resistance)
+        {
+            this.activeBike.SetResistance((byte) ((resistance / 100) * byte.MaxValue));
         }
 
         public Thread GetSimThread() => (this.simulatorBike as SimulatorBike).GetSimThread();

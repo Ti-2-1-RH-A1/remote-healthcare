@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace RemoteHealthcare.Bike
 {
@@ -18,21 +19,29 @@ namespace RemoteHealthcare.Bike
         private readonly IServiceProvider services;
         private readonly Bluetooth bluetooth;
 
+        private int BikeConnectionGood;
+
         public RealBike(IServiceProvider serviceProvider)
         {
             this.services = serviceProvider;
-
             this.bluetooth = services.GetServices<Bluetooth>().Where(b => b.BLEInstance == BLEInstance.BIKE).FirstOrDefault();
             bluetooth.DataReceived += Ble_DataReceived;
         }
 
         private void Ble_DataReceived(object sender, BLESubscriptionValueChangedEventArgs e)
         {
-            List<(DataTypes, float)> dataReceived = BikeDataParser.ParseBikeData(e.Data);
-            foreach ((DataTypes, float) dataItem in dataReceived)
-            {
-                DataReceived(dataItem);
-            }
+
+            
+                Dictionary<DataTypes, float> dataReceived = BikeDataParser.ParseBikeData(e.Data);
+
+                DataReceived(dataReceived);
+            
+        }
+
+        public void Stop()
+        {
+            bluetooth.Dispose();
+            this.Dispose();
         }
 
         public void SetResistance(byte resistance)
@@ -40,14 +49,20 @@ namespace RemoteHealthcare.Bike
             bluetooth.SetBikeResistance(resistance);
         }
 
-        public void Start(string bikeId = null)
+        public async Task Start(string bikeId = null)
         {
             // bikeId shouldn't be null, as handled before Start is called upon
             this.bikeId = bikeId;
-            bluetooth.Start(this);
+            this.BikeConnectionGood = await bluetooth.Start(bikeTypeName + " " + bikeId, bikeServiceName, bikeSubscribtionCharacteristic);
+            Console.WriteLine(BikeConnectionGood);
+            if (BikeConnectionGood != 0)
+            {
+                Console.WriteLine("Connectie naar fiets niet mogelijk sessie wordt gestopt.");
+                services.GetService<DeviceManager>().StopTraining();
+            }
         }
 
-        public void DataReceived((DataTypes, float) data)
+        public void DataReceived(Dictionary<DataTypes, float> data)
         {
             services.GetService<DeviceManager>().HandleData(data);
         }

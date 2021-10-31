@@ -2,23 +2,27 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ServerClient.Data;
 
 namespace ServerClient
 {
     public class ClientsManager
     {
         private readonly Dictionary<string, ClientHandler> clients;
+        public readonly DataHandler dataHandler;
 
         public enum ClientType
         {
             PATIENT,
             DOCTOR,
-            ALL
+            ALL,
         }
 
         public ClientsManager()
         {
             clients = new Dictionary<string, ClientHandler>();
+            dataHandler = new DataHandler();
+            dataHandler.LoadAllData();
         }
 
         public void Add(ClientHandler clientHandler)
@@ -42,23 +46,26 @@ namespace ServerClient
         /// <param name="client"></param>
         public void Disconnect(ClientHandler client)
         {
-            SendToClients(ClientType.DOCTOR,
-                "RemoveClient",
-                new Dictionary<string, string>(){
-                    { "Data", client.UUID },
-                });
-            if (client.UUID != null && clients.ContainsKey(client.UUID))
+            if (!client.UUID.Contains("DOCTOR-"))
             {
-                clients.Remove(client.UUID);
-            }
-            else
-            {
-                Console.WriteLine(client.ToString() + " not found");
+                SendToClients(ClientType.DOCTOR,
+                    "RemoveClient",
+                    new Dictionary<string, string>()
+                    {
+                        {"Data", client.UUID},
+                    });
+                if (client.UUID != null && clients.ContainsKey(client.UUID))
+                {
+                    clients.Remove(client.UUID);
+                }
+                else
+                {
+                    Console.WriteLine(client.ToString() + " not found");
+                }
             }
 
             Console.WriteLine("Client disconnected");
         }
-
 
         /// <summary>
         /// Gets all logged in patient clients
@@ -74,6 +81,7 @@ namespace ServerClient
 
             return new List<ClientHandler>(dic.Values);
         }
+
         /// <summary>
         /// send a header and data to a list of clients
         /// </summary>

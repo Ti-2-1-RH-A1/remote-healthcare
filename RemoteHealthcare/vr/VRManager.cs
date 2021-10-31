@@ -1,21 +1,21 @@
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RemoteHealthcare.Bike;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using Microsoft.Extensions.DependencyInjection;
-using RemoteHealthcare.Bike;
 
 namespace RemoteHealthcare.VR
 {
-    public class VRManager
+    public class VRManager : IVRManager
     {
-        //private NetworkStream networkStream;
         private Dictionary<string, string> userSessions;
         private Connection connection;
         private Dictionary<string, string> nodes;
         private readonly IServiceProvider services;
-        private bool isReady = false;
+        public bool isReady = false;
+
         public VRManager(IServiceProvider serviceProvider)
         {
             // Initialise and connect to the TcpClient
@@ -28,14 +28,12 @@ namespace RemoteHealthcare.VR
             services.GetService<IDeviceManager>().HandelDataEvents += HandleData;
 
             connection = new Connection(client.GetStream(), this);
-
-            userSessions = VRMethod.GetRunningSessions(ref connection);
         }
 
         /// <summary>
-        /// Reconnect does <c>reconnects to a new client</c> reconnects to a new client and resets all necessary fields
+        /// Connect does <c>reconnects to a new client</c> reconnects to a new client and resets all necessary fields
         /// </summary>
-        public void Reconnect()
+        public void Connect()
         {
             userSessions = VRMethod.GetRunningSessions(ref connection);
             ConnectToAClient();
@@ -47,13 +45,22 @@ namespace RemoteHealthcare.VR
             nodes = VRMethod.GetScene(ref connection);
         }
 
-        public void HandleData((DataTypes, float) data)
+        public void HandleData(Dictionary<DataTypes, float> data)
         {
-            if (data.Item1 == DataTypes.BIKE_SPEED)
-            {
-                updateBikeSpeed(data.Item2);
-            }
+            UpdateBikeData(data);
+        }
 
+        public void HandleDoctorMessage(string message)
+        {
+            if (isReady) { VRMethod.DrawChatMessage(ref connection, message); }
+        }
+
+        public void Stop()
+        {
+            VRMethod.ResetScene(ref connection);
+            connection.currentSessionID = null;
+            userSessions = VRMethod.GetRunningSessions(ref connection);
+            VRMethod.bikeId = null;
         }
 
         /// <summary>Start does <c>The beginning of the VRManager</c> This is the beginning of the program, als 
@@ -61,36 +68,29 @@ namespace RemoteHealthcare.VR
         ///
         public void Start()
         {
-            ConnectToAClient();
+            connection.Start();
+            Connect();
 
             VRMethod.ResetScene(ref connection);
 
             nodes = VRMethod.GetScene(ref connection);
 
-            //string terrainUuid = VRMethod.CreateTerrain(ref connection);
+            string terrainUuid = VRMethod.CreateTerrain(ref connection);
 
-            //VRMethod.SetTexture(ref connection, terrainUuid);
+            VRMethod.SetTexture(ref connection, terrainUuid);
 
             JArray position = new JArray { 20, 0, 20 };
             JArray rotation = new JArray { 0, 0, 0 };
             string bikename1 = "Bike";
-            
+
             string bikeUUID = VRMethod.AddModelBike(ref connection, bikename1, position, rotation);
 
             VRMethod.CreateBikePanel(ref connection);
             VRMethod.CreateMessagePanel(ref connection);
-            VRMethod.DrawOnBikePanel(ref connection, "hoegaboega");
-            VRMethod.DrawChatMessage(ref connection, "PLACEHOLDER[Ontvangen messages van doktor applicatie]", "messagePanel");
             VRMethod.DrawOnBikePanel(ref connection, "Loading...");
-            VRMethod.DrawChatMessage(ref connection, "PLACEHOLDER[Ontvangen messages van doktor applicatie]");
-
-            /// Note: This will eventually probably be replaced with an update method that calls on to DrawBikeData to update with the received data.
-            double speedData = 5.2;
-            double resistanceData = 1.2;
-            double heartrateData = 92;
-            VRMethod.DrawBikeData(ref connection, speedData, resistanceData, heartrateData);
 
             UpdateSceneList();
+            VRMethod.DrawChatMessage(ref this.connection, "");
 
             Random rnd = new Random();
             for (int i = 0; i < 20; i++)
@@ -205,15 +205,17 @@ namespace RemoteHealthcare.VR
             }
         }
 
-        public void updateBikeSpeed(float speed)
+        public void UpdateBikeData(Dictionary<DataTypes, float> data)
         {
-            if (isReady)
+            if (!isReady || data == null) { return; }
+
+            string bikeId = VRMethod.GetBikeID(ref connection);
+            if (data.ContainsKey(DataTypes.BIKE_SPEED) && data.ContainsKey(DataTypes.BIKE_DISTANCE))
             {
-                string bikeId = VRMethod.GetBikeID(ref connection);
-                VRMethod.ChangeSpeed(ref connection, bikeId, speed);
+                VRMethod.ChangeSpeed(ref connection, bikeId, data[DataTypes.BIKE_SPEED]);
+                VRMethod.DrawBikeData(ref connection, data[DataTypes.BIKE_SPEED], data[DataTypes.BIKE_DISTANCE]);
             }
         }
-
 
         /// <summary>CreateTunnel does <c>Creating a network tunnel</c> returns <returns>A Boolean</returns> sends the correct json and then checks connection status based on that it returns a boolean</summary>
         ///
@@ -222,7 +224,6 @@ namespace RemoteHealthcare.VR
             Console.WriteLine("Creating a tunnel");
             // create a tunnel
             JObject tunnelCreateJson = new JObject { { "id", "tunnel/create" } };
-
 
             JObject dataJson = new JObject { { "session", userSessions[sessionId] } };
             // place to set the key 

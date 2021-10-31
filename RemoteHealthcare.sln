@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RemoteHealthcare", "RemoteHealthcare\RemoteHealthcare.csproj", "{FF44DB88-4E80-4CF5-9100-2919DC985216}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FietsSimulatorTest", "FietsSimulatorTest\FietsSimulatorTest.csproj", "{548C4995-F317-4989-B8F9-BC0F7483A60F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RemoteHealthcareTest", "FietsSimulatorTest\RemoteHealthcareTest.csproj", "{548C4995-F317-4989-B8F9-BC0F7483A60F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerClient", "ServerClient\ServerClient.csproj", "{14405CD2-2FBC-4A60-A755-629AF7277547}"
 EndProject

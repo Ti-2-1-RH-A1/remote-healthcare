@@ -10,7 +10,7 @@
         <TextBlock HorizontalAlignment="Center" Margin="0,101,0,0" Text="Type hier u text" TextWrapping="Wrap"
                    VerticalAlignment="Top" Height="116" Width="276" />
         <Button Content="send" HorizontalAlignment="Center" Height="60" Margin="0,230,0,0" VerticalAlignment="Top"
-                Width="142" />
+                Width="142" Click="Button_Click" />
         <ListBox HorizontalAlignment="Left" Height="241" Margin="38,76,0,0" VerticalAlignment="Top" Width="170" />
     </Grid>
 </Window>

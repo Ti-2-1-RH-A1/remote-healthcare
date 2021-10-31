@@ -1,22 +1,37 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace ServerClient.Data
 {
     public class DataHandler
     {
         public Dictionary<string, ClientData> ClientData;
+        private Dictionary<string, JObject> loadedData;
+        private Dictionary<string, bool> changed;
+        private bool changes = false;
+        private readonly Timer Savetimer;
         private readonly string storageLocation = Directory.GetCurrentDirectory() + "/clients/storage";
 
         public DataHandler()
         {
             ClientData = new Dictionary<string, ClientData>();
+            loadedData = new Dictionary<string, JObject>();
+            changed = new Dictionary<string, bool>();
             if (!Directory.Exists(storageLocation))
             {
                 Directory.CreateDirectory(storageLocation);
             }
+            Savetimer = new(_ =>
+            {
+                if (changes)
+                {
+                    Update();
+                }
+            }, null, 0, 5000);
         }
 
         private string FilePath(string id) => storageLocation + "/" + id + ".json";
@@ -34,6 +49,31 @@ namespace ServerClient.Data
                     ClientData.Add(jo["id"].ToString(), client);
                 }
             }
+        }
+
+        public string LoadClientHistory()
+        {
+            string[] storageFiles = Directory.GetFiles(storageLocation);
+            Dictionary<string, string> client = new Dictionary<string, string>();
+            foreach (string file in storageFiles)
+            {
+                if (file.IndexOf(".json") != -1)
+                {
+                    JObject jo = JObject.Parse(File.ReadAllText(file));
+                    client.Add(jo["id"].ToString(), jo["name"].ToString());
+                }
+            }
+            return JsonConvert.SerializeObject(client); ;
+        }
+
+        public JObject LoadClientHistoryData(string clientID)
+        {
+            if (File.Exists(FilePath(clientID)))
+            {
+                return JObject.Parse(File.ReadAllText(FilePath(clientID)));
+                
+            } 
+                return new JObject();
         }
 
         public void AddFile(string id, string name)
@@ -62,17 +102,69 @@ namespace ServerClient.Data
         public bool StoreData(string id, Dictionary<string, string> healthData)
         {
             if (!ClientData.ContainsKey(id)) return false;
-            JObject jo = JObject.Parse(File.ReadAllText(FilePath(id)));
+
+            if (loadedData.ContainsKey(id))
+            {
+                if (loadedData.TryGetValue(id, out JObject jo))
+                {
+                    loadedData[id] = UpdateJObject(healthData, jo);
+                    changed[id] = true;
+                    changes = true;
+                }
+            }
+            else
+            {
+                JObject jo = JObject.Parse(File.ReadAllText(FilePath(id)));
+                jo = UpdateJObject(healthData, jo);
+                loadedData.Add(id, jo);
+                changed.Add(id, false);
+                try
+                {
+                    File.WriteAllText(FilePath(id), jo.ToString());
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Data not saved exception found. But still going strong");
+                }
+            }
+            return true;
+        }
+
+        private static JObject UpdateJObject(Dictionary<string, string> healthData, JObject jo)
+        {
             JArray data = jo["data"] as JArray;
             JObject main = new();
-            foreach (var (key, value) in healthData)
+            foreach ((string key, string value) in healthData)
             {
                 main.Add(key, value);
             }
             data.Add(main);
             jo["data"] = data;
-            File.WriteAllText(FilePath(id), jo.ToString());
-            return true;
+            return jo;
+        }
+
+        private void Update()
+        {
+            foreach (KeyValuePair<string, bool> item in changed)
+            {
+                if (item.Value)
+                {
+                    if (loadedData.TryGetValue(item.Key, out JObject jo))
+                    {
+                        Console.WriteLine($"Saving {item.Key}");
+                        try
+                        {
+                            File.WriteAllText(FilePath(item.Key), jo.ToString());
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("Data not saved exception found.");
+                        }
+                        changed[item.Key] = false;
+                    }
+                }
+            }
+            changes = false;
         }
     }
 }

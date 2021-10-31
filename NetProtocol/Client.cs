@@ -37,20 +37,22 @@ namespace NetProtocol
         public delegate void DataReceivedHandler(object Client, DataReceivedArgs PacketInformation);
         public event DataReceivedHandler DataReceived;
 
-        public delegate void Callback(Dictionary<string, string> packetData, Dictionary<string, string> headerData);
+        public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
         public Dictionary<int, Callback> serialActions;
 
-        public Client(string host = "localhost", string authkey = "none", bool useSSL = true, string name = "No Name")
+        public Client(string host = "localhost", bool useSSL = true, string name = "No Name", string authkey = "")
         {
             this.useSSL = useSSL;
             serialActions = new Dictionary<int, Callback>();
-            authKey = authkey;
+            if (authkey == "") authKey = Auth.AuthKey.GetAuthKey();
+            else authKey = authkey;
             client = new TcpClient();
             client.BeginConnect(host, 7777, new AsyncCallback(OnConnect), null);
             buffer = new byte[1024];
             loggedIn = false;
             this.name = name;
             Console.WriteLine("Client created");
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
         }
 
         public static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
@@ -58,6 +60,11 @@ namespace NetProtocol
             if (sslPolicyErrors == SslPolicyErrors.None) return true;
             Console.WriteLine($"Certificate error: {sslPolicyErrors}");
             return false;
+        }
+
+        void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            Disconnect();
         }
 
         private void OnConnect(IAsyncResult ar)
@@ -197,6 +204,11 @@ namespace NetProtocol
 
         private void HandleData(string packetData)
         {
+            if (packetData == "\r\n\r\nOk" || packetData == "e0197ca\r\n\u0001Result\r\n\r\nOk")
+            {
+                return;
+            }
+
             (Dictionary<string, string> headers, Dictionary<string, string> data) = Protocol.ParsePacket(packetData);
             data.TryGetValue("message", out string messageValue);
             if (headers.TryGetValue("Method", out string methodValue))
@@ -235,7 +247,7 @@ namespace NetProtocol
                         {
                             if (serialActions.TryGetValue(serialInt, out Callback action))
                             {
-                                action(data, headers);
+                                action(headers, data);
                                 serialActions.Remove(serialInt);
                             }
                         }

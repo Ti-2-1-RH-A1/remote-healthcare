@@ -18,7 +18,6 @@ namespace ServerClient
         private readonly AuthHandler auth;
         private readonly Stream stream;
         private readonly ClientsManager manager;
-        private readonly DataHandler dataHandler;
         public delegate void Callback(Dictionary<string, string> header, Dictionary<string, string> data);
         public Dictionary<string, Callback> actions;
         private readonly byte[] buffer = new byte[1024];
@@ -28,8 +27,7 @@ namespace ServerClient
 
         public ClientHandler(TcpClient tcpClient, Stream stream, AuthHandler auth, ClientsManager manager)
         {
-            dataHandler = new DataHandler();
-            dataHandler.LoadAllData();
+            
             this.manager = manager;
             this.tcpClient = tcpClient;
             this.auth = auth;
@@ -38,20 +36,22 @@ namespace ServerClient
                 { "Login", LoginMethode() },
                 { "Disconnect", disconnectCallback() },
                 { "GetClients", GetClients() },
+                { "GetHistoryClients", GetHistoryClient()},
+                { "GetHistory", GetHistoryData() },
                 { "SendToClients", SendToClients() },
                 { "Post", Post() },
                 { "Get", Get() },
             };
             this.stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
-
+        
         private Callback Get()
         {
             return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
             {
                 if (header.TryGetValue("Id", out string id))
                 {
-                    if (dataHandler.ClientData.TryGetValue(id, out ClientData clientData))
+                    if (manager.dataHandler.ClientData.TryGetValue(id, out ClientData clientData))
                     {
                         if (header.TryGetValue("GetKeys", out string getKeys))
                         {
@@ -84,10 +84,7 @@ namespace ServerClient
             };
         }
 
-        public override string ToString()
-        {
-            return this.UUID;
-        }
+        public override string ToString() => UUID;
 
         private Callback Post()
         {
@@ -95,7 +92,9 @@ namespace ServerClient
             {
                 if (header.TryGetValue("Id", out string id))
                 {
-                    if (dataHandler.ClientData.TryGetValue(id, out ClientData clientData))
+                    data.Add("Id", id);
+                    manager.SendToClients(ClientsManager.ClientType.DOCTOR, "Realtime", data);
+                    if (manager.dataHandler.ClientData.TryGetValue(id, out ClientData clientData))
                     {
                         PropertyInfo[] properties = typeof(ClientData).GetProperties();
                         foreach (PropertyInfo property in properties)
@@ -105,6 +104,9 @@ namespace ServerClient
                                 property.SetValue(clientData, value);
                             }
                         }
+
+                        manager.dataHandler.StoreData(id, data);
+
                         SendPacket(header, new Dictionary<string, string>(){
                             { "Result", "Ok" },
                         });
@@ -161,7 +163,7 @@ namespace ServerClient
                 if (!DoesExist)
                 {
                     SendError(header, "Key doesn't exist");
-                    Console.WriteLine("Key doesn't exist");
+                    Console.WriteLine("Key doesn't exist "+key);
                     return;
                 }
 
@@ -203,13 +205,38 @@ namespace ServerClient
 
                     data.TryGetValue("name", out string name);
                     this.Name = name;
-                    dataHandler.AddFile(this.UUID, name);
+                    manager.dataHandler.AddFile(this.UUID, name);
                     Console.WriteLine("Patient logged in.");
                     this.IsDoctor = false;
                 }
-                if (!dataHandler.ClientData.ContainsKey(UUID))
-                    dataHandler.ClientData.Add(this.UUID, new ClientData());
+                if (!manager.dataHandler.ClientData.ContainsKey(UUID))
+                    manager.dataHandler.ClientData.Add(this.UUID, new ClientData());
                 manager.Add(this);
+            };
+        }
+
+        private Callback GetHistoryClient()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                SendPacket(header, new Dictionary<string, string>()
+                {
+                    { "Result", "ok" },
+                    { "data", manager.dataHandler.LoadClientHistory() },
+                });
+            };
+        }
+
+        private Callback GetHistoryData()
+        {
+            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            {
+                data.TryGetValue("client_id", out string id);
+                SendPacket(header, new Dictionary<string, string>()
+                {
+                    { "Result", "ok" },
+                    { "data", manager.dataHandler.LoadClientHistoryData(id).ToString() },
+                });
             };
         }
 

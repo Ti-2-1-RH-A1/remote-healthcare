@@ -13,13 +13,15 @@ namespace RemoteHealthcare
         private static void Main(string[] args)
         {
             var deviceManager = new DeviceManager();
-            deviceManager.Start(Init());
+            Init(deviceManager);
+            deviceManager.Start();
+            Task.Delay(-1).Wait();
         }
 
         /// <summary>
         /// Select bike id to connect to using user input
         /// </summary>
-        private static (IBikeManager.BikeType, string) Init()
+        private static void Init(DeviceManager deviceManager)
         {
             // TODO [Martijn] Implement fileIO so the program automatically takes the latest bike id
 
@@ -28,7 +30,8 @@ namespace RemoteHealthcare
             string bikeTypeChoice = Console.ReadLine().ToLower();
             if (bikeTypeChoice.Contains("n"))
             {
-                return (IBikeManager.BikeType.SIMULATOR_BIKE, null);
+                deviceManager.bikeType = IBikeManager.BikeType.SIMULATOR_BIKE;
+                return;
             }
 
             // Ask the user for the bike id to connect to
@@ -38,7 +41,7 @@ namespace RemoteHealthcare
             while (running)
             {
                 bikeIdInput = Console.ReadLine();
-                if (Regex.IsMatch(bikeIdInput, "[/d{5}]"))
+                if (Regex.IsMatch(bikeIdInput, @"\d{5}"))
                 {
                     // if the input consists of 5 digits stop the loop, else ask for input again
                     running = false;
@@ -48,7 +51,9 @@ namespace RemoteHealthcare
                     Console.WriteLine("Input wasn't a 5 digit serial id, try again");
                 }
             }
-            return (IBikeManager.BikeType.REAL_BIKE ,bikeIdInput);
+
+            deviceManager.bikeID = bikeIdInput;
+            deviceManager.bikeType = IBikeManager.BikeType.REAL_BIKE;
         }
     }
 }

@@ -42,12 +42,13 @@ namespace ServerClient.Tests
 
             await Task.Delay(1000);
 
-            var client = new Client("localhost", "Fiets", false);
+            var client = new Client("localhost", false, "Test", "e5OczxmOprhbpDVUtF4JmeM7gVdqrFDl");
 
             await Task.Delay(3500);
             Assert.IsTrue(client.loggedIn);
             client.SendPacket(new Dictionary<string, string>() {
                 { "Method", "Get" },
+                { "GetKeys", "speed" },
             }, new Dictionary<string, string>(), (e1, e2) =>
             {
                 Assert.IsTrue(true);

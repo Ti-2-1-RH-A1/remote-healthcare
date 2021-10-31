@@ -4,45 +4,96 @@ using RemoteHealthcare.Hrm;
 using RemoteHealthcare.ServerCom;
 using RemoteHealthcare.VR;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RemoteHealthcare
 {
     public class DeviceManager : IDeviceManager
     {
         private readonly IServiceProvider services;
-        public event Action<(DataTypes, float)> HandelDataEvents;
+        public event Action<Dictionary<DataTypes, float>> HandelDataEvents;
+        bool vrWorking = true;
+        public IBikeManager.BikeType bikeType { get; set; }
+        public string bikeID { get; set; }
 
         public DeviceManager()
         {
             services = BuildServiceProvider();
         }
 
-        public void Start((IBikeManager.BikeType, string) bikeTypeAndId)
+        public void Start()
         {
-            ComManager comManager = services.GetService<ComManager>();
-            comManager.Start();
-            var bikeManager = services.GetService<BikeManager>();
-            bikeManager.StartBike(bikeTypeAndId.Item1, bikeTypeAndId.Item2);
-            var hrmManager = services.GetService<HRMManager>();
-            hrmManager.StartHRM();
-            var vrManager = services.GetService<VRManager>();
-            vrManager.Start();
+            services.GetService<IComManager>().Start();
         }
 
-        public void HandleData((DataTypes, float) data)
+        public async Task StartTraining()
         {
-            HandelDataEvents?.Invoke(data);
+            await services.GetService<IBikeManager>().Start(bikeType, bikeID);
+
+
+            if (vrWorking)
+            {
+                services.GetService<IVRManager>().Start();
+            }
+            
+            if (bikeType == IBikeManager.BikeType.REAL_BIKE)
+            {
+                Console.WriteLine("Wil je een HR meter gebruiken? [y|n]");
+                string hrmChoice = Console.ReadLine().ToLower();
+                if (hrmChoice.Contains("y"))
+                {
+                    await services.GetService<IHRMManager>().Start();
+                }
+            }
+
+        }
+
+        public void StopTraining()
+        {
+            if (vrWorking)
+            {
+                services.GetService<IVRManager>().Stop();
+            }
+            services.GetService<IBikeManager>().Stop();
+        }
+
+        public void HandleData(Dictionary<DataTypes, float> data)
+        {
+            Dictionary<DataTypes, float> roundedData = new Dictionary<DataTypes, float>();
+
+            foreach (KeyValuePair<DataTypes, float> pair in data)
+            {
+                if (data.ContainsKey(DataTypes.HRM_HEARTRATE))
+                {
+                    roundedData.Add(DataTypes.HRM_HEARTRATE, (float) Math.Round(data[DataTypes.HRM_HEARTRATE]));
+                }
+            }
+                foreach (KeyValuePair<DataTypes, float> pair in data)
+                {
+                    if (pair.Key == DataTypes.BIKE_SPEED) { continue; }
+                    roundedData.Add(pair.Key, (float)Math.Round(pair.Value));
+                }
+
+                if (data.ContainsKey(DataTypes.BIKE_SPEED))
+                {
+                    roundedData.Add(DataTypes.BIKE_SPEED, (float) Math.Round(data[DataTypes.BIKE_SPEED] * 10) / 10);
+                }
+                
+            
+
+            HandelDataEvents?.Invoke(roundedData);
         }
 
         private IServiceProvider BuildServiceProvider()
         {
             return new ServiceCollection()
-                .AddSingleton(new Bluetooth(BLEInstance.BIKE))
-                .AddSingleton(new Bluetooth(BLEInstance.HEARTRATE))
-                .AddSingleton<ComManager>()
-                .AddSingleton<BikeManager>()
-                .AddSingleton<HRMManager>()
-                .AddSingleton<VRManager>()
+                .AddSingleton<Bluetooth>(new Bluetooth(BLEInstance.BIKE))
+                .AddSingleton<Bluetooth>(new Bluetooth(BLEInstance.HEARTRATE))
+                .AddSingleton<IComManager, ComManager>()
+                .AddSingleton<IBikeManager, BikeManager>()
+                .AddSingleton<IHRMManager, HRMManager>()
+                .AddSingleton<IVRManager, VRManager>()
                 .AddSingleton<IDeviceManager>(this)
                 .BuildServiceProvider();
         }

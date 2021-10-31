@@ -2,7 +2,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RemoteHealthcare.Bike;
 using System;
+using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace RemoteHealthcare.Tests
 {
@@ -17,9 +19,22 @@ namespace RemoteHealthcare.Tests
             CheckedTypes = CheckedDataTypes.NONE;
         }
 
+        event Action<Dictionary<DataTypes, float>> IDeviceManager.HandelDataEvents
+        {
+            add
+            {
+                // Not Implemented 
+            }
+
+            remove
+            {
+                // Not Implemented 
+            }
+        }
+
         public void Start((IBikeManager.BikeType, string) bikeTypeAndId)
         {
-            this.services.GetService<IBikeManager>().StartBike(IBikeManager.BikeType.SIMULATOR_BIKE);
+            this.services.GetService<IBikeManager>().Start(IBikeManager.BikeType.SIMULATOR_BIKE);
 
             Thread.Sleep(100);
 
@@ -42,31 +57,51 @@ namespace RemoteHealthcare.Tests
             BIKE_DISTANCE = 4,
             BIKE_RPM = 8,
         }
-        
-        public void HandleData((DataTypes, float) data)
+
+        public void Start()
         {
-            switch(data.Item1)
+            
+        }
+
+        public IBikeManager.BikeType bikeType { get; set; }
+        public string bikeID { get; set; }
+
+        public void HandleData(Dictionary<DataTypes, float> data)
+        {
+            foreach (var item in data)
             {
-                case DataTypes.BIKE_SPEED:
-                    CheckedTypes |= CheckedDataTypes.BIKE_SPEED;
-                    Assert.IsTrue(data.Item2 >= 0);
-                    break;
-                case DataTypes.BIKE_ELAPSED_TIME:
-                    CheckedTypes |= CheckedDataTypes.BIKE_ELAPSED_TIME;
-                    Assert.IsTrue(data.Item2 >= 0);
-                    break;
-                case DataTypes.BIKE_DISTANCE:
-                    CheckedTypes |= CheckedDataTypes.BIKE_DISTANCE;
-                    Assert.IsTrue(data.Item2 >= 0);
-                    break;
-                case DataTypes.BIKE_RPM:
-                    CheckedTypes |= CheckedDataTypes.BIKE_RPM;
-                    Assert.IsTrue(data.Item2 >= 0);
-                    break;
+                switch (item.Key)
+                {
+                    case DataTypes.BIKE_SPEED:
+                        CheckedTypes |= CheckedDataTypes.BIKE_SPEED;
+                        Assert.IsTrue(item.Value >= 0);
+                        break;
+                    case DataTypes.BIKE_ELAPSED_TIME:
+                        CheckedTypes |= CheckedDataTypes.BIKE_ELAPSED_TIME;
+                        Assert.IsTrue(item.Value >= 0);
+                        break;
+                    case DataTypes.BIKE_DISTANCE:
+                        CheckedTypes |= CheckedDataTypes.BIKE_DISTANCE;
+                        Assert.IsTrue(item.Value >= 0);
+                        break;
+                    case DataTypes.BIKE_RPM:
+                        CheckedTypes |= CheckedDataTypes.BIKE_RPM;
+                        Assert.IsTrue(item.Value >= 0);
+                        break;
+                }
             }
         }
 
         public event Action<(DataTypes, float)> HandelDataEvents;
+        public void StartTraining()
+        {
+            // Not Implemented 
+        }
+
+        public void StopTraining()
+        {
+            // Not Implemented 
+        }
 
         private IServiceProvider BuildServiceProvider()
         {
@@ -76,6 +111,12 @@ namespace RemoteHealthcare.Tests
                 .AddSingleton<IBikeManager, BikeManager>()
                 .AddSingleton<IDeviceManager>(this)
                 .BuildServiceProvider();
+        }
+
+        Task IDeviceManager.StartTraining()
+        {
+            // Not Implemented 
+            return Task.Delay(2);
         }
     }
 }

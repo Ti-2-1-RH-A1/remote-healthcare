@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Avans.TI.BLE;
@@ -32,28 +33,32 @@ namespace RemoteHealthcare
             ble.CloseDevice();
         }
 
-        public async Task<int> Start(RealBike realBike)
-        {
-            return await Start(RealBike.bikeTypeName + " " + realBike.bikeId, RealBike.bikeServiceName, RealBike.bikeSubscribtionCharacteristic);
-        }
-
-        public async Task<int> Start(HRM hrm)
-        {
-            return await Start(HRM.hrmTypeName, HRM.heartRateServiceName, HRM.heartSubscribtionCharacteristic);
-        }
-
         public async Task<int> Start(string deviceId, string serviceName, string subscribtionCharacteristic)
         {
             // Wait for half a second in case time is needed to recognise bluetooth devices
             Thread.Sleep(500);
 
+            List<string> lstdev = ble.ListDevices();
+
+            lstdev.ForEach(Console.WriteLine);
+            int timesTried = 0;
             int errorCode = 0; // set default to 0;
-            errorCode += await ble.OpenDevice(deviceId);
-            errorCode += await ble.SetService(serviceName);
-            ble.SubscriptionValueChanged += DataReceived;
-            errorCode += await ble.SubscribeToCharacteristic(subscribtionCharacteristic);
-            // if errorcode > 0 then connection wasn't made properly
-            // TODO [Martijn] Implement using errorcode to detect if connection was made
+            do
+            {
+                errorCode = 0;
+                Console.WriteLine("Connecting to: " + deviceId);
+                errorCode += await ble.OpenDevice(deviceId);
+                timesTried++;
+            } while (errorCode != 0 && timesTried < 5);
+
+            if (timesTried != 5 && errorCode == 0)
+            {
+                errorCode += await ble.SetService(serviceName);
+                errorCode += await ble.SubscribeToCharacteristic(subscribtionCharacteristic);
+                ble.SubscriptionValueChanged += DataReceived;
+                Console.WriteLine("Connected to: "+ deviceId);
+
+            }
             return errorCode;
         }
 
