@@ -106,7 +106,7 @@ namespace RemoteHealthcare.ServerCom
                 if (data.TryGetValue("Message", out string message))
                 {
                     //                  BgGreen   [CHAT]Reset     FgGreen   {message}Reset    
-                    Console.WriteLine($"\u001b[42m[CHAT]\u001b[0m \u001b[32m{message}\u001b[0m");
+                    Console.WriteLine($"[BERICHT VAN DOKTER] {message}");
                     DoAsync(message);
                 }
             };

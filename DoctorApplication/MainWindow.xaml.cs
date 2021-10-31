@@ -86,7 +86,7 @@ namespace DoctorApplication
                 return;
             }
 
-            var dialog = new inputBox("Type your message below:l");
+            var dialog = new inputBox("Type je bericht hieronder.");
             dialog.Owner = this;
             if (dialog.ShowDialog() == true)
             {

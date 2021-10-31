@@ -36,6 +36,10 @@ namespace DoctorApplication
             clientManager.SendMessageToAll(message);
         }
 
+        /// <summary>
+        /// Send start signal to selected clients
+        /// </summary>
+        /// <param name="clients">selected clients</param>
         public void SendStartSession(IList clients)
         {
             List<string> clientIDs = new List<string>();
@@ -46,6 +50,11 @@ namespace DoctorApplication
 
             clientManager.SendToClients(clientIDs,"Start", new Dictionary<string, string>());
         }
+
+        /// <summary>
+        /// Send stop signal to selected clients
+        /// </summary>
+        /// <param name="clients">selected clients</param>
         public void SendStopSession(IList clients)
         {
             List<string> clientIDs = new List<string>();
@@ -56,6 +65,12 @@ namespace DoctorApplication
 
             clientManager.SendToClients(clientIDs, "Stop", new Dictionary<string, string>());
         }
+
+        /// <summary>
+        /// Send message to selected clients
+        /// </summary>
+        /// <param name="clients">selected clients</param>
+        /// <param name="message"/>
         public void SendMessage(IList clients, string message)
         {
             List<string> clientIDs = new List<string>();
@@ -69,6 +84,12 @@ namespace DoctorApplication
                 {"Message", message}
             });
         }
+
+        /// <summary>
+        /// Set resistance on selected clients
+        /// </summary>
+        /// <param name="clients">Selected clients</param>
+        /// <param name="resistance">resistance %</param>
         public void SendSetResistance(IList clients, string resistance)
         {
             List<string> clientIDs = new List<string>();
