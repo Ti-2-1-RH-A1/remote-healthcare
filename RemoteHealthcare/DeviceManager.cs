@@ -36,7 +36,7 @@ namespace RemoteHealthcare
             {
                 services.GetService<IVRManager>().Start();
             }
-
+            
             if (bikeType == IBikeManager.BikeType.REAL_BIKE)
             {
                 Console.WriteLine("Wil je een HR meter gebruiken? [y|n]");

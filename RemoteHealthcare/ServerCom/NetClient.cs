@@ -8,40 +8,39 @@ using RemoteHealthcare.Bike;
 
 namespace RemoteHealthcare.ServerCom
 {
-
     class NetClient
     {
         private readonly IServiceProvider iServiceProvider;
 
         private Client client;
         public Dictionary<string, Client.Callback> actions;
+
         public NetClient(IServiceProvider iServiceProvider)
         {
             this.iServiceProvider = iServiceProvider;
-            actions = new Dictionary<string, Client.Callback>() {
-                { "Stop", StopClient() },
-                { "Start", StartClient() },
-                { "Message", HandleMessage() },
-                { "SetResistance", SetResistance() }
+            actions = new Dictionary<string, Client.Callback>()
+            {
+                {"Stop", StopClient()},
+                {"Start", StartClient()},
+                {"Message", HandleMessage()},
+                {"SetResistance", SetResistance()}
             };
         }
 
         private Client.Callback SetResistance()
         {
-            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            return delegate(Dictionary<string, string> header, Dictionary<string, string> data)
             {
                 data.TryGetValue("Resistance", out string resistance);
                 int resist = int.Parse(resistance);
 
                 iServiceProvider.GetService<IBikeManager>().SetResistance(resist);
-
             };
         }
 
         private Client.Callback StartClient()
         {
-
-            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            return delegate(Dictionary<string, string> header, Dictionary<string, string> data)
             {
                 iServiceProvider.GetService<IDeviceManager>().StartTraining();
             };
@@ -49,7 +48,7 @@ namespace RemoteHealthcare.ServerCom
 
         private Client.Callback StopClient()
         {
-            return delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+            return delegate(Dictionary<string, string> header, Dictionary<string, string> data)
             {
                 iServiceProvider.GetService<IDeviceManager>().StopTraining();
             };
@@ -70,7 +69,7 @@ namespace RemoteHealthcare.ServerCom
                 return;
             }
         }
-        
+
         public async Task Start()
         {
             Console.WriteLine("Wat is je naam? Deze sturen we naar de dokter zodat hij weet wie je bent.");
@@ -79,6 +78,7 @@ namespace RemoteHealthcare.ServerCom
             {
                 Thread.Sleep(10);
             }
+
             client.DataReceived += HandleDataFromServer;
         }
 
@@ -86,19 +86,28 @@ namespace RemoteHealthcare.ServerCom
         {
             client.SendPacket(new Dictionary<string, string>()
             {
-                { "Method", "Post" },
-                { "Id", client.UUID },
+                {"Method", "Post"},
+                {"Id", client.UUID},
             }, data);
         }
 
-        private Client.Callback HandleMessage() => delegate (Dictionary<string, string> header, Dictionary<string, string> data)
+        private async Task DoAsync(string message)
+        {
+            await Task.Run(async () =>
+            {
+                //Do something awaitable here
+                iServiceProvider.GetService<IVRManager>()?.HandleDoctorMessage(message);
+            });
+        }
+
+        private Client.Callback HandleMessage() =>
+            delegate(Dictionary<string, string> header, Dictionary<string, string> data)
             {
                 if (data.TryGetValue("Message", out string message))
                 {
                     //                  BgGreen   [CHAT]Reset     FgGreen   {message}Reset    
-                    Console.WriteLine($"\u001b[42m[CHAT]\u001b[0m \u001b[32m{message}\u001b[0m");
-                    //IVRManager vrManager = iServiceProvider.GetService<IVRManager>();
-                    //vrManager.HandleDoctorMessage(message);
+                    Console.WriteLine($"[BERICHT VAN DOKTER] {message}");
+                    DoAsync(message);
                 }
             };
     }

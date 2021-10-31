@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DoctorApplication"
         mc:Ignorable="d"
-        Title="inputBox" Height="200" Width="300">
+        Title="inputBox" Height="200" Width="500">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*"/>
@@ -25,7 +25,7 @@
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Label Content="Message" Name="lblMessage" Margin="0,0,0,1"/>
-            <TextBox Grid.Row="1" Name="ValueResponseBox" TextWrapping="Wrap" Margin="0,0,0,41" Grid.RowSpan="2"/>
+            <TextBox Grid.Row="1" Name="ValueResponseBox" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" TextWrapping="Wrap" Margin="0,0,0,41" Grid.RowSpan="2"/>
             <Button Content="Stuur" Name="SendBtn" Grid.Row="2" Click="SendBtn_Click" />
 
 

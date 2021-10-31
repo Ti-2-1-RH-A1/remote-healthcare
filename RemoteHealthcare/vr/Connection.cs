@@ -39,8 +39,8 @@ namespace RemoteHealthcare.VR
         public void Stop()
         {
             networkStream.Close();
-            recieveThread.Abort();
-            isAlive = true;
+            //recieveThread.Abort();
+            isAlive = false;
         }
 
 
@@ -115,7 +115,7 @@ namespace RemoteHealthcare.VR
 
         private async Task waitForConnection()
         {
-            while (currentSessionID.Length == 0)
+            while (currentSessionID == null || currentSessionID.Length == 0)
             {
                 await Task.Delay(10);
             }
@@ -125,7 +125,7 @@ namespace RemoteHealthcare.VR
         /// Returns a string with the response
         public void SendViaTunnel(JObject jObject, Callback callback = null)
         {
-            if (currentSessionID.Length == 0)
+            if (currentSessionID == null || currentSessionID.Length == 0)
             {
                 Console.WriteLine("not connected");
                 waitForConnection().Wait();
