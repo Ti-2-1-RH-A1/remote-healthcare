@@ -619,7 +619,7 @@ namespace RemoteHealthcare.VR
             int[] position = { 5, 70 };
             int[] color = { 100, 0, 0, 1 };
 
-            Drawtext(ref connection, panelName, "Bericht van de dokters", headerPosition, 42, color, "segoeui");
+            Drawtext(ref connection, panelName, "Bericht van de dokter", headerPosition, 42, color, "segoeui");
 
             color[0] = 0;
             int maximum = 45;
