@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
+
 namespace DoctorApplication
 {
     /// <summary>
@@ -19,10 +21,22 @@ namespace DoctorApplication
     /// </summary>
     public partial class ClientHistoryWindow : Window
     {
+        public ObservableCollection<ClientData> clientDatas { get; set; }
+
+        public void AddClientDatas(List<ClientData> clientData)
+        {
+            Dispatcher.BeginInvoke((Action) (() =>
+            {
+                clientData.ForEach(clientDatas.Add);
+            }));
+        }
+
+
         public ClientHistoryWindow()
         {
+            clientDatas = new ObservableCollection<ClientData>();
+            this.DataContext = this;
             InitializeComponent();
-            
         }
 
         private void btnBack_Click(object sender, RoutedEventArgs e)

@@ -79,11 +79,11 @@ namespace DoctorApplication
                 {
                     if (clients.TryGetValue(id, out Client editClient))
                     {
-                        if (data.TryGetValue("speed", out string speed)) editClient.Speed = speed;
-                        if (data.TryGetValue("time", out string time)) editClient.Time = time;
-                        if (data.TryGetValue("distance_traveled", out string distance_traveled)) editClient.DistanceTraveled = distance_traveled;
-                        if (data.TryGetValue("rpm", out string rpm)) editClient.Rpm = rpm;
-                        if (data.TryGetValue("heartrate", out string heartrate)) editClient.Heartrate = heartrate;
+                        if (data.TryGetValue("speed", out string speed)) editClient.speed = speed;
+                        if (data.TryGetValue("time", out string time)) editClient.time = time;
+                        if (data.TryGetValue("distance_traveled", out string distance_traveled)) editClient.distanceTraveled = distance_traveled;
+                        if (data.TryGetValue("rpm", out string rpm)) editClient.rpm = rpm;
+                        if (data.TryGetValue("heartrate", out string heartrate)) editClient.heartRate = heartrate;
                         clients[id] = editClient;
                     }
                 }
@@ -168,7 +168,7 @@ namespace DoctorApplication
 
                     Dictionary<string, string> jo = JsonConvert.DeserializeObject<Dictionary<string, string>>(Jdata);
 
-                    MainWindow.doctorActions.UpdateSelectWindow(jo);
+                    MainWindow.DoctorActions.UpdateSelectWindow(jo);
                 });
         }
 
@@ -185,8 +185,8 @@ namespace DoctorApplication
                 data.TryGetValue("data", out string Jdata);
 
                 JObject jo = JObject.Parse(Jdata);
-
-                MainWindow.doctorActions.UpdateHistoryWindow(jo);
+    
+                MainWindow.DoctorActions.UpdateHistoryWindow(jo);
             });
         }
 

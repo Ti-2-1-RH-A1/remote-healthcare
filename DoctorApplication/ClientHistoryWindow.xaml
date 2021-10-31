@@ -7,14 +7,14 @@
         mc:Ignorable="d"
         Title="ClientHistoryWindow" Height="450" Width="500">
     <Grid>
-        <ListView Name="UserGrid" Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Clients, Mode=TwoWay}" SelectedItem="{Binding SelectedClient}" Margin="0,0,181,0">
+        <ListView Name="UserGrid" Grid.Row="0" Grid.Column="0" ItemsSource="{Binding clientDatas, Mode=OneWay}" Margin="0,0,181,0">
             <ListView.View>
-                <GridView x:Name="grdClientsHistory">
-                    <GridViewColumn Header="Time" DisplayMemberBinding="{Binding Time}"  Width="Auto" />
-                    <GridViewColumn Header="Speed" DisplayMemberBinding="{Binding Speed}"  Width="Auto" />
-                    <GridViewColumn Header="Distance" DisplayMemberBinding="{Binding Distance_Traveled}"  Width="Auto" />
-                    <GridViewColumn Header="RPM" DisplayMemberBinding="{Binding RPM}"  Width="Auto" />
-                    <GridViewColumn Header="Heartrate" DisplayMemberBinding="{Binding Heartrate}"  Width="Auto" />
+                <GridView x:Name="GrdClientsHistory">
+                    <GridViewColumn Header="Time" DisplayMemberBinding="{Binding time}"  Width="Auto" />
+                    <GridViewColumn Header="Speed" DisplayMemberBinding="{Binding speed}"  Width="Auto" />
+                    <GridViewColumn Header="Distance" DisplayMemberBinding="{Binding distanceTraveled}"  Width="Auto" />
+                    <GridViewColumn Header="RPM" DisplayMemberBinding="{Binding rpm}"  Width="Auto" />
+                    <GridViewColumn Header="HeartRate" DisplayMemberBinding="{Binding heartRate}"  Width="Auto" />
 
                 </GridView>
             </ListView.View>
