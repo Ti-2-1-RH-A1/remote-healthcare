@@ -68,7 +68,7 @@ namespace DoctorApplication
             dialog.Owner = this;
             if (dialog.ShowDialog() == true)
             {
-                doctorActions.SendToAll(dialog.ResponseText);
+                DoctorActions.SendToAll(dialog.ResponseText);
             }
         }
 
@@ -158,11 +158,11 @@ namespace DoctorApplication
                 MessageBox.Show("Je moet minstens 1 client geselecteerd hebben.", "Selectie fout", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            doctorActions.SendSetResistance(list.SelectedItems, "0");
+            DoctorActions.SendSetResistance(list.SelectedItems, "0");
             Thread.Sleep(10);
-            doctorActions.SendMessage(list.SelectedItems, "NOODSTOP!");
+            DoctorActions.SendMessage(list.SelectedItems, "NOODSTOP!");
             Thread.Sleep(10);
-            doctorActions.SendStopSession(list.SelectedItems);
+            DoctorActions.SendStopSession(list.SelectedItems);
         }
     }
 }
