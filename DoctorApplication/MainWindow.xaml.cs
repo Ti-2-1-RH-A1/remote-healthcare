@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -63,8 +64,12 @@ namespace DoctorApplication
 
         private void BtnBroadcast_Click(object sender, RoutedEventArgs e)
         {
-            MessageAll message = new(this);
-            message.ShowDialog();
+            var dialog = new inputBox("Type hierond je bericht naar alle clients");
+            dialog.Owner = this;
+            if (dialog.ShowDialog() == true)
+            {
+                doctorActions.SendToAll(dialog.ResponseText);
+            }
         }
 
         private void BtnHistory_Click(object sender, RoutedEventArgs e)
@@ -89,12 +94,23 @@ namespace DoctorApplication
             }
         }
 
+        private bool SelectionAmountCheck(ListView list, int amount)
+        {
+            if (list.SelectedItems.Count < amount)
+            {
+                MessageBox.Show("Je moet minstens 1 client geselecteerd hebben.", "Selectie fout", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            return true;
+        }
+
         private void btnStartSession_Click(object sender, RoutedEventArgs e)
         {
             ListView list = ClientListView;
             if (list.SelectedItems.Count < 1)
             {
-                MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Je moet minstens 1 client geselecteerd hebben.", "Selectie fout", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -109,7 +125,7 @@ namespace DoctorApplication
             ListView list = ClientListView;
             if (list.SelectedItems.Count < 1)
             {
-                MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Je moet minstens 1 client geselecteerd hebben.", "Selectie fout", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             DoctorActions.SendStopSession(list.SelectedItems);
@@ -120,11 +136,11 @@ namespace DoctorApplication
             ListView list = ClientListView;
             if (list.SelectedItems.Count < 1)
             {
-                MessageBox.Show("You need to have at least one client selected.", "Selection error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Je moet minstens 1 client geselecteerd hebben.", "Selectie fout", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            var dialog = new inputBox("Enter resistance %");
+            var dialog = new inputBox("Vul het nieuwe weerstand % in");
             dialog.Owner = this;
             if (dialog.ShowDialog() == true)
             {
@@ -132,6 +148,21 @@ namespace DoctorApplication
             }
 
 
+        }
+
+        private void btnNoodstop(object sender, RoutedEventArgs e)
+        {
+            ListView list = ClientListView;
+            if (list.SelectedItems.Count < 1)
+            {
+                MessageBox.Show("Je moet minstens 1 client geselecteerd hebben.", "Selectie fout", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            doctorActions.SendSetResistance(list.SelectedItems, "0");
+            Thread.Sleep(10);
+            doctorActions.SendMessage(list.SelectedItems, "NOODSTOP!");
+            Thread.Sleep(10);
+            doctorActions.SendStopSession(list.SelectedItems);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace RemoteHealthcare
     {
         private readonly IServiceProvider services;
         public event Action<Dictionary<DataTypes, float>> HandelDataEvents;
-        bool vrWorking = false;
+        bool vrWorking = true;
         public IBikeManager.BikeType bikeType { get; set; }
         public string bikeID { get; set; }
 
@@ -30,14 +30,23 @@ namespace RemoteHealthcare
         public async Task StartTraining()
         {
             await services.GetService<IBikeManager>().Start(bikeType, bikeID);
-            
-            
+
+
             if (vrWorking)
             {
                 services.GetService<IVRManager>().Start();
             }
-            
-            await services.GetService<IHRMManager>().Start();
+
+            if (bikeType == IBikeManager.BikeType.REAL_BIKE)
+            {
+                Console.WriteLine("Wil je een HR meter gebruiken? [y|n]");
+                string hrmChoice = Console.ReadLine().ToLower();
+                if (hrmChoice.Contains("y"))
+                {
+                    await services.GetService<IHRMManager>().Start();
+                }
+            }
+
         }
 
         public void StopTraining()
@@ -53,20 +62,25 @@ namespace RemoteHealthcare
         {
             Dictionary<DataTypes, float> roundedData = new Dictionary<DataTypes, float>();
 
-            if (data.ContainsKey(DataTypes.HRM_HEARTRATE))
+            foreach (KeyValuePair<DataTypes, float> pair in data)
             {
-                roundedData.Add(DataTypes.HRM_HEARTRATE, (float)Math.Round(data[DataTypes.HRM_HEARTRATE]));
+                if (data.ContainsKey(DataTypes.HRM_HEARTRATE))
+                {
+                    roundedData.Add(DataTypes.HRM_HEARTRATE, (float) Math.Round(data[DataTypes.HRM_HEARTRATE]));
+                }
             }
-            else
-            {
                 foreach (KeyValuePair<DataTypes, float> pair in data)
                 {
                     if (pair.Key == DataTypes.BIKE_SPEED) { continue; }
                     roundedData.Add(pair.Key, (float)Math.Round(pair.Value));
                 }
 
-                roundedData.Add(DataTypes.BIKE_SPEED, (float)Math.Round(data[DataTypes.BIKE_SPEED] * 10) / 10);
-            }
+                if (data.ContainsKey(DataTypes.BIKE_SPEED))
+                {
+                    roundedData.Add(DataTypes.BIKE_SPEED, (float) Math.Round(data[DataTypes.BIKE_SPEED] * 10) / 10);
+                }
+                
+            
 
             HandelDataEvents?.Invoke(roundedData);
         }

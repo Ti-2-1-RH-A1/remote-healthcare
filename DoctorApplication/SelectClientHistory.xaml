@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DoctorApplication"
         mc:Ignorable="d"
-        Title="SelectClientHistory" Height="500" Width="500">
+        Title="Selecteer client geschiedenis" Height="500" Width="500">
     <Grid>
         <ListView x:Name="UserGrid" Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Clients, Mode=OneWay}" SelectedItem="{Binding SelectedClient}" Margin="0,0,0,75">
             <ListView.View>

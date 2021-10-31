@@ -832,7 +832,7 @@ namespace RemoteHealthcare.VR
             message.Add("data", data);
 
             string response = "";
-            connection.SendViaTunnel(message, (callbackResponse => response = callbackResponse));
+            connection.SendViaTunnel(message, callbackResponse => response = callbackResponse);
             while (response.Length == 0)
             {
                 Thread.Sleep(10);

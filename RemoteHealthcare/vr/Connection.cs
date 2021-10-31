@@ -162,26 +162,34 @@ namespace RemoteHealthcare.VR
             bool running = true;
             while (running)
             {
+                if (currentSessionID == null) { break; }
                 if (currentSessionID.Length > 1)
                 {
-                    ReceiveFromTcp(out var receivedData, false);
-                    Console.WriteLine(receivedData);
-
-                    //if (receivedData == "") { return; }
-                    JObject tunnel = JObject.Parse(receivedData);
-                    JObject idObject = (JObject) tunnel.GetValue("data");
-                    JObject dataObject = (JObject) idObject.GetValue("data");
-                    if (dataObject.ContainsKey("serial"))
+                    try
                     {
-                        JToken jToken = dataObject.GetValue("serial");
-                        string serial = jToken.ToString();
-                        //Console.WriteLine(serial);
+                        ReceiveFromTcp(out var receivedData, false);
+                        //Console.WriteLine(receivedData);
 
-                        if (callbacks.ContainsKey(serial))
+                        if (receivedData == "") { continue; }
+                        JObject tunnel = JObject.Parse(receivedData);
+                        JObject idObject = (JObject)tunnel.GetValue("data");
+                        JObject dataObject = (JObject)idObject.GetValue("data");
+                        if (dataObject.ContainsKey("serial"))
                         {
-                            callbacks[serial](dataObject.ToString());
-                            callbacks.Remove(serial);
+                            JToken jToken = dataObject.GetValue("serial");
+                            string serial = jToken.ToString();
+                            //Console.WriteLine(serial);
+
+                            if (callbacks.ContainsKey(serial))
+                            {
+                                callbacks[serial](dataObject.ToString());
+                                callbacks.Remove(serial);
+                            }
                         }
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Error in vr");
                     }
                 }
             }
